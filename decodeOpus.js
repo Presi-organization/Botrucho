@@ -2,7 +2,7 @@
 
 const fs = require('fs');
 const path = require('path');
-const opus = require('node-opus');
+const { OpusEncoder } = require('node-opus');
 
 const rate = 48000;
 const frame_size = 1920;
@@ -28,7 +28,7 @@ let getDecodedFrame = (frameString, encoder, filename) => {
 
 let convertOpusStringToRawPCM = (inputPath, filename, cb) => {
 	total++;
-	let encoder = new opus.OpusEncoder(rate, channels);
+	let encoder = new OpusEncoder(rate, channels);
 	const inputStream = fs.createReadStream(inputPath);
 	const outputStream = fs.createWriteStream(path.join(path.dirname(inputPath), `${filename}.raw_pcm`));
 	let data = '';
