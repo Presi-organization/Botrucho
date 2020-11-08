@@ -4,5 +4,5 @@
     "discord_token": "Nzc1MTE4NTA4NTU0OTc3MzEx.X6hrXQ.aYHDRDqvr9NDhrqFoO0nZFwr9AI",
     "bot_controller": "775118508554977311",
     "content_type": "audio/wav",
-    "prefix": "$"
+    "prefix": "!"
   }
