@@ -2,7 +2,7 @@
 
 const fs = require('fs');
 const path = require('path');
-const { OpusEncoder } = require('node-opus');
+const { OpusEncoder } = require('@discordjs/opus');
 
 const rate = 48000;
 const frame_size = 1920;
