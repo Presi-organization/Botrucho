@@ -1,10 +1,6 @@
 const ytdl = require("ytdl-core");
 const Discord = require("discord.js");
-const fetchVideoInfo = require("youtube-info");
-const {
-    getID,
-    reduceTrailingWhitespace
-} = require("./util");
+const embed = require("./embedMessage");
 const {
     prefix,
     discord_token
@@ -32,14 +28,31 @@ client.on("message", async message => {
 
     const serverQueue = queue.get(message.guild.id);
 
-    if (message.content.startsWith(`${prefix}play`)) {
-        console.log("PLAY command")
+    if (message.content.startsWith(`${prefix} ping`)) {
+        message.channel.send(embed.simpleEmbedMessage(2899536, "**Pinging...**")).then(msg => {
+            const ping = msg.createdTimestamp - message.createdTimestamp;
+            msg.edit(embed.simpleEmbedMessage(9807270, `**:ping_pong: Pong! LATENCIA:-**\n  ${ping}ms`));
+        });
+    } else if (message.content.startsWith(`${prefix} clear`)) {
+        const args = message.content.split(" ").slice(2);
+        const amount = args.join(" ");
+
+        if (!amount) return message.reply('¡No ha proporcionado una cantidad de mensajes que deberían eliminarse!');
+        if (isNaN(amount)) return message.reply('¡El parámetro de cantidad no es un número!');
+
+        if (amount > 99) return message.reply('¡No puedes borrar más de 100 mensajes a la vez!');
+        if (amount < 1) return message.reply('¡Tienes que borrar al menos 1 mensaje!');
+
+        await message.channel.messages.fetch({ limit: amount }).then(messages => {
+            message.channel.bulkDelete(messages);
+        });
+    } else if (message.content.startsWith(`${prefix} play`)) {
         execute(message, serverQueue);
         return;
-    } else if (message.content.startsWith(`${prefix}skip`)) {
+    } else if (message.content.startsWith(`${prefix} skip`)) {
         skip(message, serverQueue);
         return;
-    } else if (message.content.startsWith(`${prefix}stop`)) {
+    } else if (message.content.startsWith(`${prefix} stop`)) {
         stop(message, serverQueue);
         return;
     } else {
@@ -49,13 +62,10 @@ client.on("message", async message => {
 
 const execute = async (message, serverQueue) => {
     const args = message.content.split(" ");
-    console.log(args)
 
     const voiceChannel = message.member.voice.channel;
     if (!voiceChannel)
-        return message.channel.send(
-            "You need to be in a voice channel to play music!"
-        );
+        return message.channel.send(embed.simpleEmbedMessage(15158332, "¡Tienes que estar en un canal de voz!"));
     const permissions = voiceChannel.permissionsFor(message.client.user);
     if (!permissions.has("CONNECT") || !permissions.has("SPEAK")) {
         return message.channel.send(
@@ -63,26 +73,7 @@ const execute = async (message, serverQueue) => {
         );
     }
 
-    // let argsReduced = args.splice(1).join(" ");
-    // argsReduced = reduceTrailingWhitespace(argsReduced);
-
-    // getID(argsReduced, (id) => {
-    //     if (id == null) {
-    //         message.channel.send("Sorry, no search results turned up");
-    //     }
-    //     else {
-    //         ytdl.getInfo(argsReduced)
-    //             .then(videoInfo => {
-    //                 console.log(Object.keys(videoInfo));
-    //                 // message.channel.send("Now playing **" + videoInfo.title + "**");
-    //             })
-    //             .catch(err => {
-    //                 throw new Error(err);
-    //             });
-    //     }
-    // });
-
-    const songInfo = await ytdl.getInfo(args[1]);
+    const songInfo = await ytdl.getInfo(args[2]);
     const song = {
         title: songInfo.videoDetails.title,
         url: songInfo.url
@@ -153,7 +144,7 @@ const play = (guild, song) => {
         })
         .on("error", error => console.error(error));
     dispatcher.setVolumeLogarithmic(serverQueue.volume / 5);
-    serverQueue.textChannel.send(`Start playing: **${song.title}**`);
+    serverQueue.textChannel.send(embed.simpleEmbedMessage(3447003, `Start playing: **${song.title}**`));
 }
 
 client.login(discord_token);
