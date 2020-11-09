@@ -73,6 +73,15 @@ client.on("message", async message => {
                 }).catch(error => message.channel.send(error));
             }).catch(error => message.channel.send(error));
         }
+    } else if (message.content.startsWith(`${prefix} leave`)) { 
+        let voiceChannel = message.member.voice.channel;
+        if (!voiceChannel) {
+            message.channel.send('No estoy en un canal de voz.');
+        } else {
+            message.channel.send('Dejando el canal de voz.').then(() => {
+            voiceChannel.leave();
+            }).catch(error => message.channel.send(error));
+        }   
     } else {
         message.channel.send("You need to enter a valid command!");
     }
