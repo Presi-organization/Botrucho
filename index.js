@@ -60,6 +60,19 @@ client.on("message", async message => {
     } else if (message.content.startsWith(`${prefix} stop`)) {
         stop(message, serverQueue);
         return;
+    } else if (message.content.startsWith(`${prefix} join`)) {
+        let channelVoice = message.member.voice.channel;
+        if (!channelVoice || channelVoice.type !== 'voice') {
+            message.channel.send('¡Necesitas unirte a un canal de voz primero!.').catch(error => message.channel.send(error));
+        } else if (message.guild.voiceConnection) {
+            message.channel.send('Ya estoy conectado en un canal de voz.');
+        } else {
+            message.channel.send('Conectando...').then(msg => {
+                channelVoice.join().then(() => {
+                    msg.edit(':white_check_mark: | Conectado exitosamente.').catch(error => message.channel.send(error));
+                }).catch(error => message.channel.send(error));
+            }).catch(error => message.channel.send(error));
+        }
     } else {
         message.channel.send("You need to enter a valid command!");
     }
@@ -153,3 +166,7 @@ const play = (guild, song) => {
 }
 
 client.login(discord_token);
+
+client.on("error", (e) => console.error(e));
+client.on("warn", (e) => console.warn(e));
+client.on("debug", (e) => console.info(e));
