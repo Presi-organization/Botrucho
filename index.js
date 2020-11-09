@@ -2,10 +2,15 @@ const ytdl = require("ytdl-core");
 const Discord = require("discord.js");
 const embed = require("./embedMessage");
 const {
-    prefix,
-    discord_token
+    prefix
 } = require("./settings.json");
 
+// DEV Purposes
+// const {
+//     discord_token
+// } = require("./config.json");
+
+const discord_token = process.env.DISCORD_TOKEN;
 const client = new Discord.Client();
 
 const queue = new Map();

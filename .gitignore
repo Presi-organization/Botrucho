@@ -1,2 +1,4 @@
-package-lock.json
+recordings
 node_modules
+config.json
+package-lock.json
