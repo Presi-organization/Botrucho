@@ -177,5 +177,3 @@ const play = (guild, song) => {
 client.login(discord_token);
 
 client.on("error", (e) => console.error(e));
-client.on("warn", (e) => console.warn(e));
-client.on("debug", (e) => console.info(e));
