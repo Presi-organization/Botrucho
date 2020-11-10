@@ -91,7 +91,7 @@ client.on("message", async message => {
 });
 
 client.on("guildMemberSpeaking", (member, speaking) => {
-    handleVocalMessage(member, speaking);
+    console.log(member.displayName || member.username, "is talking?", speaking);
 });
 
 client.login(discord_token);
