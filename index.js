@@ -12,18 +12,16 @@ const { join } = require("./management commands/join");
 const { ping } = require("./management commands/ping");
 const { clear } = require("./management commands/clear");
 
-const { handleVocalMessage } = require("./voice commands/handleVocalMessage");
-
 const {
     prefix
 } = require("./settings.json");
 
 // DEV Purposes
-const {
-    discord_token
-} = require("./config.json");
+// const {
+//     discord_token
+// } = require("./config.json");
 
-// const discord_token = process.env.DISCORD_TOKEN;
+const discord_token = process.env.DISCORD_TOKEN;
 const client = new Discord.Client();
 
 const queue = new Map();

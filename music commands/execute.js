@@ -3,11 +3,11 @@ const embed = require("../embedMessage");
 const search = require('youtube-search');
 
 // DEV Purposes
-const {
-    yt_api_key
-} = require("../config.json");
+// const {
+//     yt_api_key
+// } = require("../config.json");
 
-// const yt_api_key = process.env.YT_API_KEY;
+const yt_api_key = process.env.YT_API_KEY;
 
 const execute = async (message, serverQueue, queue) => {
     const args = message.content.split(" ");
