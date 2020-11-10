@@ -8,19 +8,22 @@ const { volume } = require("./music commands/volume");
 const { listQueue } = require("./music commands/queue");
 const { execute } = require("./music commands/execute");
 
+const { join } = require("./management commands/join");
 const { ping } = require("./management commands/ping");
 const { clear } = require("./management commands/clear");
+
+const { handleVocalMessage } = require("./voice commands/handleVocalMessage");
 
 const {
     prefix
 } = require("./settings.json");
 
 // DEV Purposes
-// const {
-//     discord_token
-// } = require("./config.json");
+const {
+    discord_token
+} = require("./config.json");
 
-const discord_token = process.env.DISCORD_TOKEN;
+// const discord_token = process.env.DISCORD_TOKEN;
 const client = new Discord.Client();
 
 const queue = new Map();
@@ -71,18 +74,8 @@ client.on("message", async message => {
         listQueue(message, serverQueue);
         return;
     } else if (message.content.startsWith(`${prefix} join`)) {
-        let channelVoice = message.member.voice.channel;
-        if (!channelVoice || channelVoice.type !== 'voice') {
-            message.channel.send('¡Necesitas unirte a un canal de voz primero!.').catch(error => message.channel.send(error));
-        } else if (message.guild.voiceConnection) {
-            message.channel.send('Ya estoy conectado en un canal de voz.');
-        } else {
-            message.channel.send('Conectando...').then(msg => {
-                channelVoice.join().then(() => {
-                    msg.edit(':white_check_mark: | Conectado exitosamente.').catch(error => message.channel.send(error));
-                }).catch(error => message.channel.send(error));
-            }).catch(error => message.channel.send(error));
-        }
+        join(message);
+        return;
     } else if (message.content.startsWith(`${prefix} leave`)) {
         let voiceChannel = message.member.voice.channel;
         if (!voiceChannel) {
@@ -95,6 +88,10 @@ client.on("message", async message => {
     } else {
         message.channel.send("You need to enter a valid command!");
     }
+});
+
+client.on("guildMemberSpeaking", (member, speaking) => {
+    handleVocalMessage(member, speaking);
 });
 
 client.login(discord_token);
