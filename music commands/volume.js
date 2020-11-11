@@ -7,7 +7,7 @@ const volume = async (message, serverQueue) => {
 
     // Creamos una variable para el porcentaje del volumen
     let countVolumen = parseInt(amount);
-    if (countVolumen < 100) {
+    if (countVolumen <= 100) {
         let dispatcher = serverQueue.connection.dispatcher;
         // Modificamos el volumen de la canción en reproducción
         await dispatcher.setVolume(Math.min((dispatcher.volume = countVolumen / 50)))
