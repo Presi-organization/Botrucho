@@ -1,0 +1,1271 @@
+{
+  "languages": [
+    "en"
+  ],
+  "translations": {
+    "MISSING_PERMISSIONS": {
+      "en": "You must have the `{perm}` permission to use this command."
+    },
+    "MISSING_ROLE": {
+      "en": "You must have the `{perm}` permission or the `@{role}` role to use this command"
+    },
+    "BOT_PERMISSIONS": {
+      "en": "The bot must have the `{perm}` permission to use this command"
+    },
+    "ARGS_REQUIRED": {
+      "en": "You must provide args for the `{command}` command ."
+    },
+    "USES": {
+      "en": "Correct uses:"
+    },
+    "USES_SING": {
+      "en": "Correct usage:"
+    },
+    "NO_SNIPE": {
+      "en": "I have not yet found any deleted message in this channel."
+    },
+    "LANG_NO_CORRECT": {
+      "en": "Please provide a valid language.\n__**Supported languages**__ \n:flag_fr: French (fr)\n:flag_gb: English (en)"
+    },
+    "BOT_ADDED": {
+      "en": "The bot {bot} joined the server using OAuth flow. He was added by {adder}"
+    },
+    "UNKNOW_INVITE": {
+      "en": "I can't figure who."
+    },
+    "HELLO_NEED_HELP": {
+      "en": "The prefix is set to `{prefix}`\nServer ID: `{id}`\n\nDo `{prefix}help` to see the available commands\nTo play a music, join a voice channel and do `{prefix}play`"
+    },
+    "HELP_TIP": {
+      "en": "To execute commands, first write the prefix and then the command. Example: `{prefix}play`.\nDo `{prefix}setprefix` to change the prefix"
+    },
+    "NO_VIDEO_FOUND": {
+      "en": "Sorry , no videos found , please try again"
+    },
+    "DELETE_ERROR": {
+      "en": "Please give me the `Manage messages` permission to delete the invocation message"
+    },
+    "ROLE_PERMS": {
+      "en": "A role with `Manage guild` permissions can't be set as autorole"
+    },
+    "MUSIC": {
+      "en": "<:Idle:857505512924774410> Sorry **{user}** but the music commands are temporarily under maintenance."
+    },
+    "COMMANDS_LIST": {
+      "en": "Commands list"
+    },
+    "HELP_LIENS_UTILES": {
+      "en": [
+        "Dashboard",
+        "Premium",
+        "Invite me"
+      ]
+    },
+    "CLIQ": {
+      "en": "Click here"
+    },
+    "HELP_FOOTER": {
+      "en": "Do {prefix}help <command> for more information about a command!"
+    },
+    "HELP_ERROR": {
+      "en": "No commands found for `{text}`."
+    },
+    "HELP": {
+      "en": {
+        "perms": "You don't need any permissions.",
+        "bot": "Bot don't need any permissions.",
+        "s": "Command status"
+      }
+    },
+    "VOTE": {
+      "en": "⭐ If you want to get a 24/7 playback, please upvote the bot [here](https://top.gg/bot/973290665704308756/vote)."
+    },
+    "ERROR_CHANNEL": {
+      "en": "The indicated channel is invalid, you must give the text channel ID or name."
+    },
+    "ERROR_CHANNEL_CATEGORY": {
+      "en": "The indicated channel is invalid, you must give the category ID or name."
+    },
+    "ERROR_CHANNEL_NEWS": {
+      "en": "The indicated channel is invalid, you must ping the channel or give its name, ID. It must be an announcement channel."
+    },
+    "ERROR_CHANNEL_VOICE": {
+      "en": "The indicated channel is invalid, you must ping the channel or give its name, ID. It must be a voice channel."
+    },
+    "ERROR_ROLE": {
+      "en": "Please provide a valid role or a valid role ID."
+    },
+    "EMOJI_ERROR": {
+      "en": "Please provide a valid emoji from this guild."
+    },
+    "DELETE_EMOJI": {
+      "en": "The emoji has been sucesfully removed from the server."
+    },
+    "ERROR_USER": {
+      "en": "You must mention a valid member or provide a valid user ID."
+    },
+    "DASHBOARD": {
+      "en": "`💡` You can also configure me with my [`Dashboard`](https://ojala.com/)"
+    },
+    "CHEARCHING": {
+      "en": "🎵 **Searching** 🔍 `{title}`"
+    },
+    "CONFIG_OK": {
+      "en": "Your configuration for {x} has been successfully saved"
+    },
+    "NOT_VOC": {
+      "en": "You have to be in a voice channel to use this command."
+    },
+    "NOT_GOOD_VOC": {
+      "en": "I can only play music in {channel} on this server."
+    },
+    "MUSIC_ADDED": {
+      "en": "Enqueued"
+    },
+    "MUSIC_START": {
+      "en": "Now playing"
+    },
+    "WELCOME_NAME": {
+      "en": "Welcome"
+    },
+    "LANGUAGE_GOOD_SET": {
+      "en": ":flag_gb:  My language has been set to `english`"
+    },
+    "CHANNEL_IGNORED": {
+      "en": "`❌` This channel as been set as ignored channel. I can't reply to commands"
+    },
+    "COMMAND_DISABLED": {
+      "en": "`❌` Sorry, this command is disabled."
+    },
+    "BLACKLIST": {
+      "en": "`❌` Sorry, this server has been blacklisted."
+    },
+    "GIVEAWAY_SUCCES": {
+      "en": "Your giveaway has been started in {channel}. You can manage it with the followings commands : `g-reroll` , `g-end`."
+    },
+    "GIVEAWAY_PROMPTS": {
+      "en": [
+        "Hello ! Please mention the channel you want to host the giveaway in. !",
+        "Super! How long do you want the giveaway to last? \n You can use `m` for minutes, `h` for hours, `d` for days.",
+        "How many winners will this giveaway have? \n Please enter a number between `1` and `10`.",
+        "Good. What is the prize of this giveaway? \n Please enter the giveaway prize under this message.",
+        "How many messages do giveaway participant need to have? \n Answer `0` to skip this step.",
+        "How many invites do giveaway participant need to have? \n Aswer `0` to skip this step."
+      ]
+    },
+    "TEMPS_PROMPTS": {
+      "en": [
+        "Hello ! start by giving me the **channel** which once joined will have to create a temporary channel (vocal channel only) !",
+        "Great! and now, in which category should I create the temporary channels? give a channel ID or name!",
+        "Wonderful ! and how many people maximum will be able to go in these temporary channels ? ( give a number between 1 and 10 )"
+      ]
+    },
+    "RESPONDERS_PROMPTS": {
+      "en": [
+        "Hello ! start by giving me the **channel** that will trigger the system response. If you want it to work on the whole server, put `all`.",
+        "Great! Now give me the text that will trigger the response. If you want it to be triggered on every message, type `every`.",
+        "Wonderful! And now give me the text I should send in response.\n**Help**:\n`{user}`: mentions the user.",
+        "Okay! And now, after how long do you want to delete the reply. If you don't want to delete the message, send `no`.\n You can use `s` for seconds, `m` for minutes, `h` for hourss",
+        "And finally, do you want the message that triggered the action to be deleted? Answer with `yes` or `no`."
+      ]
+    },
+    "REACTIONS_PROMPTS": {
+      "en": [
+        "Hello ! start by giving me the **channel** that will trigger the system response. If you want it to work on the whole server, put `all`.",
+        "Great! Now give me the text that will trigger the reaction. If you want it to be triggered on every message, type `every`.",
+        "Beautiful! And now give me the emoji I'll have to react with."
+      ]
+    },
+    "LEAVE_PROMPTS": {
+      "en": [
+        "Hello ! start by telling me if I should activate or deactivate the goodbye system. Answer with (**enable** or **disable**) !",
+        "Great! Now what channel should I send your message to? Give a text channel.",
+        "Wonderful! But now let's focus on the message I'll have to send.\n**Help**:\n`{user}` : Mentions the user\n`{tag}` : Puts the tag of the user ( ex : Pauldb09#0001)\n`{username}` : Puts the username of the member\n`{server}` : Puts the name of the server\n`{counter}` : Puts the number of members of the server\n",
+        "Right. But in what form should I send it? If you want a picture, send **image** and if you just want the text, send: **text**."
+      ]
+    },
+    "WELCOME_PROMPTS": {
+      "en": [
+        "Hello ! start by telling me if I should activate or deactivate the welcome system. Answer with (**enable** or **disable**) !",
+        "Great! Now what channel should I send your message to? Give a text channel.",
+        "Wonderful! But now let's focus on the message I'll have to send.\n**Help**:\n`{user}` : Ping the user\n`{username}` : Put the user's name of the member\n`{server}` : Put the name of the server\n`{counter}` : Puts the number of members of the server\n`{inviter}` : Puts the person who invited the member\n`{invites}` : Puts the number of invitations of the person who invited the member",
+        "Right. But in what form should I send it? If you want a picture, send **image** and if you just want the text, send: **text**."
+      ]
+    },
+    "TICKETS_PROMPTS": {
+      "en": [
+        "Hello! start by giving me the **channel** where I will send this panel!",
+        "Great! and now, give me the support role that will have access to this panel",
+        "Wonderful! And now give me a title for this panel (the reason why users open a ticket)",
+        "Right. And what will be the description of this panel (the message on the embed inviting users to create a ticket)",
+        "Right. And in which category should I create the tickets? Give me the name of a category or its ID.",
+        "Everything is ok. But you have to give the message that will welcome the members in their ticket \n**Help**:\n`{user}` : Mentions the user."
+      ]
+    },
+    "PING_PROMPTS": {
+      "en": [
+        "Hello ! start by telling me if I should activate or deactivate the auto ping system. Answer with (**enable** or **disable**) !",
+        "Great! Now what channel should I send your message to? Give a text channel.",
+        "Wonderful! But now let's focus on the message I'll have to send.\n**Help**:\n`{user}` : Ping the user",
+        "Okay! And now, after how long do you want to delete the message.\n You can use `s` for seconds, `m` for minutes."
+      ]
+    },
+    "BOOST_PROMPTS": {
+      "en": [
+        "Hello ! start by telling me if I should enable or disable messages during a boost. Answer with (**enable** or **disable**) !",
+        "Great! Now what salon should I send your message to? Give a text channel.",
+        "Wonderful! But now let's look at the message I will have to send.\n**Help**:\n`{user}` : Ping the userr\n`{tag}` : Put the user's tag ( ex : Pauldb09#0001)\n`{username}` : Put the user's username\n`{server}` : Put the name of the server",
+        "Right. And what role will I have to give to the people who boost the server?"
+      ]
+    },
+    "YOUTUBE_PROMPTS": {
+      "en": [
+        "Hello ! start by telling me if I should activate or deactivate the youtube alerts system. Answer with (**enable** or **disable**) !",
+        "Great! Now what channel should I send your message to? Give a text channel.",
+        "Wonderful! But now let's focus on the message I'll have to send.\n**Help**:\n`{YoutuberName}` : Give the name of the youtuber who made the video\n`{videoName}` : Give the name of the video that has just been released.\n`{VideoURL}` : Give the link of the video.",
+        "Good. Now give me the name of the youtuber that I will follow. Give the link of a channel or the name."
+      ]
+    },
+    "DJ_MODEOK": {
+      "en": "The dj system has been successfully setup"
+    },
+    "LIRYCS": {
+      "en": "I haven't found any lyrics for `{songName}`."
+    },
+    "SHUFFLE": {
+      "en": "The server queue has been mixed succesfully (`{songs}` songs)."
+    },
+    "DJ_MODE": {
+      "en": [
+        "Bonjour!  start by telling me if I should **enable** or **disable** the DJ system.\nAnswer with (**enable** or **disable**) !",
+        "Great! and now give me the role of DJ. People with this role will be able to manage the music on the server"
+      ]
+    },
+    "GIVEAWAY_INFOS": {
+      "en": {
+        "end": "Ends at",
+        "enter": "React with `🎁` to enter",
+        "host": "Host by",
+        "winners": "Winner(s)",
+        "rest": "Remaining time",
+        "vote": "**Vote for 25% Entry Boost**",
+        "error": "Giveaway cancelled, no valid participations.",
+        "invite": "**Invite me**",
+        "requirementMessage": "• You must send `{messages}` messages",
+        "requirementInvite": "• You must have `{messages}` invites",
+        "requirementDouble": "• You must send `{messages}` messages and have `{count}` invites",
+        "congrats": "🏆 Congratulations, {winners} ! You won **{prize}**!\n{messageURL}",
+        "seconds": "seconds",
+        "minutes": "minutes",
+        "hours": "hours",
+        "days": "days"
+      }
+    },
+    "CAN_CANCEL": {
+      "en": "Note: You can type at any moment `cancel` to cancel ."
+    },
+    "CLEAR": {
+      "en": "Note: You can type at any moment `cancel` to cancel ."
+    },
+    "GIVEAWAY_MAX": {
+      "en": "The maximum number of giveaways per server has been reached (4) Please end these giveaways first."
+    },
+    "NOT_SAME_CHANNEL": {
+      "en": "We are not in the same voice channel."
+    },
+    "NUMBER_ERROR": {
+      "en": "Please provide a valid number, greater than **{amount}** and less than **{range}**"
+    },
+    "MESSAGE_ERROR": {
+      "en": "The text must be between **{amount}** and **{range}** characters!"
+    },
+    "CANCELED": {
+      "en": "💡 Operation canceled"
+    },
+    "ARGS_TIP": {
+      "en": "You don't need any arguments for this command. **You have to react with <:panelconfig:897781971680391220> to start the configuration**. \n You can send `cancel` at any time to cancel"
+    },
+    "HELP_CAT": {
+      "en": [
+        "Moderation",
+        "Music",
+        "Levelling",
+        "General",
+        "Games",
+        "Custom commands"
+      ]
+    },
+    "ADDS": {
+      "en": "`✅` Loading **{tracks}** tracks. Please be patient..."
+    },
+    "JOINED": {
+      "en": "**:thumbsup: Joined `{channel}` and bound to {text}.**"
+    },
+    "GIVEAWAY_END": {
+      "en": {
+        "succes": "Giveaway will be ended in 20s...",
+        "error": "No giveaway found with this ID",
+        "end": "This giveaway is already ended."
+      }
+    },
+    "GIVEAWAY_REROLL": {
+      "en": {
+        "ok": "Giveaway rerolled successfully",
+        "error": "No giveaway found with this ID",
+        "a": "🎉 The news winners are: {winners} ! You won **{prize}** !\n{messageURL}",
+        "b": "I can't reroll this giveaway"
+      }
+    },
+    "ANTI_DC": {
+      "en": {
+        "title": "Anti selfbots",
+        "desc": "**{tag}** has been kicked from the server because his account is too recent. \n __Account creation__ : {date}."
+      }
+    },
+    "JOIN_DM": {
+      "en": {
+        "succes": "The dm welcome message has been successfully set.",
+        "disable": "The welcome message in private messages has been disabled!",
+        "args": "Please provide a message."
+      }
+    },
+    "G_LOGS": {
+      "en": {
+        "succes": "The giveaways logs channel has been successfully set: `{channel}`",
+        "disable": "The giveaways logs channel has been disabled!"
+      }
+    },
+    "SUGG_LOGS": {
+      "en": {
+        "succes": "The suggestions logs channel has been successfully set: `{channel}`",
+        "disable": "The suggestions logs channel has been disabled!"
+      }
+    },
+    "ROLEINFO": {
+      "en": {
+        "title": "Role informations",
+        "name": "Name:",
+        "color": "Color:",
+        "creation": "Creation:",
+        "second": "Advanced informations",
+        "with": "Number of users with this role:"
+      }
+    },
+    "USERINFO": {
+      "en": {
+        "title": "User informations",
+        "name": "Username:",
+        "discrim": "Discriminator:",
+        "creation": "Account creation:",
+        "second": "Member Informations",
+        "higest": "Higest role:",
+        "join": "Join date:",
+        "hoist": "Hoist role:",
+        "none": "None",
+        "rest": "And **{rest}** others.."
+      }
+    },
+    "GIVEAWAY_DM": {
+      "en": {
+        "title_ok": "`✅` Entry accepted",
+        "title_no": "`❌` Entry denied",
+        "title_ok_logs": "`✅` New valid entry",
+        "all_ok": "Your entry for [`this giveaway`]({url}) has been accepted. Good luck!\nIf you want **25%** Entry Boost, [`vote`](https://top.gg/bot/973290665704308756/vote) for the bot.",
+        "all_ok_logs": "{member}'s entry for [`this giveaway`]({url}) has been accepted.",
+        "denied": "Your entry [`this giveaway`]({url}) has been denied.",
+        "deniedMsg": "Your entry [`this giveaway`]({url}) has been denied.\n\n__`<:panelconfig:897781971680391220>`Requirements__\n• You must have **{count}** messages.",
+        "deniedDouble": "Your entry [`this giveaway`]({url}) has been denied.\n\n__`<:panelconfig:897781971680391220>`Requirements__\n• You must have **{count}** messages.\n• You must invite **{invites}** persons",
+        "hoist": "Hoist Rolle:",
+        "none": "None",
+        "rest": "And **{rest}** others.."
+      }
+    },
+    "INVITE": {
+      "en": {
+        "title": "`📚` **{name}** Invitations",
+        "desc": "Total invites"
+      }
+    },
+    "ENA/DISA": {
+      "en": {
+        "succes": " System successfully disabled for this server.",
+        "disable": "This system is not enabled.",
+        "err": "Please provide a valid argument: **enable** or **disable**"
+      }
+    },
+    "ON/OFF": {
+      "en": "Please provide an argument : **on** or **off**."
+    },
+    "CONFIG_REQUIRED": {
+      "en": "You must have a configuration to delete it"
+    },
+    "ACTUAL_CONFIG": {
+      "en": {
+        "title": "`📚` Actual status",
+        "channel": "Channel: ",
+        "enabled": "Enabled: ",
+        "no": "Not defined."
+      }
+    },
+    "LEAVE": {
+      "en": {
+        "now": "We are now **{x}** members.",
+        "title": "{username} left",
+        "kick": "{user} just kicked **{a}** from the server."
+      }
+    },
+    "SONG": {
+      "en": {
+        "title": "❌ Song unavailable",
+        "desc": "Sorry but this music is not available for the moment. Try to try again."
+      }
+    },
+    "BYE": {
+      "en": "Goodbye"
+    },
+    "WELCOME": {
+      "en": {
+        "desc": "We are now **{x}** members.\nAccount creation date **{date}**",
+        "title": "{username} joined"
+      }
+    },
+    "ANTI_PUB": {
+      "en": {
+        "err": "The system against invitations is already activated in this server.",
+        "ok": "I have activated the anti-advertising system on this server.",
+        "desa": "The anti-advertising system has been deactivated."
+      }
+    },
+    "COUNTER": {
+      "en": {
+        "a": "Humans:",
+        "b": "Bots:",
+        "c": "Count:"
+      }
+    },
+    "BAN": {
+      "en": {
+        "name": "Banishment",
+        "desc": "**{username}** has been banned !",
+        "raison": "Reason",
+        "dm": "⛔ | Hello `{member.user.tag}`,\n you have been banned from `{message.guild.name}` for the reason `{reason}`.",
+        "by": "Banned by"
+      }
+    },
+    "BANID": {
+      "en": {
+        "name": "Banishment",
+        "desc": "has been successfully banned by",
+        "raison": "Reason",
+        "dm": "`📚` | Hello `{member.user.tag}`,\n you have been banned from `{message.guild.name}` for the reason `{reason}`.",
+        "by": "Banned by",
+        "deja": "This person is already banned from the server."
+      }
+    },
+    "SOFTBAN": {
+      "en": {
+        "name": "Softban",
+        "desc": "has been successfully softbanned by",
+        "raison": "Reason",
+        "dm": "⛔ | Hello `{member.user.tag}`,\n you have been softbanned from `{message.guild.name}` for the reason `{reason}`.",
+        "by": "softban by"
+      }
+    },
+    "MASSBAN": {
+      "en": {
+        "name": "Massban",
+        "desc": "has successfully massbanned the users",
+        "raison": "People banned",
+        "dm": "⛔ | Hello `{member.user.tag}`,\n you have been banned from `{message.guild.name}`.",
+        "by": "massban command by"
+      }
+    },
+    "KICK": {
+      "en": {
+        "name": "📚 Kick",
+        "desc": "has been successfully kicked by",
+        "raison": "Reason",
+        "dm": "`📚` | Hello `{member.user.tag}`,\n You have been kicked from `{message.guild.name}` for the reason `{reason}`.",
+        "by": "kicked by"
+      }
+    },
+    "MODERATION": {
+      "en": {
+        "superior": "This person is higher than you in the hierarchy!",
+        "bot": "the bot is not high enough in the hierarchy to do this!",
+        "owner": "I can't do this on the server owner!",
+        "you": "You cannot do this action on yourself",
+        "raison": "No reason provided"
+      }
+    },
+    "TCKETS": {
+      "en": {
+        "superior": "This person is higher than you in the hierarchy!",
+        "bot": "the bot is not high enough in the hierarchy to do this!",
+        "owner": "I can't do this on the server owner!",
+        "you": "You cannot do this action on yourself",
+        "raison": "No reason provided"
+      }
+    },
+    "UNWARN": {
+      "en": {
+        "err": "`{username}` hasn't had any warnings yet.",
+        "succes": "All warnings from `{username}` have been removed"
+      }
+    },
+    "WARN": {
+      "en": {
+        "name": "Warn",
+        "desc": "has been successfully warned by",
+        "raison": "Reason",
+        "dm": "⚠ | Hello `{member.user.tag}`,\n You have been warned on `{message.guild.name}` for the reason `{reason}`."
+      }
+    },
+    "NOT_MUSIC": {
+      "en": "I am not currently playing music. So it's impossible to do that"
+    },
+    "NO_BAN": {
+      "en": "This person is not in the server ban list or the ID is invalid"
+    },
+    "NO_BANS": {
+      "en": "There is no one banned on this server yet."
+    },
+    "SKIP": {
+      "en": "**⏩ *Skipping* 👍**"
+    },
+    "STOP": {
+      "en": "**⏹ Music stopped!**"
+    },
+    "VOLUME": {
+      "en": "🔊 | Changed volume to: `{volume}`"
+    },
+    "DEFAULT_VOLUME": {
+      "en": "Default volume set to **{volume}%** !"
+    },
+    "DEFAULT_VOLUME_WARNING": {
+      "en": "⚠ Be aware that you can don't hear anything with this volume "
+    },
+    "QUEUE_END": {
+      "en": "Queue has ended! "
+    },
+    "EMOJI_SUCCES": {
+      "en": "Emoji successfully added to the server. ({emoji})"
+    },
+    "READ": {
+      "en": "Hooks such as [] or <> must not be used when executing commands."
+    },
+    "ALREADY": {
+      "en": "This channel is already set as suggestions channel"
+    },
+    "ERROR_BOT": {
+      "en": "You can't do this action on a bot."
+    },
+    "ADD_LEVEL": {
+      "en": "You have successfully added `{level}` level(s) to `{username}`"
+    },
+    "ADD_XP": {
+      "en": "You have successfully added `{level}` xp(s) to `{username}`"
+    },
+    "LOADING": {
+      "en": "**Loading informations, please wait...**"
+    },
+    "LOCK": {
+      "en": "**🔒 Channel sucesfully locked**"
+    },
+    "LOCK_ERROR": {
+      "en": "This channel is already locked"
+    },
+    "UNLOCK_ERROR": {
+      "en": "This channel isn't locked "
+    },
+    "UNLOCK": {
+      "en": "🔓 Channel sucesfully unlocked"
+    },
+    "WEARENOW": {
+      "en": "We are now {count}"
+    },
+    "MESSAGE_DELETE": {
+      "en": "🗑 A message from {author} has been deleted in the {channel} channel"
+    },
+    "NO_RESULTS": {
+      "en": "I did not find any music for `{query}`"
+    },
+    "CHANNEL_PERMS": {
+      "en": "I don't have the permission to send messages/embeds in this channel."
+    },
+    "COOLDOWN": {
+      "en": "<:horloge3:830440548053024789> Please wait {time} seconds before using the `{command}` command again"
+    },
+    "AVATAR": {
+      "en": "Avatar of "
+    },
+    "AVATAR_DESC": {
+      "en": "Click [here]({url}) to see the avatar. "
+    },
+    "LINKS": {
+      "en": "No Links"
+    },
+    "LANGNAME": {
+      "en": "en"
+    },
+    "DISABLED/ENABLED": {
+      "en": {
+        "enabled": "enabled",
+        "disable": "disabled"
+      }
+    },
+    "ERROR": {
+      "en": {
+        "title": "An error has occured",
+        "desc": "An error has occurred,  please wait and retry.\nYou can go in the [support server](https://discord.gg/SQsBWtjzTv) to report this error!"
+      }
+    },
+    "RESUME": {
+      "en": {
+        "err": "The music isn't paused.",
+        "ok": "The music is resuming !"
+      }
+    },
+    "BACK": {
+      "en": {
+        "err": "There is no music before this one.",
+        "ok": "`⏮` **I go back to the previous music.**"
+      }
+    },
+    "REMOVE": {
+      "en": {
+        "more": "No more music in the queue to remove",
+        "num": "Invalid number. Please use queue number between 1 to {x}.",
+        "current": "I can't remove the current song. Please use queue number between 1 to {x}.",
+        "no": "No songs found. Please use queue number between 1 to {x}.",
+        "ok": "Successfully removed **{title}** from the queue."
+      }
+    },
+    "JUMP": {
+      "en": {
+        "more": "No more music in the queue to remove",
+        "num": "Invalid number. Please use queue number between 1 to **{x}**.",
+        "current": "I can't remove the current song. Please use queue number between 1 to **{x}**.",
+        "no": "No songs found. Please use queue number between 1 to **{x}**.",
+        "ok": "I jump to  **{title}**."
+      }
+    },
+    "SKIPTO": {
+      "en": {
+        "more": "No more music in the queue to remove",
+        "num": "Invalid number. Please use queue number between 1 to **{x}**.",
+        "current": "I can't remove the current song. Please use queue number between 1 to **{x}**.",
+        "no": "No songs found. Please use queue number between 1 to **{x}**.",
+        "ok": "Skipping to **{title}**."
+      }
+    },
+    "MOVED": {
+      "en": {
+        "already": "I am already in your voice channel.",
+        "ok": "Moved the player to {channel}."
+      }
+    },
+    "CHANNEL_CREATE": {
+      "en": {
+        "desc": "`📚` The `{type}` channel {channel} (`{name}`) has been created.",
+        "text": "text",
+        "category": "catgory",
+        "voice": "voice",
+        "news": "news",
+        "title": "Channel created"
+      }
+    },
+    "CHANNEL_DELETED": {
+      "en": {
+        "desc": "`📚`  The `{type}` channel **{channel}** has been just deleted.",
+        "text": "text",
+        "category": "catgory",
+        "voice": "voice",
+        "news": "news",
+        "title": "Channel deleted"
+      }
+    },
+    "VOICE": {
+      "en": {
+        "desc": "`📚` {member} has just joined the channel {channel} (`{name}`)",
+        "title": "Voice channel joined"
+      }
+    },
+    "VOICE_LEAVE": {
+      "en": {
+        "desc": "`📚` {member} has just left the Voice channel {channel} (`{name}`)",
+        "title": "Voice channel leaved"
+      }
+    },
+    "ROLE_CREATE": {
+      "en": {
+        "desc": "`📚` The role {role} (`{name}`) was created.",
+        "title": "Role creation"
+      }
+    },
+    "NICKNAME": {
+      "en": {
+        "desc": "`📚` {user} has just changed his nickname.",
+        "title": "Nickname change",
+        "nick": "Nickname"
+      }
+    },
+    "TICKET_CREATE": {
+      "en": {
+        "desc": "`📚` {member} has just opened a ticket.",
+        "reason": "Reason",
+        "creator": "Creator",
+        "title": "Ticket openned"
+      }
+    },
+    "ROLE_DELETE": {
+      "en": {
+        "desc": "The role `{name}` was deleted.",
+        "title": "`📚` Role deleted"
+      }
+    },
+    "CLEAR_QUEUE": {
+      "en": {
+        "err": "There is only one music in the queue. Use `{prefix}`",
+        "ok": "The server queue has been sucesfully **cleared**"
+      }
+    },
+    "SEEK": {
+      "en": {
+        "err": "Please provide a valid time.",
+        "ok": "Time set on the current song `{time}`."
+      }
+    },
+    "FORWARD": {
+      "en": {
+        "err": "Please provide a valid time.",
+        "ok": "⏱ Forwarding the current music of `{time}`."
+      }
+    },
+    "REWIND": {
+      "en": {
+        "err": "Please provide a valid time.",
+        "ok": "⏱ Rewinding the current song of `{time}`."
+      }
+    },
+    "PREMIUM_REQUIRED": {
+      "en": {
+        "title": "Vote required",
+        "err": "This is a premium command but don't worry you can unlock it by voting our bot on Top.gg. https://top.gg/bot/973290665704308756/vote"
+      }
+    },
+    "PREMIUM_NEED": {
+      "en": {
+        "desc": "You must upgrade this server to Premium to use this command."
+      }
+    },
+    "SUGGEST": {
+      "en": {
+        "notEnabled": "The suggestion system is not enabled on this server.",
+        "title": "💡 New suggestion ! ",
+        "field1Desc1": "Status",
+        "field1Desc2": "Pending approval",
+        "field2": "Author",
+        "err": "I can't find the {channel} channel... Check my permissions or if the channel still exists!",
+        "succes": "Suggestion sent successfully in {channel}.",
+        "NOT_A_SUGG": "This message is not a suggestion.",
+        "approvedBy": "approved by",
+        "noMessageID": "You must provide a valid message ID.",
+        "approvedOK": "`✅` Suggestion successfully approved. [`Go to the suggestion`]({url})",
+        "deniedOK": "`✅` Suggestion successfully denied. [`Go to the suggestion`]({url})",
+        "deniedBy": "denied by",
+        "delete": "The suggestion has been successfully deleted",
+        "comment": "Comment",
+        "Logstitle1": "New suggestion",
+        "Logsdesc1": "`📚` A new suggestion has been created by {member}.\n**Content**: {reason}",
+        "reasonRequired": "Please provide a reason.",
+        "approvedDM": "`✅` Your [`suggestion`]({url}) has been approved.",
+        "refuseDM": "`❌` Your [`suggestion`]({url}) has been denied."
+      }
+    },
+    "TICKET": {
+      "en": {
+        "has": "<:nitro_gris_activ:830451169486700585> You have the premium and can therefore have **8** ticket panels instead of **3**",
+        "not": "<:nitro_gris_activ:830451169486700585> You do not have the premium for this server, so you have a limit of **3** panels",
+        "no": "No panel for the moment",
+        "channel": "Channel",
+        "use": "**Create a panel**\n`{prefix}ticket-system create` : The bot will then create a message collector so no need for aguments!\n**Delete a panel**\n`{prefix}ticket-system delete <id>` : the panel will be deleted and the message too",
+        "ok": "The ticket panel has been successfully created and its ID is : `{id}`.You can check in <#{channel}>",
+        "max": "You have reached the limit of ticket panels. Vote for the bot and give the premium to this server to get 5 more.\nVote: **https://top.gg/bot/973290665704308756/vote**"
+      }
+    },
+    "TICKET_CLOSE": {
+      "en": {
+        "noTicket": "This channel is not a ticket.",
+        "text1": "The ticket autor marked this ticket as finished. To close it, react with 🗑️",
+        "title1": "Ticket ended",
+        "dm1": "Ticket closed in {guild}",
+        "dm2": "Your ticket has been deleted by `{tag}`.",
+        "desc": "This ticket is now marked as closed. Close it if you don't need help anymore",
+        "close:": "Close the ticket"
+      }
+    },
+    "AUTO_RESPONDERS": {
+      "en": {
+        "has": "<:nitro_gris_activ:830451169486700585> You have the premium and can therefore have **8** auto responses instead of **3**",
+        "not": "<:nitro_gris_activ:830451169486700585> You do not have the premium for this server, so you have a limit of **3** automatic responses",
+        "no": "No automatic responses for the moment",
+        "channel": "Channel",
+        "use": "**Create a automatic response**\n`{prefix}auto-responder create` : The bot will then create a message collector so no need for aguments!\n**Delete a response**\n`{prefix}auto-responder delete <id>` : the response will be deleted from the database.",
+        "ok": "The automatic response has been successfully created. Its id is `{id}`.",
+        "max": "You have reached the limit of automatic responses. Vote for the bot and give the premium to this server to get 5 more.\n Vote: **https://top.gg/bot/973290665704308756/vote**"
+      }
+    },
+    "AUTO_REACTIONS": {
+      "en": {
+        "has": "<:nitro_gris_activ:830451169486700585> You have the premium and can therefore have **8** auto reactions instead of **3**",
+        "not": "<:nitro_gris_activ:830451169486700585> You do not have the premium for this server, so you have a limit of **3** automatic reactions",
+        "no": "No automatic reactions for the moment",
+        "channel": "Channel",
+        "use": "**Create an automatic reaction**\n`{prefix}auto-reactions create` : The bot will then create a message collector so no need for aguments!\n**Delete an automatic reaction**\n`{prefix}auto-reactions delete <id>` : the auto reaction will be deleted from the database.",
+        "ok": "The automatic reaction has been successfully created. Its id is `{id}`.",
+        "max": "You have reached the limit of automatic reactions. Vote for the bot and give the premium to this server to get 5 more.\nVote: **https://top.gg/bot/973290665704308756/vote**"
+      }
+    },
+    "TICKET_ADD": {
+      "en": {
+        "noTicket": "This channel is not a ticket.",
+        "already": "This person already has access to this ticket.",
+        "ok": "{username} has been successfully added to the ticket"
+      }
+    },
+    "UNBAN": {
+      "en": {
+        "err": "This channel is not a ticket.",
+        "ok": "`{tag}` has been successfully unbanned from the server. "
+      }
+    },
+    "MUTE": {
+      "en": {
+        "admin": "Muting a person who has `Administrator` permission will have no effect! ",
+        "already": "This person is already silenced on the server.",
+        "role": "The `{role}` role has been created and the channel permissions have been updated.",
+        "time": "Please provide a duration of 14 days or less (s/m/h/d)",
+        "desc": "**{username}** was muted !",
+        "name": "Mute",
+        "raison": "Reason",
+        "dm": "`📚` | Hello `{member.user.tag}`, you have been muted on  `{message.guild.name}` for the reason `{reason}`."
+      }
+    },
+    "MASSROLE": {
+      "en": {
+        "desc": "You must provide args for this command.",
+        "field1T": "Add a role",
+        "field2T": "Remove a role",
+        "field3T": "Bot perms",
+        "field1D": "To remove a role from the entire server\nExemple : `{prefix}massrole remove @user`",
+        "field2D": "To add a role from the entire server\nExemple : `{prefix}massrole add @user`",
+        "field3D": "You must be sure that bot has the `Manage Roles' permission and its highest role is above the desired role",
+        "adding1": "Add the current role to all members who do not have the role",
+        "adding2": "Adding the current role to all members who do not have the role (**{u}/{count}**)",
+        "addingOK": "The `{role}` role has been given to the **{count}** members who did not have this role, operation executed in **{time}** minutes ",
+        "remove1": "Removing the role to all members who have the role",
+        "remove2": "Removing the role to all members who have the role (**{u}/{count}**)",
+        "removeOK": "The `{role}` role has been removed from the **{count}** members who had this role, this was done in **{time}** minutes."
+      }
+    },
+    "MASSNICK": {
+      "en": {
+        "adding1": " Changing the nickname of every users of the server...",
+        "adding2": " Changing the nickname of every users of the server (**{u}/{count}**)",
+        "addingOK": " The nickname of every members of this server has been changed, operation executed in **{time}** minutes "
+      }
+    },
+    "DISCRIM": {
+      "en": {
+        "err": "There is nobody in the server who has as discriminator `{discrim}`.",
+        "desc": "Here are the **{count}** people who have the discriminator `{discrim}`",
+        "field1T": "People",
+        "field1D": "And **{rest}** others..",
+        "force1": "Do you want statistics about discriminators on your server ? ",
+        "force2": "[Invite me](https://bot.app/invite)"
+      }
+    },
+    "BANLIST": {
+      "en": {
+        "desc": "📚 There are {size} bans on this server.",
+        "field1T": "Bans list",
+        "no": "No reason provided"
+      }
+    },
+    "SERVERINFO": {
+      "en": {
+        "a": "Members",
+        "b": "Account",
+        "c": "Administrators",
+        "d": "Channels",
+        "e": "Banner",
+        "f": "Others",
+        "rest": "And **{rest}** others.."
+      }
+    },
+    "PERMS": {
+      "en": {
+        "has": "Has the permission",
+        "not": "Does not have permission",
+        "title": "Permissions of **{username}** in the **{channel}** channel"
+      }
+    },
+    "AUTOROLE": {
+      "en": {
+        "succes": "The autorole has been defined for this server: `@{role}`",
+        "disable": "The autorole has been disabled!"
+      }
+    },
+    "DJMODE": {
+      "en": {
+        "succes": "The DJ role has been defined for this server: `@{role}`",
+        "disable": "The DJ role has been disabled!"
+      }
+    },
+    "SLOWMODE": {
+      "en": {
+        "ok": "I have successfully defined the slowmode for this channel.",
+        "desa": "I have successfully disabled the slowmode for this channel."
+      }
+    },
+    "NUKE": {
+      "en": {
+        "wait": "Do you really want to delete all the messages in this channel? Answer with **yes** or **no**",
+        "ok": "**Channel Nuked**\nAll messages from this channel have been deleted."
+      }
+    },
+    "BOTAUTOROLE": {
+      "en": {
+        "succes": "The bot autorole has been defined for this server: `@{role}`",
+        "disable": "The bot autorole has been disabled!"
+      }
+    },
+    "AUTONICK": {
+      "en": {
+        "ok": "The autonick has been defined for this server. New members will have this nickname.",
+        "disable": "The automatic nickname has been successfully disabled."
+      }
+    },
+    "CHOICE_USER": {
+      "en": {
+        "multiple": "**I found mutiple users. Please put the number of one to choose.**\n",
+        "disable": "The automatic nickname has been successfully disabled."
+      }
+    },
+    "CHOICE_ROLE": {
+      "en": {
+        "multiple": "**I found multiple roles. Please put the number of one to choose.**\n",
+        "disable": "The automatic nickname has been successfully disabled."
+      }
+    },
+    "HOLIDAYS": {
+      "en": {
+        "err": "The provided country isn't supported. Pleas choice a country in the list:\n```{list}```",
+        "noInfo": "I don't have enough information about this country.",
+        "title": "Holidays in {country}"
+      }
+    },
+    "BOTAUTONICK": {
+      "en": {
+        "ok": "The bot autonick has been defined for this server. New bots will have this nickname.",
+        "disable": "The automatic nickname for the bots has been successfully disabled."
+      }
+    },
+    "SET_SUGG": {
+      "en": {
+        "succes": "The suggest channel has been successfully set: `#{channel}` !",
+        "disable": "The suggest system has been successfully disabled.",
+        "already": "This channel is already set as suggestion channel"
+      }
+    },
+    "SET_LOGS": {
+      "en": {
+        "succes": "The logs channel has been successfully set: `#{channel}` !",
+        "disable": "The logs system has been successfully disabled."
+      }
+    },
+    "SETVC": {
+      "en": {
+        "succes": "The music is now resticted to {channel} !",
+        "disable": "The music is no longer restricted.",
+        "already": "The music is already restricted to this channel."
+      }
+    },
+    "SET_POST": {
+      "en": {
+        "succes": "The autopost channel has been successfully set: `#{channel}` !",
+        "disable": "The auto publish system has been successfully disabled.",
+        "already": "This channel is already set as autopost channel"
+      }
+    },
+    "CONTROLLER": {
+      "en": {
+        "succes": "The controller channel has been successfully set: {channel} !\n\n*You can rename and move this channel if you want to.*",
+        "disable": "The controller system has been successfully disabled.",
+        "already": "This controller channel already exists: {channel}"
+      }
+    },
+    "AUTOPLAY": {
+      "en": {
+        "succes": "The auto music system has been successfully set. When someone will join {channel}, i will play music !",
+        "disable": "The auto music system has been successfully disabled.",
+        "already": "This channel is already set as autoplay channel",
+        "args": "Please provide the music name"
+      }
+    },
+    "SET_COUNT": {
+      "en": {
+        "succes": "The counting channel has been successfully set: `#{channel}` !",
+        "disable": "The counting system has been successfully disabled.",
+        "warn": "**Counting channel** This channel has been set as the counting channel! Any message that is not a number or does not follow the logical sequence will be automatically deleted. \nThank you for respecting the rules",
+        "not": "The counting system is not enabled on this server. Do `{prefix}count-channel #channel`",
+        "ok": "The counter works well on this server.\n**Last number**: {last}\n**Channel** : <#{channel}>",
+        "already": "This channel is already set as count channel"
+      }
+    },
+    "UNMUTE": {
+      "en": {
+        "err": "This person is not silenced on this server.",
+        "ok": "I did end the mute of `{user}` correctly.",
+        "warn": "I couldn't unmute **{user}**, check my permissions"
+      }
+    },
+    "CASE": {
+      "en": {
+        "err": "No case found on this server for `{id}`.",
+        "desc": "📚 Informations about the `{case}` case.",
+        "mod": "Moderator",
+        "target": "Target",
+        "reason": "Reason",
+        "no": "Unknow user"
+      }
+    },
+    "LOGS_MOD": {
+      "en": {
+        "title": "New case ({id})",
+        "desc": "📚 `{user}` has just punished `{member}`.",
+        "mod": "Moderator",
+        "target": "Target",
+        "reason": "Reason",
+        "no": "Unknow user"
+      }
+    },
+    "CASE_LIST": {
+      "en": {
+        "err": "`❌` There is no case for this server.",
+        "desc": "`📚` Informations about the `{x}` cases of this server.\nDo `{prefix}case-info <id>` to get more informations about a specific case.\nDo `{prefix}case-delete <id>` to remove a case from the database.",
+        "mod": "Moderator",
+        "target": "Target",
+        "reason": "Reason",
+        "no": "Unknow user",
+        "desc1": "`📚` Informations about the `{x}` cases of `{username}` on this server.\nDo `{prefix}case-info <id>` to get more informations about a specific case.\nDo `{prefix}case-delete <id>` to remove a case from the database.",
+        "noWarns": "`❌` __**{username}**__ has not yet had any cases on this server."
+      }
+    },
+    "REMIND": {
+      "en": {
+        "time": "Please provide a valid duration for this reminder.",
+        "msg": "Please provide a reason for this reminder.",
+        "succes": "Your remind has been successfully saved. I will notify you in __**{time}**__",
+        "no": "`❌` You don't have any reminder.\n Do `{prefix}remind create <time> <reason>` to create one",
+        "desc": "`💡` Do `{prefix}remind create <time> <reason>` to create a reminder",
+        "title": "Reminders",
+        "name": "Please provide the name of the reminder that you want delete.",
+        "exist": "No reminder found for `{text}`. Check spelling",
+        "del": "The `{text}` reminder has been successfully deleted.",
+        "found": "`🔍` I have found one reminder for `{text}`.\n`<:panelconfig:897781971680391220>`**Reminder information**\n**Message**: {msg}\n**Time**: {time}\n\n Please confirm the deletion of this reminder or cancel with the buttons"
+      }
+    },
+    "CASE_DELETE": {
+      "en": {
+        "err": "No case found on this server for `{id}`.",
+        "ok": "The case `{case}` has been successfully deleted."
+      }
+    },
+    "CHATBOT": {
+      "en": {
+        "succes": "The chatbot channel has been successfully set: `#{channel}` !",
+        "disable": "The chatbot system has been successfully disabled.",
+        "already": "This channel is already set as chatbot channel"
+      }
+    },
+    "MODLOGS": {
+      "en": {
+        "succes": "The mod logs channel has been successfully set: `#{channel}` !",
+        "disable": "The mod logs system has been successfully disabled."
+      }
+    },
+    "RAID_LOGS": {
+      "en": {
+        "succes": "The anti-raid logs channel has been successfully set: `#{channel}` !",
+        "disable": "The anti-raid logs system has been successfully disabled.",
+        "already": "This channel is already set as anti raid logs"
+      }
+    },
+    "SET_PREFIX": {
+      "en": {
+        "ok": "The prefix has been updated: `{prefix}`. Example: `{prefix}help`",
+        "already": "The current prefix is already this one.",
+        "err": "Your prefix must be between 1 and 4 characters long! Your prefix `{prefix}` is too long !"
+      }
+    },
+    "SET_COLOR": {
+      "en": {
+        "ok": "`✅` The color of the bot embeds has been updated to: `{prefix}`.",
+        "already": "The current prefix is already this one.",
+        "err": "The provided color is not a valid hexadecimal color.\nAvailable colors: **https://htmlcolorcodes.com/**"
+      }
+    },
+    "HELP_COMMAND": {
+      "en": {
+        "desc": "You can find the command list directly on the website:\n• Use `{prefix}help <command>`  for more information about a command and `{prefix}help <category>` for more informations about a category.\n**Example**: `{prefix}help music`\n• You can use `{prefix}help commands` to see the commands list without going through the site\n\n**Prefix**\nMy prefix on **{guild}** is `{prefix}`.To execute commands, first write the prefix and then the command, example: `{prefix}play`.\nDo `{prefix}setprefix <prefix>` to change the prefix",
+        "title": "bot commands",
+        "dm": "`✅` Check your private messages !"
+      }
+    },
+    "QUEUE": {
+      "en": {
+        "a": "__Now playing:__",
+        "b": "__Loop mode:__",
+        "c": "songs",
+        "next": "__Next songs in the queue__",
+        "title": "Queue for",
+        "request": "Requested by",
+        "no": "Nothing next in the queue",
+        "disabled": "`Disabled`",
+        "queue": "`Enabled`",
+        "track": "`Rehearsal of the song`",
+        "autoplay": "`Autoplay`"
+      }
+    },
+    "TIKTOK": {
+      "en": {
+        "a": "Username:",
+        "b": "Nickname:",
+        "c": "No bio set.",
+        "d": "Followers",
+        "e": "Followings",
+        "f": "Hearts",
+        "error": "No user found on tiktok for `{text}`."
+      }
+    },
+    "STATS": {
+      "en": {
+        "desc": "",
+        "field": "**Guilds:**\n `{server}`\n**Users:**\n `{users}`\n**Commands:**\n `92`\n**Version:**\n `5.1`\n**Team:**\n [Click here](https://bot.app/team)",
+        "field1": "`Discord.js` : **v13-dev**\n`Owner` : **<@688402229245509844>\n**`Database` : **MongoDB**",
+        "links": "Links"
+      }
+    },
+    "LOOP": {
+      "en": {
+        "music": "Loop mode for song **{status}**",
+        "queue": "Loop mode for queue **{status}**",
+        "err": "The autorole has been disabled!"
+      }
+    },
+    "24/7": {
+      "en": {
+        "enabled": "🎧 24/7 mode: **Enabled**",
+        "disabled": "🎧 24/7 mode: **Disabled**",
+        "noVoiceChannel": "You must join a voice channel to define it as 24/7 channel.",
+        "enabledSince": "The 24/7 mode is already enabled.",
+        "disabledSince": "The 24/7 mode is already disabled."
+      }
+    },
+    "clearing": {
+      "en": {
+        "enabled": "I will now delete messages annoucing news songs after 10s.",
+        "disabled": "The clearing mode has been succesfully disabled.",
+        "enabledSince": "The clearing mode is already enabled.",
+        "disabledSince": "The clearing mode is already disabled."
+      }
+    },
+    "autoshuffle": {
+      "en": {
+        "enabled": "I will automatically shuffle new spotify playlists.",
+        "disabled": "The `auto shuffle` plugin has been succesfully disabled.",
+        "enabledSince": "The `auto shuffle` plugin is already enabled.",
+        "disabledSince": "The `auto shuffle` plugin is already disabled."
+      }
+    },
+    "ANNOUNCE": {
+      "en": {
+        "enabled": "I will now show the messages announcing a new song.",
+        "disabled": "I will now hide the messages announcing a new song.",
+        "enabledSince": "The announce mode is already enabled.",
+        "disabledSince": "The announce mode is already disabled."
+      }
+    },
+    "AUTOPLAYE": {
+      "en": {
+        "enabled": "🎼 Autoplay: **Enabled**",
+        "disabled": "🎼 Autoplay: **Disabled**",
+        "enabledSince": "The autoplay mode is already enabled.",
+        "disabledSince": "The autoplay mode is already disabled."
+      }
+    },
+    "BASSBOOST": {
+      "en": {
+        "enabled": "⏱ Enabling `bassboost` filter. Please wait...",
+        "disabled": "⏱ Disabling `bassboost` filter. Please wait...",
+        "enabledSince": "The bassboost filter is already enabled.",
+        "disabledSince": "The bassboost filter is already disabled."
+      }
+    },
+    "8D": {
+      "en": {
+        "enabled": "⏱ Enabling `8D` filter. Please wait...",
+        "disabled": "⏱ Disabling `8D` filter. Please wait...",
+        "enabledSince": "The bassboost filter is already enabled.",
+        "disabledSince": "The bassboost filter is already disabled."
+      }
+    },
+    "Earrape": {
+      "en": {
+        "enabled": "⏱ Enabling `Earrape` filter. Please wait...",
+        "disabled": "⏱ Disabling `Earrape` filter. Please wait...",
+        "enabledSince": "The Earrape filter is already enabled.",
+        "disabledSince": "The Earrape filter is already disabled."
+      }
+    },
+    "NIGHTCODE": {
+      "en": {
+        "enabled": "⏱ Enabling `nightcore` filter. Please wait...",
+        "disabled": "⏱ Disabling `nightcore` filter. Please wait...",
+        "enabledSince": "The nightcore filter is already enabled.",
+        "disabledSince": "The nightcore filter is already disabled."
+      }
+    },
+    "KARAOKE": {
+      "en": {
+        "enabled": "⏱ Enabling `Karaoke` filter. Please wait...",
+        "disabled": "The nightcore filter has been succesfully disabled.",
+        "enabledSince": "The nightcore filter is already enabled.",
+        "disabledSince": "The nightcore filter is already disabled."
+      }
+    },
+    "vaporwave": {
+      "en": {
+        "enabled": "⏱ Enabling `Karaoke` filter. Please wait...",
+        "disabled": "The vaporwave filter has been succesfully disabled.",
+        "enabledSince": "The vaporwave filter is already enabled.",
+        "disabledSince": "The vaporwave filter is already disabled."
+      }
+    },
+    "PAUSE": {
+      "en": {
+        "succes": "Music successfully paused",
+        "err": "Music is already paused on this server. Do `{prefix}resume` to resume the music."
+      }
+    },
+    "ADMIN_LIST": {
+      "en": {
+        "title": "Administrators",
+        "desc": "Here are {size} people who have `Administrator` permission on this server.",
+        "name": "Administrators list"
+      }
+    }
+  }
+}

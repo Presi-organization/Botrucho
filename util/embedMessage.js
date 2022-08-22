@@ -10,7 +10,7 @@ exports.simpleEmbedMessage = (color, message) => {
 };
 
 exports.richEmbedMessage = () => {
-    const embed = new Discord.RichEmbed()
+    return new Discord.RichEmbed()
         .setTitle("Este es su título, puede contener 256 caracteres")
         .setAuthor(message.author.username, message.author.avatarURL)
         .setColor(0x00AE86)
@@ -25,6 +25,4 @@ exports.richEmbedMessage = () => {
         .addField("Campo en línea", "Debajo del campo en línea", true)
         .addBlankField(true)
         .addField("Campo en línea 3", "Puede tener un máximo de 25 campos.", true);
-
-    return embed;
 };

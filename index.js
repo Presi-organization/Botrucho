@@ -1,30 +1,94 @@
-const Discord = require("discord.js");
-
-const { skip } = require("./music commands/skip");
-const { stop } = require("./music commands/stop");
-const { pause } = require("./music commands/pause");
-const { resume } = require("./music commands/resume");
-const { volume } = require("./music commands/volume");
-const { listQueue } = require("./music commands/queue");
-const { execute } = require("./music commands/execute");
-
-const { join } = require("./management commands/join");
-const { ping } = require("./management commands/ping");
-const { clear } = require("./management commands/clear");
-
 const {
-    prefix
-} = require("./settings.json");
+    Client: Client,
+    Intents: Intents,
+    Collection: Collection,
+    MessageEmbed: MessageEmbed,
+    Message
+} = require("discord.js");
+const { getFreeClientID: getFreeClientID, setToken: setToken } = require("play-dl");
+const { Routes } = require("discord-api-types/v10");
+const { Player } = require("discord-player");
+const { REST } = require("@discordjs/rest");
+const mongoose = require("mongoose");
+const fs = require('node:fs');
+const util = require("util");
+require("./util/extenders.js");
 
-// DEV Purposes
-// const {
-//     discord_token
-// } = require("./config.json");
+require('dotenv').config()
 
-const discord_token = process.env.DISCORD_TOKEN;
-const client = new Discord.Client();
+const readdir = util.promisify(fs.readdir);
+client = new Client({
+    intents: [
+        Intents.FLAGS.GUILDS,
+        Intents.FLAGS.GUILD_MESSAGES,
+        Intents.FLAGS.GUILD_VOICE_STATES,
+        Intents.FLAGS.GUILD_MESSAGE_REACTIONS,
+    ]
+});
 
-const queue = new Map();
+client.config = require("./config.js");
+client.footer = client.config.footer;
+client.owners = client.config.owners;
+client.commands = new Collection;
+client.deleted_messages = new WeakSet();
+client.player = new Player(client, client.config.player);
+
+getFreeClientID().then(client_id => {
+    setToken({
+        soundcloud: {
+            client_id: client_id,
+        },
+    }).then();
+});
+
+mongoose.connect(client.config.database.MongoURL).then(() => {
+    console.log("[MongoDB]: Database is ready!");
+}).catch(e => {
+    console.log("[MongoDB]: Error\n" + e)
+});
+
+const init = async function () {
+    fs.readdirSync("./commands").filter(file => file.endsWith(".js"));
+    const categories = await readdir("./commands/");
+    console.log(`[Commands] ${ categories.length } Categories loaded.`, categories)
+    const commands = [];
+    for (const category of categories) {
+        for (const command_file of (await readdir("./commands/" + category + "/")).filter(e => "js" === e.split(".").pop())) {
+            const command = require(`./commands/${ category }/${ command_file }`);
+            client.commands.set(command.name, command);
+            commands.push(command.data.toJSON());
+        }
+    }
+
+    const rest = new REST({ version: '10' }).setToken(process.env.DISCORD_TOKEN);
+
+    rest.put(Routes.applicationGuildCommands(process.env.CLIENT_ID, process.env.GUILD_ID), { body: commands })
+        .then(() => console.log('Successfully registered application commands.'))
+        .catch(console.error);
+
+    const discord_events = await readdir("./events/discord");
+    // console.log(`[Discord Events] ${ discord_events.length } events loaded.`, discord_events);
+    discord_events.forEach(discord_event => {
+        const event_name = discord_event.split(".")[0], event_file = require(`./events/discord/${ discord_event }`);
+        client.on(event_name, (...e) => event_file.execute(...e, client));
+        delete require.cache[require.resolve(`./events/discord/${ discord_event }`)];
+    });
+
+    const player_events = await readdir("./events/player");
+    // console.log(`[Player Events] ${ player_events.length } events loaded.`, player_events);
+    player_events.forEach(player_event => {
+        const player_event_name = player_event.split(".")[0],
+            player_event_file = require(`./events/player/${ player_event }`)
+        client.player.on(player_event_name, (...e) => player_event_file.execute(...e, client));
+        delete require.cache[require.resolve(`./events/player/${ player_event }`)]
+    })
+};
+
+init().then();
+
+client.login(client.config.token).catch(e => {
+    console.log("[Discord login]: Please provide a valid discord bot token\n" + e)
+});
 
 client.once("ready", () => {
     console.log("Ready!");
@@ -38,60 +102,8 @@ client.once("disconnect", () => {
     console.log("Disconnect!");
 });
 
-client.on("message", async message => {
-    if (message.author.bot) return;
-    if (!message.content.startsWith(prefix)) return;
-
-    const serverQueue = queue.get(message.guild.id);
-
-    if (message.content.startsWith(`${prefix} ping`)) {
-        ping(message);
-        return;
-    } else if (message.content.startsWith(`${prefix} clear`)) {
-        clear(message);
-        return;
-    } else if (message.content.startsWith(`${prefix} play`)) {
-        execute(message, serverQueue, queue);
-        return;
-    } else if (message.content.startsWith(`${prefix} pause`)) {
-        pause(message, serverQueue);
-        return;
-    } else if (message.content.startsWith(`${prefix} resume`)) {
-        resume(message, serverQueue);
-        return;
-    } else if (message.content.startsWith(`${prefix} skip`)) {
-        skip(message, serverQueue);
-        return;
-    } else if (message.content.startsWith(`${prefix} stop`)) {
-        stop(message, serverQueue);
-        return;
-    } else if (message.content.startsWith(`${prefix} volume`)) {
-        volume(message, serverQueue);
-        return;
-    } else if (message.content.startsWith(`${prefix} queue`)) {
-        listQueue(message, serverQueue);
-        return;
-    } else if (message.content.startsWith(`${prefix} join`)) {
-        join(message);
-        return;
-    } else if (message.content.startsWith(`${prefix} leave`)) {
-        let voiceChannel = message.member.voice.channel;
-        if (!voiceChannel) {
-            message.channel.send('No estoy en un canal de voz.');
-        } else {
-            message.channel.send('Dejando el canal de voz.').then(() => {
-                voiceChannel.leave();
-            }).catch(error => message.channel.send(error));
-        }
-    } else {
-        message.channel.send("You need to enter a valid command!");
-    }
-});
-
 client.on("guildMemberSpeaking", (member, speaking) => {
     console.log(member.displayName || member.username, "is talking?", speaking);
 });
-
-client.login(discord_token);
 
 client.on("error", (e) => console.error(e));
