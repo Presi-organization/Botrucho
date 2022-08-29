@@ -1,6 +1,6 @@
 const {
     Client: Client,
-    Intents: Intents,
+    GatewayIntentBits: Intents,
     Collection: Collection,
     MessageEmbed: MessageEmbed,
     Message
@@ -19,10 +19,10 @@ require('dotenv').config()
 const readdir = util.promisify(fs.readdir);
 client = new Client({
     intents: [
-        Intents.FLAGS.GUILDS,
-        Intents.FLAGS.GUILD_MESSAGES,
-        Intents.FLAGS.GUILD_VOICE_STATES,
-        Intents.FLAGS.GUILD_MESSAGE_REACTIONS,
+        Intents.Guilds,
+        Intents.GuildMessages,
+        Intents.GuildVoiceStates,
+        Intents.GuildMessageReactions,
     ]
 });
 
