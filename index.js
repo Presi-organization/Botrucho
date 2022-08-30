@@ -69,7 +69,8 @@ const init = async function () {
     const discord_events = await readdir("./events/discord");
     // console.log(`[Discord Events] ${ discord_events.length } events loaded.`, discord_events);
     discord_events.forEach(discord_event => {
-        const event_name = discord_event.split(".")[0], event_file = require(`./events/discord/${ discord_event }`);
+        const event_name = discord_event.split(".")[0],
+            event_file = require(`./events/discord/${ discord_event }`);
         client.on(event_name, (...e) => event_file.execute(...e, client));
         delete require.cache[require.resolve(`./events/discord/${ discord_event }`)];
     });
@@ -78,10 +79,20 @@ const init = async function () {
     // console.log(`[Player Events] ${ player_events.length } events loaded.`, player_events);
     player_events.forEach(player_event => {
         const player_event_name = player_event.split(".")[0],
-            player_event_file = require(`./events/player/${ player_event }`)
+            player_event_file = require(`./events/player/${ player_event }`);
         client.player.on(player_event_name, (...e) => player_event_file.execute(...e, client));
         delete require.cache[require.resolve(`./events/player/${ player_event }`)]
-    })
+    });
+
+    const say_events = await readdir("./events/say");
+    // console.log(`[Say Events] ${ say_events.length } events loaded.`, say_events);
+    say_events.forEach(say_event => {
+        const say_event_name = say_event.split(".")[0],
+            say_event_file = require(`./events/say/${ say_event }`);
+        client.player.on(say_event_name, (...e) => say_event_file.execute(...e, client));
+        delete require.cache[require.resolve(`./events/say/${ say_event }`)]
+    });
+
 };
 
 init().then();
