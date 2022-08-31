@@ -114,7 +114,7 @@ Message.prototype.errorMessage = function (text, cooldown = {}) {
 
 CommandInteraction.prototype.errorMessage = function (text, cooldown = {}) {
     if (text) {
-        return this.channel.send({
+        return this.channel.reply({
             embeds: [ {
                 description: text,
                 color: 0XC73829,

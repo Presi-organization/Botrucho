@@ -1,4 +1,5 @@
 const { SlashCommandBuilder } = require("@discordjs/builders");
+const { getVoiceConnection } = require("@discordjs/voice");
 
 module.exports = {
     name: 'leave',
@@ -13,8 +14,19 @@ module.exports = {
 
         let queue = client.player.getQueue(interaction.guild.id)
         if (!queue || !queue.connection || !interaction.member.voice.channel) {
-            let err = await interaction.translate("NOT_MUSIC", guildDB.lang)
-            return interaction.errorMessage(err)
+            try {
+                getVoiceConnection(interaction.guild.id).destroy();
+                return interaction.reply({
+                    embeds: [ {
+                        description: "Disconnected from <#" + interaction.member.voice.channel.id + ">.",
+                        color: 0X2ED457,
+                    } ]
+                })
+            } catch (e) {
+                let err = await interaction.translate("NOT_MUSIC", guildDB.lang)
+                return interaction.errorMessage(err)
+            }
+        } else {
         }
         if (guildDB.dj_role && queue.metadata.dj.id !== interaction.user.id) {
             if (!interaction.member.permissions.has("MANAGE_MESSAGES")) {
