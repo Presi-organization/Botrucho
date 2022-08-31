@@ -1,8 +1,7 @@
 const { EmbedBuilder } = require("discord.js");
 
 module.exports = {
-    async execute(queue, _, client) {
-        console.log(queue)
+    async execute(queue, client) {
         if (queue.metadata.controller) {
             const embed = new EmbedBuilder()
                 .setAuthor({
