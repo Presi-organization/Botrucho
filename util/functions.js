@@ -47,7 +47,7 @@ const getServersList = async client => {
  */
 const createClientVars = async client => {
     const config = require("../config")
-    client.color = config.color.startsWith("#") ? config.color : "#3A871F"
+    client.color = config.color
     client.owners = ["757309249440186460", "688402229245509844", "776416380530327603", "772850214318768138"]
     client.footer = config.footer.slice(0, 32)
     client.defaultPrefix = config.prefix.slice(0, 4)

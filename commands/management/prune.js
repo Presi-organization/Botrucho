@@ -24,7 +24,7 @@ module.exports = {
             });
         });
 
-        await interaction.reply({ content: `Successfully pruned \`${ amount }\` messages.`, ephemeral: true });
+        await interaction.reply({ content: `Successfully pruned \`${ amount }\` messages.`, ephemeral: false });
         deletedMessages.add(interaction);
         setTimeout(async () => {
             if (interaction && deletedMessages.has(interaction)) {

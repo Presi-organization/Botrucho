@@ -8,13 +8,13 @@ module.exports = {
     // Your name/tag
     owners: [ "iJoda#6615" ],
     //The footer of the embeds that the bot will send
-    footer: "f**king bot ",
+    footer: "Botrucho ",
     // The id of the support
     supportID: "729774155037278268",
     // The status of your bot
     game: "Bot... Not so much",
     //the color of the embeds
-    color: "#f5b719",
+    color: 0Xf5b719,
     // OPTIONAL: Your top.gg token.
     topgg: "TOPGG_TOKEN",
     // OPTIONAL: The link of your bot's top.gg page.
@@ -39,7 +39,9 @@ module.exports = {
         owner: { hide: true, enabled: true, name: "Owner", desc: "Manage your bot with the owner commands" }
     },
     // some usefull links about your bot, if you don't have an information, put null.
-    links: null,
+    links: {
+        invite: "https://discord.com/api/oauth2/authorize?client_id=973290665704308756&permissions=8&scope=bot"
+    },
     //Database
     database: {
         // The url of your mongodb database. Check mongodb.org

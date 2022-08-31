@@ -1,10 +1,10 @@
-const { MessageEmbed } = require("discord.js");
+const { EmbedBuilder } = require("discord.js");
 
 module.exports = {
     async execute(queue, track, client) {
         if (!queue.metadata) return console.log("Not metadata");
         if (queue.metadata.controller) {
-            const embed = new MessageEmbed()
+            const embed = new EmbedBuilder()
                 .setAuthor(track.requestedBy.tag, track.requestedBy.displayAvatarURL(), "https://discord.com/oauth2/authorize?client_id=973290665704308756&scope=bot&permissions=19456")
                 .setDescription(`Send a music name/link bellow this message to play music.`)
                 .addField("Now playing", `[**${ track.title }**](${ track.url }) [<@${ track.requestedBy.id }>] \`${ track.duration }\``)
@@ -13,7 +13,7 @@ module.exports = {
                     dynamic: true,
                     size: 512
                 }))
-                .setColor("#3A871F");
+                .setColor(client.config.color);
             return queue.metadata.message.edit({
                 embeds: [ embed ],
             });
@@ -23,7 +23,7 @@ module.exports = {
                 queue.metadata.message.editReply({
                     embeds: [
                         {
-                            color: queue.metadata.guildDB.color,
+                            color: client.config.color,
                             author: {
                                 name: "" + track.requestedBy.tag + " - Now playing",
                                 icon_url: track.requestedBy.displayAvatarURL(),

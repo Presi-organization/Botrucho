@@ -1,9 +1,7 @@
 const {
-    Client: Client,
     GatewayIntentBits: Intents,
     Collection: Collection,
-    MessageEmbed: MessageEmbed,
-    Message
+    Client: Client
 } = require("discord.js");
 const { getFreeClientID: getFreeClientID, setToken: setToken } = require("play-dl");
 const { Routes } = require("discord-api-types/v10");

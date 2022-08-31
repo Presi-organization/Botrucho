@@ -22,7 +22,7 @@ module.exports = {
                             icon_url: message.client.user.displayAvatarURL()
                         },
                         title: `Settings for ${ message.guild.name }`,
-                        color: guildDB.color
+                        color: client.config.color
                     } ]
                 }).catch(() => {
                     message.member.send("❌ Please give me the `Send messages` and `Embed links` permission.");
@@ -61,7 +61,7 @@ module.exports = {
                 return message.channel.send({
                     embeds: [
                         {
-                            color: "#C73829",
+                            color: "0XC73829",
                             description: `${ u.replace("{command}", r) }\n${ read }\n\n**${ langUsage }**\n${ i.usages ? `${ i.usages.map(x => `\`${ guildDB.prefix }${ x }\``).join("\n") }` : ` \`${ guildDB.prefix }${ r } ${ i.usage }\`` }`,
                             footer: { text: message.client.footer, iconURL: message.client.user.displayAvatarURL() },
                             author: {

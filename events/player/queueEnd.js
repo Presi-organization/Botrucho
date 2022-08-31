@@ -1,21 +1,29 @@
-const { MessageEmbed } = require("discord.js");
+const { EmbedBuilder } = require("discord.js");
 
 module.exports = {
     async execute(queue, _, client) {
+        console.log(queue)
         if (queue.metadata.controller) {
-            const embed = new MessageEmbed()
-                .setAuthor(`${ client.footer }`, client.user.displayAvatarURL({
-                    dynamic: true,
-                    size: 512
-                }), "https://discord.com/oauth2/authorize?client_id=973290665704308756&scope=bot&permissions=66186704")
+            const embed = new EmbedBuilder()
+                .setAuthor({
+                    name: client.user.username,
+                    url: client.config.links.invite,
+                    iconURL: client.user.displayAvatarURL({
+                        dynamic: true,
+                        size: 512
+                    }),
+                })
                 .setDescription(`Send a music name/link bellow this message to play music.`)
-                .addField("Now playing", "__**Nothing playing**__")
-                .setImage(url = "https://d2vrvpw63099lz.cloudfront.net/whatsapp-bots/whatsapp-bots.png")
-                .setFooter(`${ client.footer }`, client.user.displayAvatarURL({
-                    dynamic: true,
-                    size: 512
-                }))
-                .setColor("#3A871F");
+                .addFields("Now playing", "__**Nothing playing**__")
+                .setImage("https://d2vrvpw63099lz.cloudfront.net/whatsapp-bots/whatsapp-bots.png")
+                .setFooter({
+                    text: client.footer,
+                    iconURL: client.user.displayAvatarURL({
+                        dynamic: true,
+                        size: 512
+                    })
+                })
+                .setColor(client.config.color);
             return queue.metadata.message.edit({
                 embeds: [ embed ],
             });
@@ -25,7 +33,7 @@ module.exports = {
                 embeds: [
                     {
                         title: "Queue Concluded",
-                        color: "#F0B02F",
+                        color: client.config.color,
                         description: loadingTest,
                     },
                 ],

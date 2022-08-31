@@ -1,4 +1,4 @@
-const { Message, MessageEmbed, Guild, CommandInteraction, } = require("discord.js");
+const { Message, EmbedBuilder, Guild, CommandInteraction, } = require("discord.js");
 const lang = require('../languages/lang.json')
 const translate = require("@vitalets/google-translate-api");
 const guildData = require('../models/guildData');
@@ -17,7 +17,7 @@ Guild.prototype.addDB = async function (guildID = {}) {
         lang: langJson,
         premium: null,
         premiumUserID: null,
-        color: "#3A871F",
+        color: 0X3A871F,
         backlist: null
     }).save()
 };
@@ -99,7 +99,7 @@ Message.prototype.errorMessage = function (text, cooldown = {}) {
         return this.channel.send({
             embeds: [ {
                 description: text,
-                color: "#C73829",
+                color: 0XC73829,
                 author: {
                     name: this.guild.name,
                     icon_url: this.guild.icon ? this.guild.iconURL({ dynamic: true }) : "https://cdn.discordapp.com/attachments/748897191879245834/782271474450825226/0.png?size=128"
@@ -111,12 +111,31 @@ Message.prototype.errorMessage = function (text, cooldown = {}) {
         throw new Error(`Error: No text provided`)
     }
 };
+
+CommandInteraction.prototype.errorMessage = function (text, cooldown = {}) {
+    if (text) {
+        return this.channel.send({
+            embeds: [ {
+                description: text,
+                color: 0XC73829,
+                author: {
+                    name: this.guild.name,
+                    icon_url: this.guild.icon ? this.guild.iconURL({ dynamic: true }) : "https://cdn.discordapp.com/attachments/748897191879245834/782271474450825226/0.png?size=128"
+                },
+            } ]
+        })
+    } else {
+        this.errorOccurred("No text provided", "en")
+        throw new Error(`Error: No text provided`)
+    }
+};
+
 Message.prototype.succesMessage = function (text, noAutor = {}) {
     if (text) {
         this.channel.send({
             embeds: [ {
                 description: text,
-                color: "#2ED457",
+                color: 0X2ED457,
             } ]
         })
         return
@@ -137,17 +156,17 @@ Message.prototype.usage = async function (guildDB, cmd = {}) {
     this.channel.send({
         embeds: [ {
             description: `${ u.replace("{command}", cmd.name) }\n${ read }\n\n**${ langUsage }**\n${ cmd.usages ? `${ cmd.usages.map(x => `\`${ guildDB.prefix }${ x }\``).join("\n") }` : ` \`${ guildDB.prefix }${ cmd.name } ${ cmd.usage } \`` }`,
-            color: "#C73829",
+            color: 0XC73829,
             author: { name: this.author.username, icon_url: this.author.displayAvatarURL({ dynamic: !0, size: 512 }) },
         } ]
     })
 };
 Message.prototype.mainMessage = function (text, args, options = {}) {
     if (text) {
-        let embed1 = new MessageEmbed()
+        let embed1 = new EmbedBuilder()
             .setAuthor(this.author.tag, this.author.displayAvatarURL())
             .setDescription(`${ text }`)
-            .setColor("#3A871F")
+            .setColor(0X3A871F)
             .setFooter(this.client.footer, this.client.user.displayAvatarURL({ dynamic: true, size: 512 }))
         this.channel.send({ embeds: [ embed1 ], allowedMentions: { repliedUser: false } }).then(m => {
             m.react("<:delete:830790543659368448>")
@@ -169,8 +188,19 @@ Message.prototype.mainMessage = function (text, args, options = {}) {
 Message.prototype.errorOccurred = async function (err, guildDB = {}) {
     console.log("[32m%s[0m", "ERROR", "[0m", `${ cmd ? `Command ${ cmd.name }` : "System" } has error: \n\n${ err }`)
     const lang = await this.translate("ERROR", guildDB.lang)
-    const r = new MessageEmbed()
-        .setColor("#F0B02F")
+    const r = new EmbedBuilder()
+        .setColor(0XF0B02F)
+        .setTitle(lang.title)
+        .setDescription(lang.desc)
+        .setFooter("Error code: " + err + "", this.client.user.displayAvatarURL({ dynamic: !0, size: 512 }));
+    return this.channel.send({ embeds: [ r ] })
+};
+
+CommandInteraction.prototype.errorOccurred = async function (err, guildDB = {}) {
+    console.log("[32m%s[0m", "ERROR", "[0m", `${ cmd ? `Command ${ cmd.name }` : "System" } has error: \n\n${ err }`)
+    const lang = await this.translate("ERROR", guildDB.lang)
+    const r = new EmbedBuilder()
+        .setColor(0XF0B02F)
         .setTitle(lang.title)
         .setDescription(lang.desc)
         .setFooter("Error code: " + err + "", this.client.user.displayAvatarURL({ dynamic: !0, size: 512 }));
