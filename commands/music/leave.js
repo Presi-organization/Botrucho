@@ -21,7 +21,7 @@ module.exports = {
                 let MissingRole = await interaction.translate("MISSING_ROLE", guildDB.lang);
                 let Missingperm = await interaction.translate("MISSING_PERMISSIONS", guildDB.lang);
                 let role = interaction.guild.roles.cache.get(guildDB.dj_role)
-                if (!role) return message.errorMessage(Missingperm.replace("{perm}", 'Manage messages'))
+                if (!role) return interaction.errorMessage(Missingperm.replace("{perm}", 'Manage messages'))
                 if (interaction.member.roles.cache) {
                     if (!interaction.member.roles.cache.has(role.id)) return interaction.errorMessage(MissingRole.replace("{perm}", 'Manage messages').replace("{role}", role.name))
                 } else return interaction.errorMessage(MissingRole.replace("{perm}", 'Manage messages').replace("{role}", role.name))
