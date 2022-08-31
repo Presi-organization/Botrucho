@@ -144,6 +144,20 @@ Message.prototype.succesMessage = function (text, noAutor = {}) {
         throw new Error(`Error: No text provided`)
     }
 };
+CommandInteraction.prototype.succesMessage = function (text, noAutor = {}) {
+    if (text) {
+        this.channel.send({
+            embeds: [ {
+                description: text,
+                color: 0X2ED457,
+            } ]
+        });
+    } else {
+        this.errorOccurred("No text provided", "en")
+        throw new Error(`Error: No text provided`)
+    }
+};
+
 Message.prototype.usage = async function (guildDB, cmd = {}) {
     let langUsage;
     if (cmd.usages) {
