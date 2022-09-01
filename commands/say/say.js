@@ -20,11 +20,11 @@ module.exports = {
 
         let queue = interaction.client.player.getQueue(interaction.guild.id);
 
-        if (queue) return interaction.reply({ content: `Songs reproducing music`, ephemeral: true });
+        if (queue) return interaction.editReply({ content: `Songs reproducing music`, ephemeral: true });
 
         const key = process.env.AISPEECH_TOKEN;
         const region = "eastus";
-        const audioFile = "elaudio.wav"
+        const audioFile = "voice_speech.wav";
 
         const speechConfig = sdk.SpeechConfig.fromSubscription(key, region);
         const audioConfig = sdk.AudioConfig.fromAudioFileOutput(audioFile);
@@ -43,12 +43,17 @@ module.exports = {
                     });
 
                     const player = createAudioPlayer();
-                    const resource = createAudioResource('elaudio.wav');
+                    const resource = createAudioResource(audioFile);
                     player.play(resource);
 
                     connection.subscribe(player);
 
-                    interaction.editReply("Now synthesizing to: " + audioFile);
+                    interaction.editReply({
+                        embeds: [ {
+                            description: `Synthesizing phrase.`,
+                            color: 0Xf5b719
+                        } ]
+                    })
                 } else {
                     console.error("Speech synthesis canceled, " + result.errorDetails +
                         "\nDid you set the speech resource key and region values?");
