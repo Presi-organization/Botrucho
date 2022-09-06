@@ -408,7 +408,7 @@ module.exports = {
                             name: `${ interaction.user.tag } ha creado un evento`,
                             icon_url: interaction.user.displayAvatarURL()
                         },
-                        description: `Confirma tu asistencia en: ${ eventName }`,
+                        description: `<@&540708709945311243> Confirma tu asistencia en: ${ eventName }`,
                         color: 0XF5B719,
                     } ],
                     fetchReply: true
