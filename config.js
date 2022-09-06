@@ -14,7 +14,7 @@ module.exports = {
     // The status of your bot
     game: "Bot... Not so much",
     //the color of the embeds
-    color: 0Xf5b719,
+    color: 0XF5B719,
     // OPTIONAL: Your top.gg token.
     topgg: "TOPGG_TOKEN",
     // OPTIONAL: The link of your bot's top.gg page.

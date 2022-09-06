@@ -1,7 +1,8 @@
 const {
     GatewayIntentBits: Intents,
     Collection: Collection,
-    Client: Client
+    Client: Client,
+    Partials
 } = require("discord.js");
 const { getFreeClientID: getFreeClientID, setToken: setToken } = require("play-dl");
 const { Routes } = require("discord-api-types/v10");
@@ -21,7 +22,12 @@ client = new Client({
         Intents.GuildMessages,
         Intents.GuildVoiceStates,
         Intents.GuildMessageReactions,
-    ]
+    ],
+    partials: [
+        Partials.Message,
+        Partials.Channel,
+        Partials.Reaction
+    ],
 });
 
 client.config = require("./config.js");

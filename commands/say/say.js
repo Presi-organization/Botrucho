@@ -51,7 +51,7 @@ module.exports = {
                     interaction.editReply({
                         embeds: [ {
                             description: `Synthesizing phrase.`,
-                            color: 0Xf5b719
+                            color: 0XF5B719
                         } ]
                     })
                 } else {

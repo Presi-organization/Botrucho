@@ -2,10 +2,12 @@ const { Message, EmbedBuilder, Guild, CommandInteraction, } = require("discord.j
 const lang = require('../languages/lang.json')
 const translate = require("@vitalets/google-translate-api");
 const guildData = require('../models/guildData');
+const eventData = require('../models/eventData');
 const { prefix, lang: langJson } = require('../config');
+
 /**
  * Add a guild in the database
- * @param {number} guildID The ID of the guild
+ * @param {{}} guildID The ID of the guild
  */
 Guild.prototype.addDB = async function (guildID = {}) {
     if (!guildID || isNaN(guildID)) {
@@ -21,9 +23,10 @@ Guild.prototype.addDB = async function (guildID = {}) {
         backlist: null
     }).save()
 };
+
 /**
- * Fetchs a guild in the database
- * @param {number} guildID The ID of the guild to fetch
+ * Fetches a guild in the database
+ * @param {{}} guildID The ID of the guild to fetch
  */
 Guild.prototype.fetchDB = async function (guildID = {}) {
     if (!guildID || isNaN(guildID)) {
@@ -33,53 +36,71 @@ Guild.prototype.fetchDB = async function (guildID = {}) {
     if (!data) data = await this.addDB()
     return data
 };
-CommandInteraction.prototype.translate = function (text, guildDB = {}) {
-    if (!text || !lang.translations[text]) {
-        throw new Error(`Translate: Params error: Unknow text ID or missing text ${ text }`)
-        return;
+
+Guild.prototype.addEventDB = async function (messageID, eventName, calendarLink, guildID = {}) {
+    if (!guildID || isNaN(guildID)) {
+        guildID = this.id
     }
-    if (!guildDB) return console.log("Missing guildDB")
-    return lang.translations[text][guildDB]
-};
-Message.prototype.translate = function (text, guildDB = {}) {
-    if (!text || !lang.translations[text]) {
-        throw new Error(`Translate: Params error: Unknow text ID or missing text ${ text }`)
-        return;
-    }
-    if (!guildDB) return console.log("Missing guildDB")
-    return lang.translations[text][guildDB]
+
+    return await new eventData({
+        serverID: guildID,
+        messageID: messageID,
+        eventName: eventName,
+        calendarLink: calendarLink
+    }).save()
 };
 
-Guild.prototype.translate = async function (text = {}) {
+Guild.prototype.fetchEventDB = async function (messageID, guildID = {}) {
+    if (!guildID || isNaN(guildID)) {
+        guildID = this.id
+    }
+    return eventData.findOne({ serverID: guildID, messageID: messageID });
+};
+
+/**
+ * Translate a text based on lang json for an Interaction
+ * @param {string} text The text to translate
+ * @param {string} guildDBLang The language
+ */
+CommandInteraction.prototype.translate = function (text, guildDBLang = "en") {
+    if (!text || !lang.translations[text]) {
+        throw new Error(`Translate: Params error: Unknow text ID or missing text ${ text }`)
+    }
+    if (!guildDBLang) return console.log("Missing guildDBLang")
+    return lang.translations[text][guildDBLang]
+};
+
+/**
+ * Translate a text based on lang json for a Message
+ * @param {string} text The text to translate
+ * @param {string} guildDBLang The language
+ */
+Message.prototype.translate = function (text, guildDBLang = {}) {
+    if (!text || !lang.translations[text]) {
+        throw new Error(`Translate: Params error: Unknow text ID or missing text ${ text }`)
+    }
+    if (!guildDBLang) return console.log("Missing guildDBLang")
+    return lang.translations[text][guildDBLang]
+};
+
+/***
+ * Translate a text based on lang json for a Guild with search in DB
+ * @param {string} text The text to translate
+ */
+Guild.prototype.translate = async function (text = "en") {
     if (text) {
         if (!lang.translations[text]) {
-
             throw new Error(`Unknown text ID "${ text }"`)
-            return;
         }
     } else {
         throw new Error(`Not text Provided`)
-        return;
     }
-    const langbd = await guildData.findOne({ serverID: this.id })
+    const langDB = await guildData.findOne({ serverID: this.id })
     let target;
-    if (langbd) {
-        target = langbd.lang;
+    if (langDB) {
+        target = langDB.lang;
     } else {
         target = 'en';
-    }
-    return lang.translations[text][target]
-
-};
-Guild.prototype.translatee = async function (text, target = {}) {
-    if (text) {
-        if (!lang.translations[text]) {
-            throw new Error(`Unknown text ID "${ text }"`)
-            return;
-        }
-    } else {
-        throw new Error(`Aucun texte indiqué `)
-        return;
     }
     return lang.translations[text][target]
 };
@@ -94,7 +115,12 @@ Message.prototype.gg = async function (text, args, options = {}) {
     return texttoreturn.replace("show", "channel").replace("living room", "channel").replace("room", "channel");
 };
 
-Message.prototype.errorMessage = function (text, cooldown = {}) {
+/**
+ * Sends an Error Message
+ * @param {string} text Text to send
+ * @return {*}
+ */
+Message.prototype.errorMessage = function (text) {
     if (text) {
         return this.channel.send({
             embeds: [ {
@@ -112,7 +138,12 @@ Message.prototype.errorMessage = function (text, cooldown = {}) {
     }
 };
 
-CommandInteraction.prototype.errorMessage = function (text, cooldown = {}) {
+/**
+ * Sends an Interaction Error Message
+ * @param {string} text Text to send
+ * @return {*}
+ */
+CommandInteraction.prototype.errorMessage = function (text) {
     if (text) {
         return this.channel.reply({
             embeds: [ {
@@ -130,7 +161,11 @@ CommandInteraction.prototype.errorMessage = function (text, cooldown = {}) {
     }
 };
 
-Message.prototype.succesMessage = function (text, noAutor = {}) {
+/**
+ * Sends a success Message
+ * @param {string} text text to send as a Message
+ */
+Message.prototype.succesMessage = function (text) {
     if (text) {
         this.channel.send({
             embeds: [ {
@@ -138,15 +173,19 @@ Message.prototype.succesMessage = function (text, noAutor = {}) {
                 color: 0X2ED457,
             } ]
         })
-        return
     } else {
         this.errorOccurred("No text provided", "en")
         throw new Error(`Error: No text provided`)
     }
 };
-CommandInteraction.prototype.succesMessage = function (text, noAutor = {}) {
+
+/**
+ * Sends an Interaction success Message
+ * @param {string} text text to send as a reply
+ */
+CommandInteraction.prototype.succesMessage = function (text) {
     if (text) {
-        this.channel.send({
+        this.channel.reply({
             embeds: [ {
                 description: text,
                 color: 0X2ED457,
@@ -175,6 +214,7 @@ Message.prototype.usage = async function (guildDB, cmd = {}) {
         } ]
     })
 };
+
 Message.prototype.mainMessage = function (text, args, options = {}) {
     if (text) {
         let embed1 = new EmbedBuilder()
@@ -195,9 +235,11 @@ Message.prototype.mainMessage = function (text, args, options = {}) {
         throw new Error(`Error: No text provided`)
     }
 };
+
 /**
  * Send an error message in the current channel
- * @param {string} error the code of the error
+ * @param err
+ * @param guildDB
  */
 Message.prototype.errorOccurred = async function (err, guildDB = {}) {
     console.log("[32m%s[0m", "ERROR", "[0m", `${ cmd ? `Command ${ cmd.name }` : "System" } has error: \n\n${ err }`)
@@ -210,6 +252,11 @@ Message.prototype.errorOccurred = async function (err, guildDB = {}) {
     return this.channel.send({ embeds: [ r ] })
 };
 
+/**
+ * Send an error message in the current channel as reply
+ * @param err
+ * @param guildDB
+ */
 CommandInteraction.prototype.errorOccurred = async function (err, guildDB = {}) {
     console.log("[32m%s[0m", "ERROR", "[0m", `${ cmd ? `Command ${ cmd.name }` : "System" } has error: \n\n${ err }`)
     const lang = await this.translate("ERROR", guildDB.lang)
