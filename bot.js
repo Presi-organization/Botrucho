@@ -108,7 +108,7 @@ client.login(client.config.token).catch(e => {
 });
 
 client.once("ready", () => {
-    client.user.setPresence({ status: "invisible", activities: [ { name: "nada importante", type: 5 } ] });
+    client.user.setPresence({ status: "dnd", activities: [ { name: "nada importante", type: 5 } ] });
     console.log("Ready!");
 });
 
