@@ -1,6 +1,12 @@
 const { SlashCommandBuilder } = require("@discordjs/builders");
 const sdk = require("microsoft-cognitiveservices-speech-sdk");
-const { joinVoiceChannel, createAudioPlayer, createAudioResource } = require("@discordjs/voice");
+const {
+    joinVoiceChannel,
+    getVoiceConnection,
+    createAudioResource
+} = require("@discordjs/voice");
+const fs = require('node:fs');
+const { join } = require("path");
 
 module.exports = {
     name: 'say',
@@ -12,11 +18,13 @@ module.exports = {
         .setDescription('Plays a phrasae.')
         .addStringOption(option => option.setName('phrase').setDescription('The desired phrase').setRequired(true)),
     async execute(interaction, guildDB) {
+        const { client } = interaction;
+        const channel = interaction.member.voice.channel;
 
         await interaction.deferReply("thinking");
 
         const phrase = interaction.options.getString('phrase');
-        if (!interaction.member.voice?.channel) return interaction.editReply('Connect to a Voice Channel');
+        if (!channel) return interaction.editReply('Connect to a Voice Channel');
 
         let queue = interaction.client.player.getQueue(interaction.guild.id);
 
@@ -24,7 +32,7 @@ module.exports = {
 
         const key = process.env.AISPEECH_TOKEN;
         const region = "eastus";
-        const audioFile = "voice_speech.wav";
+        const audioFile = join(__dirname, "voice_speech.wav");
 
         const speechConfig = sdk.SpeechConfig.fromSubscription(key, region);
         const audioConfig = sdk.AudioConfig.fromAudioFileOutput(audioFile);
@@ -34,26 +42,32 @@ module.exports = {
         let synthesizer = new sdk.SpeechSynthesizer(speechConfig, audioConfig);
 
         synthesizer.speakTextAsync(phrase,
-            function (result) {
+            async function (result) {
                 if (result.reason === sdk.ResultReason.SynthesizingAudioCompleted) {
-                    const connection = joinVoiceChannel({
-                        channelId: interaction.member.voice?.channel.id,
-                        guildId: interaction.member.voice?.channel.guild.id,
-                        adapterCreator: interaction.member.voice?.channel.guild.voiceAdapterCreator,
-                    });
+                    let connection = getVoiceConnection(interaction.guild.id);
+                    if (!connection) {
+                        connection = joinVoiceChannel({
+                            channelId: channel.id,
+                            guildId: interaction.guild.id,
+                            adapterCreator: interaction.guild.voiceAdapterCreator,
+                        });
+                    }
+                    connection.subscribe(client.playerSay);
 
-                    const player = createAudioPlayer();
-                    const resource = createAudioResource(audioFile);
-                    player.play(resource);
+                    await new Promise(resolve => setTimeout(resolve, 500));
 
-                    connection.subscribe(player);
+                    const stream = fs.createReadStream(audioFile);
+
+                    let resource = createAudioResource(stream);
+                    client.playerSay.play(resource);
 
                     interaction.editReply({
                         embeds: [ {
                             description: `Synthesizing phrase.`,
                             color: 0XF5B719
                         } ]
-                    })
+                    });
+
                 } else {
                     console.error("Speech synthesis canceled, " + result.errorDetails +
                         "\nDid you set the speech resource key and region values?");

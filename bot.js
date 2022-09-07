@@ -5,6 +5,7 @@ const {
     Partials
 } = require("discord.js");
 const { getFreeClientID: getFreeClientID, setToken: setToken } = require("play-dl");
+const { createAudioPlayer } = require("@discordjs/voice");
 const { Routes } = require("discord-api-types/v10");
 const { Player } = require("discord-player");
 const { REST } = require("@discordjs/rest");
@@ -36,6 +37,7 @@ client.owners = client.config.owners;
 client.commands = new Collection;
 client.deleted_messages = new WeakSet();
 client.player = new Player(client, client.config.player);
+client.playerSay = createAudioPlayer();
 
 getFreeClientID().then(client_id => {
     setToken({
@@ -93,7 +95,7 @@ const init = async function () {
     say_events.forEach(say_event => {
         const say_event_name = say_event.split(".")[0],
             say_event_file = require(`./events/say/${ say_event }`);
-        client.player.on(say_event_name, (...e) => say_event_file.execute(...e, client));
+        client.playerSay.on(say_event_name, (...e) => say_event_file.execute(...e, client));
         delete require.cache[require.resolve(`./events/say/${ say_event }`)]
     });
 
@@ -106,7 +108,7 @@ client.login(client.config.token).catch(e => {
 });
 
 client.once("ready", () => {
-    client.user.setPresence({ status: "dnd", activities: [ { name: "nada importante", type: 5 } ] });
+    client.user.setPresence({ status: "invisible", activities: [ { name: "nada importante", type: 5 } ] });
     console.log("Ready!");
 });
 

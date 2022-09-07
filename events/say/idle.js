@@ -1,5 +1,5 @@
 module.exports = {
     async execute(_) {
-        console.log("[idle]")
+        console.log("[idle]");
     }
 }
