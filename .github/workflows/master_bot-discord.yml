@@ -31,7 +31,7 @@ jobs:
       with:
         push: true
         tags: index.docker.io/${{ secrets.AzureAppService_ContainerUsername_156738ff1a06440ea557694bffb51822 }}/presi11/discord-bot:${{ github.sha }}
-        file: ./Dockerfile
+        file: ./docker/Dockerfile
 
   deploy:
     runs-on: ubuntu-latest
