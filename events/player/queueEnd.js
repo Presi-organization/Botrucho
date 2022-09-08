@@ -2,6 +2,7 @@ const { EmbedBuilder } = require("discord.js");
 
 module.exports = {
     async execute(queue, client) {
+        const deletedMessages = client.deleted_messages;
         if (queue.metadata.controller) {
             const embed = new EmbedBuilder()
                 .setAuthor({
@@ -23,12 +24,19 @@ module.exports = {
                     })
                 })
                 .setColor(client.config.color);
-            return queue.metadata.message.edit({
+            return queue.metadata.message.editReply({
                 embeds: [ embed ],
+            }).then(msg => {
+                deletedMessages.add(msg);
+                setTimeout(async () => {
+                    if (msg && deletedMessages.has(msg)) {
+                        msg.delete() && deletedMessages.delete(msg)
+                    }
+                }, 3000)
             });
         } else {
             const loadingTest = await queue.metadata.message.translate("QUEUE_END", queue.metadata.guildDB.lang)
-            return queue.metadata.channel.send({
+            return queue.metadata.message.editReply({
                 embeds: [
                     {
                         title: "Queue Concluded",
@@ -36,6 +44,13 @@ module.exports = {
                         description: loadingTest,
                     },
                 ],
+            }).then(msg => {
+                deletedMessages.add(msg);
+                setTimeout(async () => {
+                    if (msg && deletedMessages.has(msg)) {
+                        msg.delete() && deletedMessages.delete(msg)
+                    }
+                }, 3000)
             });
         }
     }

@@ -8,8 +8,7 @@ module.exports = {
                     color: client.config.color,
                     description: `${ enqueued_message } **[${ track.title }](${ track.url })**`,
                 },
-            ],
-            ephemeral: true
+            ]
         });
     }
 }

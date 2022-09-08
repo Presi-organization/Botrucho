@@ -36,7 +36,7 @@ module.exports = {
                     highWaterMark: 1 << 25,
                     dlChunkSize: 0
                 },
-                leaveOnEmptyCooldown: null,
+                leaveOnEmptyCooldown: 30000,
                 leaveOnEmpty: false,
                 leaveOnEnd: false,
                 leaveOnStop: false,

@@ -13,7 +13,7 @@ const channeldb = new mongoose.Schema({
     goodPremium: { type: String, required: false, default: null },
     requestChannel: { type: String, required: false, default: null },
     requestMessage: { type: String, required: false, default: null },
-    defaultVolume: { type: String, required: false, default: 60 },
+    defaultVolume: { type: Number, required: false, default: 60 },
     vc: { type: String, required: false, default: null },
     clearing: { type: String, required: false, default: null },
     auto_shuffle: { type: String, required: false, default: null },

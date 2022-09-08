@@ -380,7 +380,7 @@ module.exports = {
                 await command.execute(interaction, guildDB);
             } catch (error) {
                 console.error(error);
-                await interaction.reply({
+                await interaction.editReply({
                     content: 'There was an error while executing this command!',
                     ephemeral: true
                 });
