@@ -31,7 +31,7 @@ jobs:
       with:
         context: .
         push: true
-        tags: index.docker.io/${{ secrets.AzureAppService_ContainerUsername_156738ff1a06440ea557694bffb51822 }}/presi11/discord-bot:${{ github.sha }}
+        tags: presi11/discord-bot:${{ github.sha }}
         file: ./docker/Dockerfile
 
   deploy:
@@ -49,4 +49,4 @@ jobs:
         app-name: 'bot-discord'
         slot-name: 'production'
         publish-profile: ${{ secrets.AzureAppService_PublishProfile_e825247fe477487e8438753b63054598 }}
-        images: 'index.docker.io/${{ secrets.AzureAppService_ContainerUsername_156738ff1a06440ea557694bffb51822 }}/presi11/discord-bot:${{ github.sha }}'
+        images: 'presi11/discord-bot:${{ github.sha }}'
