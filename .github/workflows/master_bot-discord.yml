@@ -33,6 +33,14 @@ jobs:
         push: true
         tags: presi11/discord-bot:${{ github.sha }}
         file: ./docker/Dockerfile
+        secrets: |
+          CLIENT_ID=${{ secrets.CLIENT_ID }}
+          GUILD_ID=${{ secrets.GUILD_ID }}
+          DISCORD_TOKEN=${{ secrets.DISCORD_TOKEN }}
+          AISPEECH_TOKEN=${{ secrets.AISPEECH_TOKEN }}
+          SHARDS=${{ secrets.SHARDS }}
+          MONGO_URL=${{ secrets.MONGO_URL }}
+
 
   deploy:
     runs-on: ubuntu-latest
