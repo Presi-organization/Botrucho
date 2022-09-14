@@ -1,19 +1,18 @@
 const { Message, EmbedBuilder, Guild, CommandInteraction, } = require("discord.js");
 const lang = require('../languages/lang.json')
 const translate = require("@vitalets/google-translate-api");
-const guildData = require('../models/guildData');
-const eventData = require('../models/eventData');
 const { prefix, lang: langJson } = require('../config');
 
 /**
  * Add a guild in the database
+ * @param {GuildData} guildData
  * @param {{}} guildID The ID of the guild
  */
-Guild.prototype.addDB = async function (guildID = {}) {
+Guild.prototype.addDB = async function (guildData, guildID = {}) {
     if (!guildID || isNaN(guildID)) {
         guildID = this.id
     }
-    return await new guildData({
+    return guildData.addGuild({
         serverID: guildID,
         prefix: prefix,
         lang: langJson,
@@ -21,40 +20,55 @@ Guild.prototype.addDB = async function (guildID = {}) {
         premiumUserID: null,
         color: 0X3A871F,
         backlist: null
-    }).save()
+    });
 };
 
 /**
  * Fetches a guild in the database
+ * @param {GuildData} guildData
  * @param {{}} guildID The ID of the guild to fetch
  */
-Guild.prototype.fetchDB = async function (guildID = {}) {
+Guild.prototype.fetchDB = async function (guildData, guildID = {}) {
     if (!guildID || isNaN(guildID)) {
         guildID = this.id
     }
-    let data = await guildData.findOne({ serverID: guildID })
-    if (!data) data = await this.addDB()
+    let data = (await guildData.showGuild(guildID)).shift()
+    if (!data) data = await this.addDB(guildData)
     return data
 };
 
-Guild.prototype.addEventDB = async function (messageID, eventName, calendarLink, guildID = {}) {
+/**
+ * Add a guild in the database
+ * @param {EventData} event
+ * @param {string} messageID
+ * @param {string} eventName
+ * @param {string} calendarLink
+ * @param {{}} guildID The ID of the guild
+ */
+Guild.prototype.addEventDB = async function (event, messageID, eventName, calendarLink, guildID = {}) {
     if (!guildID || isNaN(guildID)) {
         guildID = this.id
     }
 
-    return await new eventData({
+    return event.addEvent({
         serverID: guildID,
         messageID: messageID,
         eventName: eventName,
         calendarLink: calendarLink
-    }).save()
+    });
 };
 
-Guild.prototype.fetchEventDB = async function (messageID, guildID = {}) {
+/**
+ * Fetches a guild in the database
+ * @param {EventData} event
+ * @param {string} messageID
+ * @param {{}} guildID The ID of the guild to fetch
+ */
+Guild.prototype.fetchEventDB = async function (eventData, messageID, guildID = {}) {
     if (!guildID || isNaN(guildID)) {
         guildID = this.id
     }
-    return eventData.findOne({ serverID: guildID, messageID: messageID });
+    return (await eventData.showEvent(guildID, messageID)).shift();
 };
 
 /**
@@ -85,9 +99,10 @@ Message.prototype.translate = function (text, guildDBLang = {}) {
 
 /***
  * Translate a text based on lang json for a Guild with search in DB
+ * @param {GuildData} guildData
  * @param {string} text The text to translate
  */
-Guild.prototype.translate = async function (text = "en") {
+Guild.prototype.translate = async function (guildData, text = "en") {
     if (text) {
         if (!lang.translations[text]) {
             throw new Error(`Unknown text ID "${ text }"`)
@@ -95,7 +110,7 @@ Guild.prototype.translate = async function (text = "en") {
     } else {
         throw new Error(`Not text Provided`)
     }
-    const langDB = await guildData.findOne({ serverID: this.id })
+    const langDB = (await guildData.showGuild(this.id)).shift();
     let target;
     if (langDB) {
         target = langDB.lang;

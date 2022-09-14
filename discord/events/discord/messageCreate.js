@@ -1,14 +1,14 @@
-const permes = require("../../util/permissions.json");
+const permes = require("../../../util/permissions.json");
 const { Permissions } = require("discord.js");
 const { QueryType } = require('discord-player');
 
-require("../../util/extenders.js");
+require("../../../util/extenders.js");
 
 module.exports = {
     async execute(message) {
         const { client } = message;
         if (message.author.bot || !message.guild) return;
-        let guildDB = await message.guild.fetchDB();
+        let guildDB = await message.guild.fetchDB(client.guildData);
         let a;
         if (message.content.startsWith(guildDB.prefix) || message.content.startsWith("green ") || message.content.startsWith(`<@!${ message.client.user.id }>`)) {
             if (message.content.endsWith("*") && !message.content.includes("prefix")) return;

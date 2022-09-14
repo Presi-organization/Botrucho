@@ -2,7 +2,7 @@ module.exports = {
     async execute(queue, tracks, client) {
         if (!queue.metadata || queue.metadata.controller) return console.log("Not metadata");
         let loadingTest = await queue.metadata.message.translate("ADDS", queue.metadata.guildDB.lang);
-        queue.metadata.message.editReply({
+        queue.metadata.last_message.editReply({
             embeds: [
                 {
                     color: client.config.color,

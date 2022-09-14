@@ -14,8 +14,6 @@ module.exports = {
     async execute(interaction, guildDB) {
         const { client } = interaction;
 
-        await interaction.deferReply("thinking");
-
         const name = interaction.options.getString('song');
         if (!interaction.member.voice?.channel) return interaction.editReply('Connect to a Voice Channel');
 
@@ -26,18 +24,16 @@ module.exports = {
                 metadata: {
                     channel: interaction.channel,
                     message: interaction,
+                    last_message: interaction,
                     guildDB: guildDB,
                     dj: interaction.user.username,
                 },
                 initialVolume: guildDB.defaultVolume,
                 ytdlOptions: {
-                    quality: 'highestaudio',
-                    filter: 'audioonly',
-                    highWaterMark: 1 << 25,
-                    dlChunkSize: 0
+                    quality: 'highestaudio', filter: 'audioonly', highWaterMark: 1 << 25, dlChunkSize: 0
                 },
                 leaveOnEmptyCooldown: 30000,
-                leaveOnEmpty: false,
+                leaveOnEmpty: true,
                 leaveOnEnd: false,
                 leaveOnStop: false,
                 async onBeforeCreateStream(track, source, queue) {
@@ -65,11 +61,26 @@ module.exports = {
                     }
                 }
             })
+        } else {
+            queue.metadata.last_message = interaction;
+        }
+
+        const embedThinking = {
+            color: client.config.color, description: "thinking...",
+        }
+
+        if (queue.metadata.last_message.replied) {
+            queue.metadata.last_message.editReply({
+                embeds: [ embedThinking ]
+            });
+        } else {
+            queue.metadata.last_message.reply({
+                embeds: [ embedThinking ]
+            });
         }
 
         const searchResult = await client.player.search(name, {
-            requestedBy: interaction.user,
-            searchEngine: QueryType.AUTO
+            requestedBy: interaction.user, searchEngine: QueryType.AUTO
         }).catch(async () => {
         });
 

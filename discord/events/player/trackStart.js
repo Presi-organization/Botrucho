@@ -1,7 +1,6 @@
 module.exports = {
     async execute(queue, track, client) {
         if (!queue.metadata) return console.log("Not metadata");
-        if (queue.connection.volume === 100) queue.connection.setVolume(queue.metadata.guildDB.defaultVolume);
         const embed = {
             color: client.config.color,
             author: {
@@ -16,11 +15,9 @@ module.exports = {
                 embeds: [ embed ],
             });
         } else {
-            if (queue.metadata.guildDB.announce) {
-                queue.metadata.message.editReply({
-                    embeds: [ embed ],
-                });
-            }
+            queue.metadata.message.editReply({
+                embeds: [ embed ],
+            });
         }
     }
 }

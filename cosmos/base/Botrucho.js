@@ -1,4 +1,4 @@
-const { createClientVars } = require("../util/functions")
+const { createClientVars } = require("../../util/functions")
 const { Player } = require("discord-player");
 const util = require("util")
 const { Client, Collection } = require("discord.js")

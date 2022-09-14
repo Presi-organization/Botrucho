@@ -1,4 +1,3 @@
-const eventData = require('../../models/eventData');
 const { EmbedBuilder } = require("discord.js");
 
 module.exports = {
@@ -11,10 +10,10 @@ module.exports = {
 
         if (reaction.emoji.name === '👽') {
             const deletedMessages = client.deleted_messages;
-            let eventInfo = await reaction.message.guild.fetchEventDB(reaction.message.id);
+            let eventInfo = await reaction.message.guild.fetchEventDB(client.eventData, reaction.message.id);
             const userFind = eventInfo.userAssisting.find(userID => userID === user.id);
             if (!userFind) {
-                await eventData.updateOne({ _id: eventInfo._id }, { $addToSet: { userAssisting: user.id } });
+                await client.eventData.addAssistance(eventInfo.id, user.id);
 
                 const exampleEmbed = new EmbedBuilder()
                     .setColor(client.config.color)
