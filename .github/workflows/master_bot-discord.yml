@@ -40,6 +40,8 @@ jobs:
           AISPEECH_TOKEN=${{ secrets.AISPEECH_TOKEN }}
           SHARDS=${{ secrets.SHARDS }}
           MONGO_URL=${{ secrets.MONGO_URL }}
+          COSMOS_URL=${{ secrets.COSMOS_URL }}
+          COSMOS_KEY=${{ secrets.COSMOS_KEY }}
 
 
   deploy:
