@@ -23,8 +23,8 @@ jobs:
       uses: docker/login-action@v1
       with:
         registry: https://index.docker.io/v1/
-        username: presi11
-        password: escorpion15
+        username: ${{ secrets.AzureAppService_ContainerUsername_6963ad815b3f495fa1cbf61810dac71d }}
+        password: ${{ secrets.AzureAppService_ContainerPassword_0a000f4804134b4a881e79cc314dbe0d }}
 
     - name: Build and push container image to registry presi11
       uses: docker/build-push-action@v2
@@ -48,5 +48,5 @@ jobs:
       with:
         app-name: 'bot-discord'
         slot-name: 'production'
-        publish-profile: ${{ secrets.AzureAppService_PublishProfile_3ddcc044bae949b1b9650cad91ff89c5 }}
+        publish-profile: ${{ secrets.AzureAppService_PublishProfile_783e9fab9f064816a3f578d11b00f52b }}
         images: 'presi11/discord-bot:${{ github.sha }}'
