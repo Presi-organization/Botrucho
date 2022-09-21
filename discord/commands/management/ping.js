@@ -17,6 +17,6 @@ module.exports = {
                 .catch(console.error);
         }
 
-        return interaction.reply(`**:ping_pong: Pong!**\n${ ping }ms`);
+        return interaction.reply(`**:ping_pong: Pong!!!**\n${ ping }ms`);
     },
 };
