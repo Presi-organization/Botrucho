@@ -5,7 +5,7 @@ const { QueryType } = require('discord-player');
 require("../../../util/extenders.js");
 
 module.exports = {
-    async execute(message) {
+    async execute(_, message) {
         const { client } = message;
         if (message.author.bot || !message.guild) return;
         let guildDB = await message.guild.fetchDB(client.guildData);

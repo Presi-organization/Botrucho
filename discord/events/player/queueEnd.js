@@ -1,7 +1,7 @@
 const { EmbedBuilder } = require("discord.js");
 
 module.exports = {
-    async execute(queue, client) {
+    async execute(client, queue) {
         const deletedMessages = client.deleted_messages;
         if (queue.metadata.controller) {
             const embed = new EmbedBuilder()

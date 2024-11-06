@@ -19,7 +19,7 @@ module.exports = {
     topgg: "TOPGG_TOKEN",
     // OPTIONAL: The link of your bot's top.gg page.
     topgg_url: "https://top.gg/bot/783708073390112830",
-    //the default bot language. fr or en
+    //the default bot language. en or es.
     defaultLanguage: "en",
     // If dev mod is enabled
     devMode: true,
@@ -45,7 +45,7 @@ module.exports = {
     //Database
     database: {
         // The url of your mongodb database. Check mongodb.org
-        MongoURL: process.env.MONGO_URL,
+        MongoURL: process.env.MONGO_URI,
         // If you want to cache the database. For big bots
         cached: false,
         delay: 300000 * 4,

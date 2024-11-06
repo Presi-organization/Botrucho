@@ -9,7 +9,7 @@ exports.simpleEmbedMessage = (color, message) => {
     })
 };
 
-exports.richEmbedMessage = () => {
+exports.richEmbedMessage = (message) => {
     return new Discord.RichEmbed()
         .setTitle("Este es su título, puede contener 256 caracteres")
         .setAuthor(message.author.username, message.author.avatarURL)

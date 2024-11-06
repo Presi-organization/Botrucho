@@ -1,5 +1,5 @@
 module.exports = {
-    async execute(queue, track, _) {
+    async execute(_, queue, track) {
         console.log(`[TRACK END]: Song: ${ track }`)
     }
 }

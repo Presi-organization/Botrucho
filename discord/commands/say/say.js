@@ -26,9 +26,9 @@ module.exports = {
         const phrase = interaction.options.getString('phrase');
         if (!channel) return interaction.editReply('Connect to a Voice Channel');
 
-        let queue = interaction.client.player.getQueue(interaction.guild.id);
+        //let queue = interaction.client?.player?.getQueue(interaction.guild.id);
 
-        if (queue) return interaction.editReply({ content: `Songs reproducing music`, ephemeral: true });
+        //if (queue) return interaction.editReply({ content: `Songs reproducing music`, ephemeral: true });
 
         const key = process.env.AISPEECH_TOKEN;
         const region = "eastus";

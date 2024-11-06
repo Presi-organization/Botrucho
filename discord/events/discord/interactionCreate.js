@@ -2,7 +2,7 @@ const Discord = require("discord.js")
 const ms = require("ms")
 
 module.exports = {
-    async execute(interaction, client) {
+    async execute(client, interaction) {
         const guildDB = await interaction.guild.fetchDB(client.guildData)
         if (interaction.isButton()) {
             console.log("BUTTON USED")

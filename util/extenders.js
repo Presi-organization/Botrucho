@@ -2,6 +2,7 @@ const { Message, EmbedBuilder, Guild, CommandInteraction, } = require("discord.j
 const lang = require('../languages/lang.json')
 const translate = require("@vitalets/google-translate-api");
 const { prefix, lang: langJson } = require('../config');
+const EventData = require('../mongodb/controllers/EventData');
 
 /**
  * Add a guild in the database
@@ -32,7 +33,7 @@ Guild.prototype.fetchDB = async function (guildData, guildID = {}) {
     if (!guildID || isNaN(guildID)) {
         guildID = this.id
     }
-    let data = (await guildData.showGuild(guildID)).shift()
+    let data = (await guildData.showGuild(guildID))
     if (!data) data = await this.addDB(guildData)
     return data
 };
@@ -60,15 +61,15 @@ Guild.prototype.addEventDB = async function (event, messageID, eventName, calend
 
 /**
  * Fetches a guild in the database
- * @param {EventData} event
- * @param {string} messageID
+ * @param {EventData} eventData
+ * @param {number} messageID
  * @param {{}} guildID The ID of the guild to fetch
  */
 Guild.prototype.fetchEventDB = async function (eventData, messageID, guildID = {}) {
     if (!guildID || isNaN(guildID)) {
         guildID = this.id
     }
-    return (await eventData.showEvent(guildID, messageID)).shift();
+    return eventData.showEvent(guildID, messageID);
 };
 
 /**

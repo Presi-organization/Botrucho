@@ -1,3 +1,4 @@
+const { MongoClient } = require("mongodb");
 /**
  * Returns a list of the commands in html. For a website, top.gg page etc
  * @param {object} client The discord client instance
@@ -170,8 +171,8 @@ const checkConfig = async config => {
         console.error('✗ Please provide the url of your mongodb database.Your can get it at https://mongodb.org');
         error = true;
     } else {
-        const mongoose = require('mongoose');
-        await mongoose.connect(config.database.MongoURL, { useUnifiedTopology: true, useNewUrlParser: true }).catch(() => {
+        const mongoClient = new MongoClient(config.database.MongoURL);
+        await mongoClient.connect().catch(() => {
             console.error('✗ Your mongodb url isn\'t correct');
             error = true;
         });

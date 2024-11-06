@@ -1,7 +1,7 @@
 const { EmbedBuilder } = require("discord.js");
 
 module.exports = {
-    async execute(reaction, user, client) {
+    async execute(client, reaction, user) {
         if (reaction.message.partials) await reaction.message.fetch();
         if (reaction.partials) await reaction.fetch();
 

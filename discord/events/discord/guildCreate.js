@@ -1,5 +1,5 @@
 module.exports = {
-    async execute(e, client) {
+    async execute(client, e) {
         console.log("[32m%s[0m", "NEW GUILD ", "[0m", `${e.name} [${e.memberCount.toLocaleString()} Members]\nID: ${e.id}`)
         const channel = e.channels.cache.find(c => c.permissionsFor(e.me).has("SEND_MESSAGES") && c.permissionsFor(e.me).has("EMBED_LINKS") && c.type === "text");
         if (channel) channel.send({

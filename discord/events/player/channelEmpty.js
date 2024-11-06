@@ -1,6 +1,6 @@
 const { EmbedBuilder } = require("discord.js");
 module.exports = {
-    async execute(queue, client) {
+    async execute(client, queue) {
         if (queue.metadata.controller) {
             const embed = new EmbedBuilder()
                 .setAuthor(`${ client.footer }`, client.user.displayAvatarURL({ dynamic: true, size: 512 }))

@@ -1,5 +1,5 @@
 module.exports = {
-    async execute(queue, connection, client) {
+    async execute(client, queue, connection) {
         if (!queue.metadata || queue.metadata.controller) return console.log("Not metadata");
         let loadingTest = await queue.metadata.message.translate("JOINED", 'en');
         queue.metadata.message.editReply({

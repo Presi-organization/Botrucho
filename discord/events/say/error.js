@@ -1,5 +1,5 @@
 module.exports = {
-    async execute(error) {
+    async execute(_, error) {
         console.error(`[ERROR] ${ error }`)
     }
 }

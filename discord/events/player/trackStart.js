@@ -1,5 +1,5 @@
 module.exports = {
-    async execute(queue, track, client) {
+    async execute(client, queue, track) {
         if (!queue.metadata) return console.log("Not metadata");
         const embed = {
             color: client.config.color,
