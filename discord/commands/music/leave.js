@@ -1,56 +1,46 @@
+const { useQueue } = require("discord-player");
+const { Success, Error } = require("../../../util/embedMessage");
 const { SlashCommandBuilder } = require("@discordjs/builders");
-const { getVoiceConnection } = require("@discordjs/voice");
 
 module.exports = {
     name: 'leave',
     description: 'Makes the bot leaving your voice channel.',
     cat: 'music',
-    botpermissions: [ 'CONNECT', 'SPEAK' ],
+    botpermissions: ['CONNECT', 'SPEAK'],
     data: new SlashCommandBuilder()
         .setName('leave')
         .setDescription('Makes the bot leaving your voice channel.'),
     async execute(interaction, guildDB) {
-        const { client } = interaction;
+        if (!interaction.inCachedGuild()) return;
 
-        let queue = client.player.getQueue(interaction.guild.id)
-        if (!queue || !queue.connection || !interaction.member.voice.channel) {
-            try {
-                getVoiceConnection(interaction.guild.id).destroy();
-                return interaction.reply({
-                    embeds: [ {
-                        description: "Disconnected from <#" + interaction.member.voice.channel.id + ">.",
-                        color: 0X2ED457,
-                    } ]
-                })
-            } catch (e) {
-                let err = await interaction.translate("NOT_MUSIC", guildDB.lang)
-                return interaction.errorMessage(err)
+        await interaction.deferReply();
+
+        const queue = useQueue(interaction.guildId);
+
+        if (!queue) {
+            const embed = Error({
+                title: 'Not playing',
+                description: 'I am not playing anything right now',
+                author: {
+                    name: interaction.guild.name,
+                    icon_url: interaction.guild.iconURL()
+                }
+            });
+
+            return interaction.editReply(embed);
+        }
+
+        queue.delete();
+
+        const embed = Success({
+            title: 'Disconnected!',
+            description: 'I have successfully left the voice channel.',
+            author: {
+                name: interaction.guild.name,
+                icon_url: interaction.guild.iconURL()
             }
-        } else {
-        }
-        if (guildDB.dj_role && queue.metadata.dj.id !== interaction.user.id) {
-            if (!interaction.member.permissions.has("MANAGE_MESSAGES")) {
-                let MissingRole = await interaction.translate("MISSING_ROLE", guildDB.lang);
-                let Missingperm = await interaction.translate("MISSING_PERMISSIONS", guildDB.lang);
-                let role = interaction.guild.roles.cache.get(guildDB.dj_role)
-                if (!role) return interaction.errorMessage(Missingperm.replace("{perm}", 'Manage messages'))
-                if (interaction.member.roles.cache) {
-                    if (!interaction.member.roles.cache.has(role.id)) return interaction.errorMessage(MissingRole.replace("{perm}", 'Manage messages').replace("{role}", role.name))
-                } else return interaction.errorMessage(MissingRole.replace("{perm}", 'Manage messages').replace("{role}", role.name))
-            }
-        }
-        try {
-            if (queue.connection) await queue.connection.disconnect()
-        } catch (err) {
-            console.log(err)
-            return interaction.errorMessage(`I am not able to leave your voice channel, please check my permissions !`);
-        }
-        if (interaction.member.voice.channel) await queue.connection.disconnect();
-        interaction.reply({
-            embeds: [ {
-                description: "Disconnected from <#" + interaction.member.voice.channel.id + ">.",
-                color: 0X2ED457,
-            } ]
-        })
-    },
+        });
+
+        return interaction.editReply(embed);
+    }
 };

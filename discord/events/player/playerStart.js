@@ -1,8 +1,8 @@
+const { Info } = require("../../../util/embedMessage");
+
 module.exports = {
     async execute(client, queue, track) {
-        if (!queue.metadata) return console.log("Not metadata");
         const embed = {
-            color: client.config.color,
             author: {
                 name: "" + track.requestedBy.tag + " - Now playing",
                 icon_url: track.requestedBy.displayAvatarURL(),
@@ -10,14 +10,6 @@ module.exports = {
             },
             description: `[${ track.title }](${ track.url }) [<@${ track.requestedBy.id }>]`,
         };
-        if (queue.metadata.controller) {
-            return queue.metadata.message.editReply({
-                embeds: [ embed ],
-            });
-        } else {
-            queue.metadata.message.editReply({
-                embeds: [ embed ],
-            });
-        }
+        queue.metadata.message.editReply(Info(embed));
     }
 }

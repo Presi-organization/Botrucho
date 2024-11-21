@@ -1,4 +1,5 @@
 const { SlashCommandBuilder } = require("@discordjs/builders");
+const { useTimeline } = require("discord-player");
 const { EmbedBuilder } = require("discord.js");
 
 module.exports = {
@@ -12,9 +13,9 @@ module.exports = {
         let song_name = interaction.options.getString('song');
         await interaction.deferReply("Getting lyrics")
         if (!song_name) {
-            const queue = interaction.client.player.getQueue(interaction.guild.id);
-            if (!queue) return interaction.editReply("No queue")
-            song_name = queue.current.title;
+            const timeline = useTimeline(interaction.guildId);
+            if (!timeline) return interaction.editReply("No queue")
+            song_name = timeline.track.title;
         }
         try {
             const err = await interaction.translate("LIRYCS", guildDB.lang);
@@ -26,14 +27,14 @@ module.exports = {
             const response = await fetch(url);
             const json_response = await response.json();
             if (!json_response.title) return interaction.editReply({
-                embeds: [ {
+                embeds: [{
                     description: err.replace("{songName}", song_name),
                     color: 0XC73829,
                     author: {
                         name: interaction.guild.name,
                         icon_url: interaction.guild.icon ? interaction.guild.iconURL({ dynamic: true }) : "https://cdn.discordapp.com/attachments/748897191879245834/782271474450825226/0.png?size=128"
                     },
-                } ]
+                }]
             });
             const embed = new EmbedBuilder()
                 .setTitle(`${ json_response.title ? json_response.title + " - " + json_response.author : song_name }`)
@@ -46,7 +47,7 @@ module.exports = {
                         size: 512
                     })
                 })
-            return interaction.editReply({ embeds: [ embed ] })
+            return interaction.editReply({ embeds: [embed] })
         } catch (e) {
             return interaction.editReply("Fail Try catch" + e);
         }

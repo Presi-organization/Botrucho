@@ -1,44 +1,65 @@
 const { SlashCommandBuilder } = require("@discordjs/builders");
+const { useTimeline } = require("discord-player");
+const { Success, Error } = require("../../../util/embedMessage");
+
 module.exports = {
     name: 'volume',
     description: 'Changes the Volume',
     permissions: false,
-    aliases: [ 'sound', 'v', "vol" ],
+    aliases: ['sound', 'v', "vol"],
     cat: 'music',
     exemple: '70',
-    botpermissions: [ 'CONNECT', 'SPEAK' ],
+    botpermissions: ['CONNECT', 'SPEAK'],
     data: new SlashCommandBuilder()
         .setName('volume')
         .setDescription('Changes the Volume')
         .addStringOption(option => option.setName('value').setDescription('The new volume ypu want me to set to [1-200]').setRequired(true)),
     async execute(interaction, guildDB) {
-        const { client } = interaction;
-        const voice = interaction.member.voice.channel;
-        if (!voice) {
-            let err = await interaction.translate("NOT_VOC", guildDB.lang)
-            return interaction.errorMessage(err)
+        if (!interaction.inCachedGuild()) return;
+
+        await interaction.deferReply();
+
+        const timeline = useTimeline(interaction.guildId);
+
+        if (!timeline?.track) {
+            const embed = Error({
+                title: 'Not playing',
+                description: 'I am not playing anything right now',
+                author: {
+                    name: interaction.guild.name,
+                    icon_url: interaction.guild.iconURL()
+                }
+            });
+
+            return interaction.editReply({ embeds: [embed] });
         }
-        const queue = interaction.client.player.getQueue(interaction.guild.id)
-        if (!queue || !queue.playing) {
-            let err = await interaction.translate("NOT_MUSIC", guildDB.lang)
-            return interaction.errorMessage(err)
+
+        const amount = interaction.options.getInteger('value', false);
+
+        if (amount != null) {
+            timeline.setVolume(amount);
+
+            const embed = Success({
+                title: 'Volume changed',
+                description: `I have successfully changed the volume to ${ amount }%.`,
+                author: {
+                    name: interaction.guild.name,
+                    icon_url: interaction.guild.iconURL()
+                }
+            });
+
+            return interaction.editReply({ embeds: [embed] });
         }
-        let volume = interaction.options.getString('value');
-        if (volume === "max") volume = 200
-        if (volume === "reset" || volume === "default") volume = 70
-        if (isNaN(volume) || 200 < parseInt(volume) || parseInt(volume) <= 0) {
-            let numberErr = await interaction.translate("NUMBER_ERROR", guildDB.lang)
-            return interaction.errorMessage(numberErr.replace("{amount}", "1").replace("{range}", "200"))
-        }
-        queue.connection.setVolume(parseInt(volume));
-        let volumeText = await interaction.translate("VOLUME", guildDB.lang)
-        interaction.reply({
-            embeds: [
-                {
-                    color: client.config.color,
-                    description: volumeText.replace("{volume}", volume)
-                },
-            ]
-        })
+
+        const embed = Success({
+            title: 'Volume',
+            description: `The current volume is \`${ timeline.volume }%\`.`,
+            author: {
+                name: interaction.guild.name,
+                icon_url: interaction.guild.iconURL()
+            }
+        });
+
+        return interaction.editReply({ embeds: [embed] });
     }
-};
+}

@@ -8,17 +8,7 @@ class Botrucho extends Client {
         super(options);
         createClientVars(this).then();
         this.player = new Player(this, {
-            leaveOnEnd: !1,
-            leaveOnStop: !0,
-            leaveOnEmpty: !0,
-            enableLive: !0,
-            ytdlDownloadOptions: {
-                quality: 'highest',
-                filter: 'audioonly',
-            },
-            timeout: 0,
-            volume: 65,
-            quality: "high"
+            skipFFmpeg: false
         });
         this.wait = util.promisify(setTimeout)
         this.queue = new Map()

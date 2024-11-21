@@ -39,8 +39,29 @@ client.config = require("./config.js");
 client.footer = client.config.footer;
 client.owners = client.config.owners;
 client.deleted_messages = new WeakSet();
-client.player = new Player(client, client.config.player);
+client.player = new Player(client);
 client.playerSay = createAudioPlayer();
+
+if (process.env.NODE_ENV !== 'production') {
+    client.player.on('debug', (message) => console.log(`[Player] ${ message }`));
+    client.player.events.on('debug', (queue, message) =>
+        console.log(`[${ queue.guild.name }: ${ queue.guild.id }] ${ message }`)
+    );
+}
+
+(async () => {
+    await client.player.extractors.loadDefault((ext) => {
+        return ![].includes(ext);
+    }, {
+        YouTubeExtractor: {},
+        SoundCloudExtractor: {},
+        AppleMusicExtractor: {},
+        SpotifyExtractor: {},
+        VimeoExtractor: {},
+        ReverbnationExtractor: {},
+        AttachmentExtractor: {},
+    })
+})();
 
 (async () => {
     try {
@@ -98,7 +119,7 @@ const init = async function () {
     player_events.forEach(player_event => {
         const player_event_name = player_event.split(".")[0],
             player_event_file = require(`./discord/events/player/${ player_event }`);
-        client.player.on(player_event_name, (...e) => player_event_file.execute(client, ...e));
+        client.player.events.on(player_event_name, (...e) => player_event_file.execute(client, ...e));
         delete require.cache[require.resolve(`./discord/events/player/${ player_event }`)]
     });
 

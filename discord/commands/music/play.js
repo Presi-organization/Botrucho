@@ -1,98 +1,63 @@
+const { useMainPlayer, QueueRepeatMode } = require("discord-player");
 const { SlashCommandBuilder } = require("@discordjs/builders");
-const { QueryType } = require("discord-player");
-const play = require("play-dl");
+const { Error } = require("../../../util/embedMessage");
 
 module.exports = {
     name: 'play',
     description: 'Plays a music in your voice channel.',
     cat: 'music',
-    botpermissions: [ 'CONNECT', 'SPEAK' ],
+    botpermissions: ['CONNECT', 'SPEAK'],
     data: new SlashCommandBuilder()
         .setName('play')
         .setDescription('Plays a music in your voice channel.')
         .addStringOption(option => option.setName('song').setDescription('The name of the song.').setRequired(true)),
     async execute(interaction, guildDB) {
-        const { client } = interaction;
+        if (!interaction.inCachedGuild()) return;
+        const player = useMainPlayer();
+        const channel = interaction.member.voice.channel;
+        const name = interaction.options.getString('song', true);
 
-        const name = interaction.options.getString('song');
-        if (!interaction.member.voice?.channel) return interaction.editReply('Connect to a Voice Channel');
+        if (!interaction.member.voice?.channel) return interaction.reply(Error({ description: 'Connect to a Voice Channel' }));
 
-        let queue = interaction.client.player.getQueue(interaction.guild.id);
+        await interaction.deferReply();
 
-        if (!queue) {
-            queue = client.player.createQueue(interaction.guild.id, {
+        const searchResult = await player.search(name, { requestedBy: interaction.user });
+
+        if (!searchResult.hasTracks()) {
+            const embed = Error({
+                title: 'No results found',
+                description: `No results found for \`${ name }\``,
+                author: {
+                    name: interaction.guild.name,
+                    icon_url: interaction.guild.iconURL()
+                }
+            });
+
+            return interaction.editReply({ embeds: [embed] });
+        }
+
+        await player.play(channel, searchResult, {
+            nodeOptions: {
                 metadata: {
                     channel: interaction.channel,
-                    message: interaction,
-                    last_message: interaction,
-                    guildDB: guildDB,
-                    dj: interaction.user.username,
+                    message: interaction
                 },
-                initialVolume: guildDB.defaultVolume,
-                ytdlOptions: {
-                    quality: 'highestaudio', filter: 'audioonly', highWaterMark: 1 << 25, dlChunkSize: 0
-                },
-                leaveOnEmptyCooldown: 30000,
-                leaveOnEmpty: true,
-                leaveOnEnd: false,
+                volume: guildDB.defaultVolume,
+                repeatMode: QueueRepeatMode[guildDB.loopMode],
+                noEmitInsert: true,
                 leaveOnStop: false,
-                async onBeforeCreateStream(track, source, queue) {
-                    if (track.url.includes('youtube') || track.url.includes("youtu.be")) {
-                        try {
-                            return (await play.stream(track.url, { discordPlayerCompatibility: true })).stream;
-                        } catch (err) {
-                            return queue.metadata.message.errorMessage("This video is restricted. Try with another link.")
-                        }
-                    } else if (track.url.includes('spotify')) {
-                        try {
-                            let songs = await client.player.search(`${ track.author } ${ track.title } `, {
-                                requestedBy: interaction.user,
-                            }).catch().then(x => x.tracks[0]);
-                            return (await play.stream(songs.url, { discordPlayerCompatibility: true })).stream;
-                        } catch (err) {
-                            console.log(err)
-                        }
-                    } else if (track.url.includes('soundcloud')) {
-                        try {
-                            return (await play.stream(track.url, { discordPlayerCompatibility: true })).stream;
-                        } catch (err) {
-                            console.log(err)
-                        }
-                    }
-                }
-            })
-        } else {
-            queue.metadata.last_message = interaction;
-        }
-
-        const embedThinking = {
-            color: client.config.color, description: "thinking...",
-        }
-
-        if (queue.metadata.last_message.replied) {
-            queue.metadata.last_message.editReply({
-                embeds: [ embedThinking ]
-            });
-        } else {
-            queue.metadata.last_message.reply({
-                embeds: [ embedThinking ]
-            });
-        }
-
-        const searchResult = await client.player.search(name, {
-            requestedBy: interaction.user, searchEngine: QueryType.AUTO
-        }).catch(async () => {
+                leaveOnEmpty: true,
+                leaveOnEmptyCooldown: 60000,
+                leaveOnEnd: true,
+                leaveOnEndCooldown: 60000,
+                pauseOnEmpty: true,
+                preferBridgedMetadata: true,
+                disableBiquad: true,
+            },
+            requestedBy: interaction.user,
+            connectionOptions: {
+                deaf: true,
+            }
         });
-
-        try {
-            if (!queue.connection) await queue.connect(interaction.member.voice.channel);
-        } catch (err) {
-            console.log("ErrConnection", err)
-            if (err.toString().includes('Error: Did not enter state ready within 20000ms')) return;
-            client.player.deleteQueue(interaction.guild.id)
-            return interaction.errorMessage(`I am not able to join your voice channel, please check my permissions !`);
-        }
-        searchResult.playlist ? queue.addTracks(searchResult.tracks) : queue.addTrack(searchResult.tracks[0]);
-        if (!queue.playing) await queue.play();
     }
 }
