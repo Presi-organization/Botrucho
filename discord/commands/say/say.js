@@ -12,7 +12,7 @@ module.exports = {
     name: 'say',
     description: 'Plays a phrase',
     cat: 'sound',
-    botpermissions: [ 'CONNECT', 'SPEAK' ],
+    botpermissions: ['CONNECT', 'SPEAK'],
     data: new SlashCommandBuilder()
         .setName('say')
         .setDescription('Plays a phrasae.')
@@ -58,10 +58,10 @@ module.exports = {
                     client.playerSay.play(resource);
 
                     interaction.editReply({
-                        embeds: [ {
+                        embeds: [{
                             description: `Synthesizing phrase.`,
                             color: 0XF5B719
-                        } ]
+                        }]
                     });
 
                 } else {
