@@ -50,7 +50,7 @@ if (process.env.NODE_ENV !== 'production') {
 
 (async () => {
     await client.player.extractors.loadDefault((ext) => {
-        return ![].includes(ext);
+        return !["SoundCloudExtractor", "VimeoExtractor", "ReverbnationExtractor"].includes(ext);
     }, {
         YouTubeExtractor: {},
         SoundCloudExtractor: {},

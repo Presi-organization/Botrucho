@@ -2,14 +2,30 @@ const { Info } = require("../../../util/embedMessage");
 
 module.exports = {
     async execute(client, queue, track) {
+        queue.metadata.queueTitles = queue.metadata.queueTitles.slice(1);
+        queue.metadata.currentTrack = track;
         const embed = {
-            author: {
-                name: "" + track.requestedBy.tag + " - Now playing",
-                icon_url: track.requestedBy.displayAvatarURL(),
-                url: "https://discord.com/oauth2/authorize?client_id=973290665704308756&scope=bot&permissions=19456"
+            description: `[${ track.title }](${ track.url })`,
+            title: 'Now Playing',
+            thumbnail: { url: track.thumbnail },
+            ...(queue.metadata.queueTitles.length !== 0) && {
+                fields: [
+                    {
+                        name: 'Queue',
+                        value: queue.metadata.queueTitles.slice(0, 10).join('\n')
+                    }
+                ]
             },
-            description: `[${ track.title }](${ track.url }) [<@${ track.requestedBy.id }>]`,
+            footer: {
+                text: `Requested by ${ track.requestedBy?.tag }`,
+                iconURL: track.requestedBy?.displayAvatarURL(),
+            },
         };
-        queue.metadata.message.editReply(Info(embed));
+
+        if (!queue.metadata.queueMessage) {
+            queue.metadata.queueMessage = await queue.metadata.channel.send(Info(embed));
+        } else {
+            queue.metadata.queueMessage.edit(Info(embed));
+        }
     }
 }

@@ -2,7 +2,7 @@
 
 # Generar imagen
 ```bash
-npx dotenv-vault@latest build
+npx dotenv-vault@latest build &&
 npx dotenv-vault@latest keys production
 ```
 ```bash
