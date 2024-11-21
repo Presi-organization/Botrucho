@@ -34,6 +34,8 @@ module.exports = {
         const audioConfig = sdk.AudioConfig.fromAudioFileOutput(audioFile);
 
         speechConfig.speechSynthesisVoiceName = "es-CL-LorenzoNeural";
+        speechConfig.speechSynthesisVoiceName = "es-CR-JuanNeural";
+        speechConfig.speechSynthesisVoiceName = "es-MX-JorgeNeural";
 
         let synthesizer = new sdk.SpeechSynthesizer(speechConfig, audioConfig);
 

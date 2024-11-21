@@ -1,20 +1,16 @@
-FROM node:16-alpine
+FROM node:22-alpine
 
-# Create the directory!
-RUN mkdir -p /usr/src/bot
+# Set working directory
 WORKDIR /usr/src/bot
 
-# Copy and Install our bot
-COPY package.json /usr/src/bot
-RUN npm install
+# Copy package.json and package-lock.json first
+COPY ../package*.json ./
 
-## following 3 lines are for installing ffmepg
-# RUN apk update
-# RUN apk add
-# RUN apk add ffmpeg
+# Install dependencies
+RUN npm install --frozen-lockfile
 
-# Our precious bot
-COPY . /usr/src/bot
+# Copy the rest of the code
+COPY ../ ./
 
-# Start me!
+# Expose ports and set the entry point
 CMD ["npm", "start"]

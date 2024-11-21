@@ -4,4 +4,7 @@ config.json
 package-lock.json
 /discord/commands_imple
 .idea
-.env
+.env*
+.flaskenv*
+!.env.project
+!.env.vault
