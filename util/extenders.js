@@ -1,6 +1,5 @@
 const { Message, EmbedBuilder, Guild, CommandInteraction, } = require("discord.js");
 const lang = require('../languages/lang.json')
-const translate = require("@vitalets/google-translate-api");
 const { prefix, lang: langJson } = require('../config');
 const EventData = require('../mongodb/controllers/EventData');
 
@@ -119,16 +118,6 @@ Guild.prototype.translate = async function (guildData, text = "en") {
         target = 'en';
     }
     return lang.translations[text][target]
-};
-
-Message.prototype.gg = async function (text, args, options = {}) {
-    if (!text) {
-        this.errorOccurred("No text provided", "en")
-        throw new Error(`Aucun texte indiqué `)
-    }
-    let target = this.guild.lang
-    const texttoreturn = await translate(text, { to: target }).then((res) => res.text).catch((error) => text);
-    return texttoreturn.replace("show", "channel").replace("living room", "channel").replace("room", "channel");
 };
 
 /**

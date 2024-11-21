@@ -3,7 +3,6 @@ const {
     Collection: Collection,
     Partials
 } = require("discord.js");
-const { getFreeClientID: getFreeClientID, setToken: setToken } = require("play-dl");
 const GuildData = require("./mongodb/controllers/GuildData");
 const EventData = require("./mongodb/controllers/EventData");
 const Botrucho = require("./mongodb/base/Botrucho");
@@ -78,13 +77,13 @@ const event = new EventData();
 client.guildData = guild;
 client.eventData = event;
 
-getFreeClientID().then(client_id => {
+/*getFreeClientID().then(client_id => {
     setToken({
         soundcloud: {
             client_id: client_id,
         },
     }).then();
-});
+});*/
 
 const init = async function () {
     fs.readdirSync("./discord/commands").filter(file => file.endsWith(".js"));

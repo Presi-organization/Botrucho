@@ -7,7 +7,7 @@ WORKDIR /usr/src/bot
 COPY ../package*.json ./
 
 # Install dependencies
-RUN npm install --frozen-lockfile
+RUN npm install --verbose --frozen-lockfile
 
 # Copy the rest of the code
 COPY ../ ./

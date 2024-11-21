@@ -1,4 +1,4 @@
-const { MongoClient } = require("mongodb");
+const mongoose = require("mongoose");
 /**
  * Returns a list of the commands in html. For a website, top.gg page etc
  * @param {object} client The discord client instance
@@ -7,11 +7,10 @@ const printCmd = async message => {
     let txt = '';
     let a = message.client.commands.filter(c => c.cat !== "owner")
     const descriptions = new Map()
-    a.forEach(async command => {
-        const desc = await message.gg(command.description)
+    for (const command of a) {
         const infos = {
             aliases: command.aliases,
-            desc: desc,
+            desc: command.descriptio,
             usage: command.usage ? command.usage : "",
             name: command.name
         }
@@ -24,7 +23,7 @@ const printCmd = async message => {
                 <td>${infos.desc}</td>
                 </tr>`
         message.client.wait(2000)
-    });
+    }
     message.client.wait(20000).then(() => {
         console.log("Here is your command list:\n")
         console.log(txt)
@@ -171,8 +170,7 @@ const checkConfig = async config => {
         console.error('✗ Please provide the url of your mongodb database.Your can get it at https://mongodb.org');
         error = true;
     } else {
-        const mongoClient = new MongoClient(config.database.MongoURL);
-        await mongoClient.connect().catch(() => {
+        await mongoose.connect(config.database.MongoURL).catch(() => {
             console.error('✗ Your mongodb url isn\'t correct');
             error = true;
         });
