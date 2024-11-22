@@ -1,8 +1,9 @@
-const fs = require('node:fs');
-const { join } = require("path");
+const { useMainPlayer } = require("discord-player");
 const { SlashCommandBuilder } = require("@discordjs/builders");
 const sdk = require("microsoft-cognitiveservices-speech-sdk");
-const { createAudioResource, getVoiceConnection, joinVoiceChannel } = require('discord-voip');
+const { createAudioResource } = require('discord-voip');
+const fs = require('node:fs');
+const { join } = require("path");
 
 module.exports = {
     name: 'say',
@@ -38,22 +39,27 @@ module.exports = {
         synthesizer.speakTextAsync(phrase,
             async function (result) {
                 if (result.reason === sdk.ResultReason.SynthesizingAudioCompleted) {
-                    let connection = getVoiceConnection(interaction.guild.id);
-                    if (!connection) {
-                        connection = joinVoiceChannel({
-                            channelId: channel.id,
-                            guildId: interaction.guildId,
-                            adapterCreator: interaction.guild.voiceAdapterCreator,
-                        });
+                    const player = useMainPlayer();
+                    const queue = player.nodes.create(interaction.guildId, {
+                        metadata: {
+                            channel: interaction.channel,
+                            queueMessage: null,
+                            currentTrack: '',
+                            queueTitles: [],
+                            message: interaction
+                        }
+                    });
+
+                    if (!queue.connection) {
+                        await queue.connect(channel);
                     }
-                    connection.subscribe(client.playerSay);
 
                     await new Promise(resolve => setTimeout(resolve, 500));
 
                     const stream = fs.createReadStream(audioFile);
-
                     let resource = createAudioResource(stream);
-                    client.playerSay.play(resource);
+
+                    await queue.node.playRaw(resource);
 
                     interaction.editReply({
                         embeds: [{
