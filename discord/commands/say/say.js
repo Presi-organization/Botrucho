@@ -15,8 +15,18 @@ module.exports = {
         .setDescription('Plays a phrasae.')
         .addStringOption(option => option.setName('phrase').setDescription('The desired phrase').setRequired(true)),
     async execute(interaction, guildDB) {
-        const { client } = interaction;
         const channel = interaction.member.voice.channel;
+        const player = useMainPlayer();
+        const queue = player.nodes.create(interaction.guildId, {
+            metadata: {
+                channel: interaction.channel,
+                queueMessage: null,
+                currentTrack: '',
+                queueTitles: [],
+                message: interaction
+            }
+        });
+        if (queue.isPlaying()) return interaction.reply({ content: 'VC Ocuppied' });
 
         await interaction.deferReply("thinking");
 
@@ -39,22 +49,11 @@ module.exports = {
         synthesizer.speakTextAsync(phrase,
             async function (result) {
                 if (result.reason === sdk.ResultReason.SynthesizingAudioCompleted) {
-                    const player = useMainPlayer();
-                    const queue = player.nodes.create(interaction.guildId, {
-                        metadata: {
-                            channel: interaction.channel,
-                            queueMessage: null,
-                            currentTrack: '',
-                            queueTitles: [],
-                            message: interaction
-                        }
-                    });
-
                     if (!queue.connection) {
                         await queue.connect(channel);
                     }
 
-                    await new Promise(resolve => setTimeout(resolve, 500));
+                    await new Promise(resolve => setTimeout(resolve, 2000));
 
                     const stream = fs.createReadStream(audioFile);
                     let resource = createAudioResource(stream);
