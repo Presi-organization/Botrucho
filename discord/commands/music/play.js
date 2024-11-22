@@ -1,6 +1,7 @@
 const { useMainPlayer, QueueRepeatMode } = require("discord-player");
 const { SlashCommandBuilder } = require("@discordjs/builders");
 const { Error, Warning, withEphemeral } = require("../../../util/embedMessage");
+const { getVoiceConnection } = require("discord-voip");
 
 module.exports = {
     name: 'play',
@@ -12,6 +13,8 @@ module.exports = {
         .setDescription('Plays a music in your voice channel.')
         .addStringOption(option => option.setName('song').setDescription('The name of the song.').setRequired(true)),
     async execute(interaction, guildDB) {
+        const connection = getVoiceConnection(interaction.guildId);
+        if (connection) connection.destroy();
         if (!interaction.inCachedGuild()) return;
         const player = useMainPlayer();
         const channel = interaction.member.voice.channel;
@@ -60,9 +63,9 @@ module.exports = {
                 noEmitInsert: true,
                 leaveOnStop: false,
                 leaveOnEmpty: true,
-                leaveOnEmptyCooldown: 60000,
+                leaveOnEmptyCooldown: 30000,
                 leaveOnEnd: true,
-                leaveOnEndCooldown: 60000,
+                leaveOnEndCooldown: 30000,
                 pauseOnEmpty: true,
                 preferBridgedMetadata: true,
                 disableBiquad: true,

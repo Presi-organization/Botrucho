@@ -1,12 +1,8 @@
-const { SlashCommandBuilder } = require("@discordjs/builders");
-const sdk = require("microsoft-cognitiveservices-speech-sdk");
-const {
-    joinVoiceChannel,
-    getVoiceConnection,
-    createAudioResource
-} = require("@discordjs/voice");
 const fs = require('node:fs');
 const { join } = require("path");
+const { SlashCommandBuilder } = require("@discordjs/builders");
+const sdk = require("microsoft-cognitiveservices-speech-sdk");
+const { createAudioResource, getVoiceConnection, joinVoiceChannel } = require('discord-voip');
 
 module.exports = {
     name: 'say',
@@ -46,7 +42,7 @@ module.exports = {
                     if (!connection) {
                         connection = joinVoiceChannel({
                             channelId: channel.id,
-                            guildId: interaction.guild.id,
+                            guildId: interaction.guildId,
                             adapterCreator: interaction.guild.voiceAdapterCreator,
                         });
                     }

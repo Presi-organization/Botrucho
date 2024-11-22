@@ -6,23 +6,26 @@ module.exports = {
     data: new SlashCommandBuilder()
         .setName('move')
         .setDescription('Select a member and move them to another channel.')
-        .addUserOption(option => option.setName('target').setDescription('The member to move').setRequired(true))
+        .addUserOption(option => option.setName('user').setDescription('The member to move').setRequired(true))
         .addChannelOption(option => option.setName('channel').setDescription('The channel to move').addChannelTypes(ChannelType.GuildVoice).setRequired(true)),
-    async execute(interaction) {
-        const user = interaction.options.getMember('target');
+    async execute(interaction, guildDB) {
+        const user = interaction.options.getMember('user');
         const channel = interaction.options.getChannel('channel');
 
         if (!(interaction.member.voice.channel)) {
-            return await interaction.reply({ content: "You need to join a Voice-Channel first.", ephemeral: true });
+            return await interaction.reply({ content: interaction.translate("NOT_VOC", guildDB.lang), ephemeral: true });
         }
         if (!(user.voice.channelId)) {
             return await interaction.reply({
-                content: "The Member is currently not in a Voice-Channel.",
+                content: interaction.translate("USER_NOT_VOC", guildDB.lang),
                 ephemeral: true
             });
         }
 
-        await user.voice.setChannel(channel)
-        return interaction.reply({ content: `You moved ${ user.username } to ${ channel }`, ephemeral: true });
+        await user.voice.setChannel(channel);
+        const user_moved = interaction.translate("USER_MOVED", guildDB.lang)
+            .replace("${username}", user.username)
+            .replace("${channel}", channel);
+        return interaction.reply({ content: user_moved, ephemeral: true });
     },
 };
