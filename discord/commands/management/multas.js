@@ -13,7 +13,7 @@ module.exports = {
     async execute(interaction) {
         let identification = interaction.options.getNumber('identification');
 
-        await interaction.deferReply('Buscando')
+        await interaction.deferReply();
 
         //TODO: API CALL
 
@@ -39,5 +39,5 @@ module.exports = {
                 }
             ]
         }));
-    },
+    }
 };

@@ -6,11 +6,14 @@ module.exports = {
         .setName('prune')
         .setDescription('Prune up to 99 messages.')
         .addIntegerOption(option => option.setName('amount').setDescription('Number of messages to prune')),
-    async execute(interaction) {
+    async execute(interaction, guildDB) {
         const amount = interaction.options.getInteger('amount');
 
-        if (amount <= 1 || amount > 100) {
-            return interaction.reply({ content: 'You need to input a number between 1 and 99.', ephemeral: true });
+        if (amount < 1 || amount > 100) {
+            return interaction.reply({
+                content: interaction.translate("PRUNE_AMOUNT_ERR", guildDB.lang),
+                ephemeral: true
+            });
         }
         const { client } = interaction;
 
@@ -19,17 +22,20 @@ module.exports = {
         await interaction.channel.bulkDelete(amount, true).catch(error => {
             console.error(error);
             interaction.reply({
-                content: 'There was an error trying to prune messages in this channel!',
+                content: interaction.translate("PRUNE_ERR", guildDB.lang),
                 ephemeral: true
             });
         });
 
-        await interaction.reply({ content: `Successfully pruned \`${ amount }\` messages.`, ephemeral: false });
+        await interaction.reply({
+            content: interaction.translate("PRUNE_SUCC", guildDB.lang).replace("${amount}", amount),
+            ephemeral: false
+        });
         deletedMessages.add(interaction);
         setTimeout(async () => {
             if (interaction && deletedMessages.has(interaction)) {
                 await interaction.deleteReply() && deletedMessages.delete(interaction)
             }
-        }, 5000)
+        }, 3000);
     },
 };

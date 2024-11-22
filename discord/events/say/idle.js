@@ -5,6 +5,6 @@ module.exports = {
     async execute(_) {
         console.log("[idle]");
         const audioFile = join(process.cwd(), "/discord/commands/say/voice_speech.wav");
-        unlinkSync(audioFile);
+        if (audioFile) unlinkSync(audioFile);
     }
 }

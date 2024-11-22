@@ -1,15 +1,16 @@
+const cron = require("node-cron");
+const { Routes, ThreadAutoArchiveDuration } = require("discord-api-types/v10");
+const { createAudioPlayer } = require("discord-voip");
+const { REST } = require("@discordjs/rest");
 const {
     GatewayIntentBits: Intents,
-    Collection: Collection,
-    Partials
+    Partials,
+    WebhookClient
 } = require("discord.js");
-const GuildData = require("./mongodb/controllers/GuildData");
 const EventData = require("./mongodb/controllers/EventData");
+const GuildData = require("./mongodb/controllers/GuildData");
 const Botrucho = require("./mongodb/base/Botrucho");
-const { createAudioPlayer } = require("@discordjs/voice");
-const { Routes } = require("discord-api-types/v10");
-const { Player } = require("discord-player");
-const { REST } = require("@discordjs/rest");
+const { sendAMessageAndThread } = require("./services/webhooks/ultimateThread");
 const mongoose = require("mongoose");
 const fs = require('node:fs');
 const util = require("util");
@@ -34,11 +35,6 @@ client = new Botrucho({
     ],
 });
 
-client.config = require("./config.js");
-client.footer = client.config.footer;
-client.owners = client.config.owners;
-client.deleted_messages = new WeakSet();
-client.player = new Player(client);
 client.playerSay = createAudioPlayer();
 
 if (process.env.NODE_ENV !== 'production') {
@@ -76,14 +72,6 @@ const guild = new GuildData();
 const event = new EventData();
 client.guildData = guild;
 client.eventData = event;
-
-/*getFreeClientID().then(client_id => {
-    setToken({
-        soundcloud: {
-            client_id: client_id,
-        },
-    }).then();
-});*/
 
 const init = async function () {
     fs.readdirSync("./discord/commands").filter(file => file.endsWith(".js"));
@@ -139,9 +127,15 @@ client.login(client.config.token).catch(e => {
     console.log("[Discord login]: Please provide a valid discord bot token\n" + e)
 });
 
-client.once("ready", () => {
-    client.user.setPresence({ status: "dnd", activities: [{ name: "nada importante", type: 5 }] });
+client.once("ready", async () => {
+    client.user.setPresence({ status: "dnd", activities: [{ name: client.config.game, type: 5 }] });
     console.log("Ready!");
+
+    const channel = client.channels.cache.get('1231030584680251432');
+    const webhook = new WebhookClient({ id: process.env.WEBHOOK_ID, token: process.env.WEBOOK_TOKEN });
+    await cron.schedule('35 9 * * 5', async () => {
+        sendAMessageAndThread(channel, webhook);
+    });
 });
 
 client.once("reconnecting", () => {

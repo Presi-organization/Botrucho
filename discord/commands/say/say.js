@@ -1,10 +1,7 @@
+const { useMainPlayer } = require("discord-player");
 const { SlashCommandBuilder } = require("@discordjs/builders");
 const sdk = require("microsoft-cognitiveservices-speech-sdk");
-const {
-    joinVoiceChannel,
-    getVoiceConnection,
-    createAudioResource
-} = require("@discordjs/voice");
+const { createAudioResource } = require('discord-voip');
 const fs = require('node:fs');
 const { join } = require("path");
 
@@ -18,8 +15,18 @@ module.exports = {
         .setDescription('Plays a phrasae.')
         .addStringOption(option => option.setName('phrase').setDescription('The desired phrase').setRequired(true)),
     async execute(interaction, guildDB) {
-        const { client } = interaction;
         const channel = interaction.member.voice.channel;
+        const player = useMainPlayer();
+        const queue = player.nodes.create(interaction.guildId, {
+            metadata: {
+                channel: interaction.channel,
+                queueMessage: null,
+                currentTrack: '',
+                queueTitles: [],
+                message: interaction
+            }
+        });
+        if (queue.isPlaying()) return interaction.reply({ content: 'VC Ocuppied' });
 
         await interaction.deferReply("thinking");
 
@@ -42,22 +49,16 @@ module.exports = {
         synthesizer.speakTextAsync(phrase,
             async function (result) {
                 if (result.reason === sdk.ResultReason.SynthesizingAudioCompleted) {
-                    let connection = getVoiceConnection(interaction.guild.id);
-                    if (!connection) {
-                        connection = joinVoiceChannel({
-                            channelId: channel.id,
-                            guildId: interaction.guild.id,
-                            adapterCreator: interaction.guild.voiceAdapterCreator,
-                        });
+                    if (!queue.connection) {
+                        await queue.connect(channel);
                     }
-                    connection.subscribe(client.playerSay);
 
-                    await new Promise(resolve => setTimeout(resolve, 500));
+                    await new Promise(resolve => setTimeout(resolve, 2000));
 
                     const stream = fs.createReadStream(audioFile);
-
                     let resource = createAudioResource(stream);
-                    client.playerSay.play(resource);
+
+                    await queue.node.playRaw(resource);
 
                     interaction.editReply({
                         embeds: [{

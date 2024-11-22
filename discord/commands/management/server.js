@@ -5,7 +5,8 @@ module.exports = {
     data: new SlashCommandBuilder()
         .setName('server')
         .setDescription('Display info about this server.'),
-    async execute(interaction) {
-        return interaction.reply(`Server name: ${ interaction.guild.name }\nTotal members: ${ interaction.guild.memberCount }`);
+    async execute(interaction, guildDB) {
+        const members = interaction.translate("SERVER_INFO", guildDB.lang)["a"];
+        return interaction.reply(`Server: ${ interaction.guild.name }\n${ members }: ${ interaction.guild.memberCount }`);
     },
 };
