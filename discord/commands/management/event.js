@@ -1,6 +1,5 @@
 const {
-    SlashCommandBuilder, ActionRowBuilder, ModalBuilder, TextInputBuilder, TextInputStyle, SelectMenuOptionBuilder,
-    SelectMenuBuilder
+    SlashCommandBuilder, ActionRowBuilder, ModalBuilder, TextInputBuilder, TextInputStyle
 } = require('discord.js');
 
 

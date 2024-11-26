@@ -20,10 +20,15 @@ const withEphemeral = (embeds) => {
     return { ...embeds, ephemeral: true }
 }
 
+const withFile = (embeds, file) => {
+    return { ...embeds, files: [file] }
+}
+
 module.exports = {
     Error,
     Success,
     Warning,
     Info,
-    withEphemeral
+    withEphemeral,
+    withFile
 };

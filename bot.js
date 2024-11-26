@@ -1,6 +1,5 @@
 const cron = require("node-cron");
-const { Routes, ThreadAutoArchiveDuration } = require("discord-api-types/v10");
-const { createAudioPlayer } = require("discord-voip");
+const { Routes } = require("discord-api-types/v10");
 const { REST } = require("@discordjs/rest");
 const {
     GatewayIntentBits: Intents,
@@ -34,8 +33,6 @@ client = new Botrucho({
         Partials.Reaction
     ],
 });
-
-client.playerSay = createAudioPlayer();
 
 if (process.env.NODE_ENV !== 'production') {
     client.player.on('debug', (message) => console.log(`[Player] ${ message }`));
@@ -73,7 +70,7 @@ const event = new EventData();
 client.guildData = guild;
 client.eventData = event;
 
-const init = async function () {
+(async function () {
     fs.readdirSync("./discord/commands").filter(file => file.endsWith(".js"));
     const categories = await readdir("./discord/commands/");
     console.log(`[Commands] ${ categories.length } Categories loaded.`, categories)
@@ -93,7 +90,6 @@ const init = async function () {
         .catch(console.error);
 
     const discord_events = await readdir("./discord/events/discord");
-    // console.log(`[Discord Events] ${ discord_events.length } events loaded.`, discord_events);
     discord_events.forEach(discord_event => {
         const event_name = discord_event.split(".")[0],
             event_file = require(`./discord/events/discord/${ discord_event }`);
@@ -102,7 +98,6 @@ const init = async function () {
     });
 
     const player_events = await readdir("./discord/events/player");
-    // console.log(`[Player Events] ${ player_events.length } events loaded.`, player_events);
     player_events.forEach(player_event => {
         const player_event_name = player_event.split(".")[0],
             player_event_file = require(`./discord/events/player/${ player_event }`);
@@ -110,18 +105,7 @@ const init = async function () {
         delete require.cache[require.resolve(`./discord/events/player/${ player_event }`)]
     });
 
-    const say_events = await readdir("./discord/events/say");
-    // console.log(`[Say Events] ${ say_events.length } events loaded.`, say_events);
-    say_events.forEach(say_event => {
-        const say_event_name = say_event.split(".")[0],
-            say_event_file = require(`./discord/events/say/${ say_event }`);
-        client.playerSay.on(say_event_name, (...e) => say_event_file.execute(client, ...e));
-        delete require.cache[require.resolve(`./discord/events/say/${ say_event }`)]
-    });
-
-};
-
-init().then();
+})();
 
 client.login(client.config.token).catch(e => {
     console.log("[Discord login]: Please provide a valid discord bot token\n" + e)
