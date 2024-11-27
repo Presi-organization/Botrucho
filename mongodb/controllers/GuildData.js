@@ -10,8 +10,11 @@ class GuildDataController {
         await guild.save();
     }
 
-    async setVolume({ guildID, newVolume }) {
-        return GuildData.findOneAndUpdate({ serverID: guildID }, { volume: newVolume }, { new: true, upsert: true });
+    async setVolume({ guildId, newVolume }) {
+        return GuildData.findOneAndUpdate({ serverID: guildId }, { defaultVolume: newVolume }, {
+            new: true,
+            upsert: true
+        });
     }
 }
 

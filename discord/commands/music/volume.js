@@ -13,8 +13,8 @@ module.exports = {
     data: new SlashCommandBuilder()
         .setName('volume')
         .setDescription('Changes the Volume')
-        .addStringOption(option => option.setName('value').setDescription('The new volume ypu want me to set to [1-200]').setRequired(true)),
-    async execute(interaction, guildDB) {
+        .addIntegerOption(option => option.setName('gain').setDescription('The new volume you want me to set to [1-200]').setRequired(false)),
+    async execute(interaction) {
         if (!interaction.inCachedGuild()) return;
 
         await interaction.deferReply();
@@ -31,10 +31,10 @@ module.exports = {
                 }
             });
 
-            return interaction.editReply({ embeds: [embed] });
+            return interaction.editReply(embed);
         }
 
-        const amount = interaction.options.getInteger('value', false);
+        const amount = interaction.options.getInteger('gain');
 
         if (amount != null) {
             timeline.setVolume(amount);
@@ -48,7 +48,7 @@ module.exports = {
                 }
             });
 
-            return interaction.editReply({ embeds: [embed] });
+            return interaction.editReply(embed);
         }
 
         const embed = Success({
@@ -60,6 +60,6 @@ module.exports = {
             }
         });
 
-        return interaction.editReply({ embeds: [embed] });
+        return interaction.editReply(embed);
     }
 }

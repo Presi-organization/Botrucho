@@ -21,8 +21,8 @@ const transformQueueType = (queueType) => {
 }
 
 const getRankPic = async (rank) => {
-    const unranked = (await Jimp.read(join(process.cwd(), `/assets/tft_ranks/${ rank }.png`)));
-    return new AttachmentBuilder((await unranked.getBuffer(JimpMime.png)), { name: `${ rank }.png` });
+    const rankImage = (await Jimp.read(join(process.cwd(), `/assets/tft_ranks/${ rank }.png`)));
+    return new AttachmentBuilder((await rankImage.getBuffer(JimpMime.png)), { name: `${ rank }.png` });
 }
 
 module.exports = {
