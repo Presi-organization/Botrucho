@@ -41,6 +41,7 @@ module.exports = {
             }
         });
 
+        interaction.client.deleted_messages.add(interaction);
         return interaction.editReply(embed);
     }
 };
