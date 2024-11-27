@@ -29,14 +29,11 @@ module.exports = {
                     });
 
                 user.send({
-                    embeds: [ exampleEmbed ]
+                    embeds: [exampleEmbed]
                 })
                     .then(msg => {
-                        deletedMessages.add(msg);
-                        setTimeout(async () => {
-                            if (msg && deletedMessages.has(msg)) {
-                                msg.delete() && deletedMessages.delete(msg)
-                            }
+                        setTimeout(() => {
+                            deletedMessages.add(msg);
                         }, 120000)
                     })
                     .catch(() => {

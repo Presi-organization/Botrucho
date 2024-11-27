@@ -115,10 +115,19 @@ client.once("ready", async () => {
     client.user.setPresence({ status: "dnd", activities: [{ name: client.config.game, type: 5 }] });
     console.log("Ready!");
 
-    const channel = client.channels.cache.get('1231030584680251432');
-    const webhook = new WebhookClient({ id: process.env.WEBHOOK_ID, token: process.env.WEBOOK_TOKEN });
     await cron.schedule('35 9 * * 5', async () => {
+        const channel = client.channels.cache.get('1231030584680251432');
+        const webhook = new WebhookClient({ id: process.env.WEBHOOK_ID, token: process.env.WEBOOK_TOKEN });
         sendAMessageAndThread(channel, webhook);
+    });
+
+    await cron.schedule('*/10 * * * * *', async () => {
+        for (const interaction of client.deleted_messages) {
+            try {
+                client.deleted_messages.delete(interaction) && await interaction.deleteReply();
+            } catch {
+            }
+        }
     });
 });
 

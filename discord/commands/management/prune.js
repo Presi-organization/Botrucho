@@ -32,10 +32,5 @@ module.exports = {
             ephemeral: false
         });
         deletedMessages.add(interaction);
-        setTimeout(async () => {
-            if (interaction && deletedMessages.has(interaction)) {
-                await interaction.deleteReply() && deletedMessages.delete(interaction)
-            }
-        }, 3000);
     },
 };

@@ -16,8 +16,9 @@ module.exports = {
         .addIntegerOption(option => option.setName('gain').setDescription('The new volume you want me to set to [1-200]').setRequired(false)),
     async execute(interaction) {
         if (!interaction.inCachedGuild()) return;
+        const { client } = interaction;
 
-        await interaction.deferReply();
+        await interaction.deferReply({ ephemeral: true });
 
         const timeline = useTimeline(interaction.guildId);
 
@@ -30,7 +31,7 @@ module.exports = {
                     icon_url: interaction.guild.iconURL()
                 }
             });
-
+            client.deleted_messages.add(interaction);
             return interaction.editReply(embed);
         }
 
@@ -47,7 +48,7 @@ module.exports = {
                     icon_url: interaction.guild.iconURL()
                 }
             });
-
+            client.deleted_messages.add(interaction);
             return interaction.editReply(embed);
         }
 
@@ -59,7 +60,7 @@ module.exports = {
                 icon_url: interaction.guild.iconURL()
             }
         });
-
+        client.deleted_messages.add(interaction);
         return interaction.editReply(embed);
     }
 }

@@ -3,21 +3,21 @@ const { Success, Error } = require("../../../util/embedMessage");
 const { SlashCommandBuilder } = require("@discordjs/builders");
 
 module.exports = {
-    name: 'leave',
-    description: 'Makes the bot leaving your voice channel.',
+    name: 'skip',
+    description: 'Skip to the next track.',
     cat: 'music',
     botpermissions: ['CONNECT', 'SPEAK'],
     data: new SlashCommandBuilder()
-        .setName('leave')
-        .setDescription('Makes the bot leaving your voice channel.'),
-    async execute(interaction, guildDB) {
+        .setName('skip')
+        .setDescription('Skip to the next track.'),
+    async execute(interaction) {
         if (!interaction.inCachedGuild()) return;
 
         await interaction.deferReply();
 
         const queue = useQueue(interaction.guildId);
 
-        if (!queue) {
+        if (!queue?.isPlaying()) {
             const embed = Error({
                 title: 'Not playing',
                 description: 'I am not playing anything right now',
@@ -30,16 +30,11 @@ module.exports = {
             return interaction.editReply(embed);
         }
 
-        if (queue.metadata.queueMessage) {
-            queue.metadata.queueMessage.delete();
-            queue.metadata.queueMessage = null;
-        }
-
-        queue.delete();
+        queue.node.skip();
 
         const embed = Success({
-            title: 'Disconnected!',
-            description: 'I have successfully left the voice channel.',
+            title: 'Track Skipped!',
+            description: 'I have successfully skipped to the next track.',
             author: {
                 name: interaction.guild.name,
                 icon_url: interaction.guild.iconURL()

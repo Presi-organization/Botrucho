@@ -10,7 +10,7 @@ class Botrucho extends Client {
     defaultLanguage;
     log;
     devMode;
-    deleted_messages = new WeakSet();
+    deleted_messages = new Set();
     player = new Player(this);
 
     constructor(options) {

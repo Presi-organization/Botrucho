@@ -16,7 +16,7 @@
     "@discordjs/rest": "^2.4.0",
     "@distube/ytdl-core": "^4.15.1",
     "debug": "^4.3.7",
-    "discord-api-types": "^0.37.108",
+    "discord-api-types": "^0.37.109",
     "discord-player": "^6.7.1",
     "discord-voip": "^0.1.3",
     "discord.js": "^14.16.3",
