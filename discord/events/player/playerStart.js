@@ -17,7 +17,7 @@ module.exports = {
                 ]
             },
             footer: {
-                text: `Requested by ${ track.requestedBy?.tag }`,
+                text: `Requested by ${ track.requestedBy?.displayName }`,
                 iconURL: track.requestedBy?.displayAvatarURL(),
             },
         };

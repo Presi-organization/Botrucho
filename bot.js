@@ -24,6 +24,7 @@ client = new Botrucho({
         Intents.Guilds,
         Intents.GuildMembers,
         Intents.GuildMessages,
+        Intents.GuildPresences,
         Intents.GuildVoiceStates,
         Intents.GuildMessageReactions,
     ],
@@ -115,13 +116,20 @@ client.once("ready", async () => {
     client.user.setPresence({ status: "dnd", activities: [{ name: client.config.game, type: 5 }] });
     console.log("Ready!");
 
-    await cron.schedule('35 9 * * 5', async () => {
-        const channel = client.channels.cache.get('1231030584680251432');
+    cron.schedule('0 11 * * 5', async () => {
         const webhook = new WebhookClient({ id: process.env.WEBHOOK_ID, token: process.env.WEBOOK_TOKEN });
-        sendAMessageAndThread(channel, webhook);
+        client.channels.fetch('1231030584680251432').then(channel => {
+            let users = channel.guild.roles.cache.find(role => role.id === '540708709945311243').members
+                .reduce((acc, m) => !m.user.bot ? [...acc, m.user.displayName] : acc, []);
+            console.log(users);
+            return sendAMessageAndThread(channel, webhook);
+        });
+    }, {
+        scheduled: true,
+        timezone: "America/Bogota"
     });
 
-    await cron.schedule('*/10 * * * * *', async () => {
+    cron.schedule('*/10 * * * * *', async () => {
         for (const interaction of client.deleted_messages) {
             try {
                 client.deleted_messages.delete(interaction) && await interaction.deleteReply();

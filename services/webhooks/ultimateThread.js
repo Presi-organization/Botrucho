@@ -53,11 +53,15 @@ const sendMessageWithWebhook = (webhook) => {
 const sendAMessageAndThread = (channel, webhook) => {
     try {
         sendMessageWithWebhook(webhook).then((message) => {
-            channel.messages.fetch(message.id).then(message => {
-                return message.startThread({
-                    name: '¿Quién cae?',
-                    autoArchiveDuration: ThreadAutoArchiveDuration.ThreeDays,
-                    reason: '@Bots',
+            return message.startThread({
+                name: `Asistencia ${ getTomorrowsDay() }`,
+                autoArchiveDuration: ThreadAutoArchiveDuration.ThreeDays,
+                reason: 'Diskito en la U'
+            }).then(thread => {
+                thread.send({
+                    content: '<@&540708709945311243>'
+                }).then(msg => {
+                    setTimeout(() => msg.delete(), 100);
                 });
             });
         });
