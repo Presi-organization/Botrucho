@@ -116,7 +116,7 @@ client.once("ready", async () => {
     client.user.setPresence({ status: "dnd", activities: [{ name: client.config.game, type: 5 }] });
     console.log("Ready!");
 
-    cron.schedule('0 11 * * 5', async () => {
+    cron.schedule('0 15 * * 4', async () => {
         const webhook = new WebhookClient({ id: process.env.WEBHOOK_ID, token: process.env.WEBOOK_TOKEN });
         client.channels.fetch('1231030584680251432').then(channel => {
             let users = channel.guild.roles.cache.find(role => role.id === '540708709945311243').members

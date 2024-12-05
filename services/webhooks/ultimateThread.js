@@ -7,7 +7,7 @@ const { ThreadAutoArchiveDuration } = require("discord-api-types/v10");
  * */
 const getTomorrowsDay = () => {
     const today = new Date();
-    today.setDate(today.getDate() + 1)
+    today.setDate(today.getDate() + 2)
     const yyyy = today.getFullYear();
     let mm = today.getMonth() + 1;
     let dd = today.getDate();
@@ -35,8 +35,8 @@ const createWebhook = async (interaction) => {
  * */
 const editWebhook = (webhook) => {
     return webhook.edit({
-        name: 'Mr. Botrucho',
-        avatar: 'https://imgur.com/NdjTV8f.png'
+        name: 'Botruchook',
+        avatar: 'https://images.deepai.org/art-image/5c017be32cb74260aa1471f36d539b9c/ultimate-frisbee-profile-image-86efab.jpg'
     });
 }
 
@@ -46,22 +46,24 @@ const editWebhook = (webhook) => {
  * */
 const sendMessageWithWebhook = (webhook) => {
     return webhook.send({
-        content: `<@&540708709945311243> Asistencia ${ getTomorrowsDay() }`
+        content: `<@&540708709945311243> Asistencia ${ getTomorrowsDay() } <a:frisbeeT:1309633549967556619>`
     });
 }
 
 const sendAMessageAndThread = (channel, webhook) => {
     try {
         sendMessageWithWebhook(webhook).then((message) => {
-            return message.startThread({
-                name: `Asistencia ${ getTomorrowsDay() }`,
-                autoArchiveDuration: ThreadAutoArchiveDuration.ThreeDays,
-                reason: 'Diskito en la U'
-            }).then(thread => {
-                thread.send({
-                    content: '<@&540708709945311243>'
-                }).then(msg => {
-                    setTimeout(() => msg.delete(), 100);
+            channel.messages.fetch(message.id).then(message => {
+                return message.startThread({
+                    name: `Asistencia ${ getTomorrowsDay() }`,
+                    autoArchiveDuration: ThreadAutoArchiveDuration.ThreeDays,
+                    reason: 'Diskito en la U'
+                }).then(thread => {
+                    thread.send({
+                        content: '<@&540708709945311243>'
+                    }).then(msg => {
+                        setTimeout(() => msg.delete(), 100);
+                    });
                 });
             });
         });
@@ -70,4 +72,4 @@ const sendAMessageAndThread = (channel, webhook) => {
     }
 }
 
-module.exports = { sendAMessageAndThread }
+module.exports = { sendAMessageAndThread, editWebhook }
