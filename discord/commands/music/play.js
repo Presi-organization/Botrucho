@@ -1,4 +1,5 @@
 const { useMainPlayer, QueueRepeatMode } = require("discord-player");
+const { YoutubeiExtractor } = require("discord-player-youtubei");
 const { SlashCommandBuilder } = require("@discordjs/builders");
 const { Error, Warning, withEphemeral } = require("../../../util/embedMessage");
 
@@ -14,6 +15,7 @@ module.exports = {
     async execute(interaction, guildDB) {
         if (!interaction.inCachedGuild()) return;
         const player = useMainPlayer();
+        await player.extractors.register(YoutubeiExtractor, {})
         const channel = interaction.member.voice.channel;
         const name = interaction.options.getString('song', true);
 
@@ -46,31 +48,36 @@ module.exports = {
             interaction.deleteReply();
         }, 5000);
 
-        await player.play(channel, searchResult, {
-            nodeOptions: {
-                metadata: {
-                    channel: interaction.channel,
-                    queueMessage: null,
-                    currentTrack: '',
-                    queueTitles: [],
-                    message: interaction
+        try {
+            await player.play(channel, searchResult, {
+                nodeOptions: {
+                    metadata: {
+                        channel: interaction.channel,
+                        queueMessage: null,
+                        currentTrack: '',
+                        queueTitles: [],
+                        message: interaction
+                    },
+                    volume: guildDB.defaultVolume,
+                    repeatMode: QueueRepeatMode[guildDB.loopMode],
+                    noEmitInsert: true,
+                    leaveOnStop: false,
+                    leaveOnEmpty: true,
+                    leaveOnEmptyCooldown: 30000,
+                    leaveOnEnd: true,
+                    leaveOnEndCooldown: 30000,
+                    pauseOnEmpty: true,
+                    preferBridgedMetadata: true,
+                    disableBiquad: true,
+                    skipOnNoStream: true
                 },
-                volume: guildDB.defaultVolume,
-                repeatMode: QueueRepeatMode[guildDB.loopMode],
-                noEmitInsert: true,
-                leaveOnStop: false,
-                leaveOnEmpty: true,
-                leaveOnEmptyCooldown: 30000,
-                leaveOnEnd: true,
-                leaveOnEndCooldown: 30000,
-                pauseOnEmpty: true,
-                preferBridgedMetadata: true,
-                disableBiquad: true,
-            },
-            requestedBy: interaction.user,
-            connectionOptions: {
-                deaf: true,
-            }
-        });
+                requestedBy: interaction.user,
+                connectionOptions: {
+                    deaf: true,
+                }
+            });
+        } catch (e) {
+            console.log(`Something went wrong: ${ e }`)
+        }
     }
 }

@@ -5,7 +5,8 @@ module.exports = {
             const command = client.commands.get(interaction.commandName);
             if (!command) return;
             try {
-                await command.execute(interaction, guildDB);
+                const data = { guild: interaction.guild };
+                await client.player.context.provide(data, async () => await command.execute(interaction, guildDB));
             } catch (error) {
                 console.error(error);
                 await interaction.editReply({

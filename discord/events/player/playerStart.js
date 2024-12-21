@@ -2,6 +2,7 @@ const { Info } = require("../../../util/embedMessage");
 
 module.exports = {
     async execute(client, queue, track) {
+        console.log(`Started playing **${track.title}**!`)
         queue.metadata.queueTitles = queue.metadata.queueTitles.slice(1);
         queue.metadata.currentTrack = track;
         const embed = {
