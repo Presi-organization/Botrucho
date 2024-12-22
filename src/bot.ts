@@ -11,6 +11,7 @@ import {
     Role
 } from "discord.js";
 import { DefaultExtractors } from '@discord-player/extractor';
+import { YoutubeiExtractor } from "discord-player-youtubei";
 import { GuildQueue } from "discord-player";
 import Botrucho from "@mongodb/base/Botrucho";
 import CommandLoader from "@commands/CommandLoader";
@@ -39,6 +40,8 @@ if (!client.config.isProduction) {
     client.player.events.on('debug', (queue: GuildQueue<any>, message: string): void =>
         console.log(`[${ queue.guild.name }: ${ queue.guild.id }] ${ message }`)
     );
+} else {
+    console.warn = () => {};
 }
 
 const loadExtractors = async () => {
@@ -49,6 +52,7 @@ const loadExtractors = async () => {
     ];
     const extractors = DefaultExtractors.filter(extractor => !extractorsToExclude.includes(extractor.name));
     await client.player.extractors.loadMulti(extractors);
+    await client.player.extractors.register(YoutubeiExtractor, {})
 };
 
 const connectToDatabase = async () => {

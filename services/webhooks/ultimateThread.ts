@@ -1,4 +1,4 @@
-import { WebhookClient, BaseInteraction, TextChannel } from 'discord.js';
+import { WebhookClient, BaseInteraction, TextChannel, APIMessage } from 'discord.js';
 import { ThreadAutoArchiveDuration } from "discord-api-types/v10";
 
 /**
@@ -44,7 +44,7 @@ const editWebhook: (webhook: WebhookClient) => Promise<WebhookClient> = (webhook
  * Send a message with an existing webhook
  * @arg {WebhookClient} webhook The Webhook client
  */
-const sendMessageWithWebhook: (webhook: WebhookClient) => Promise<any> = (webhook: WebhookClient): Promise<any> => {
+const sendMessageWithWebhook: (webhook: WebhookClient) => Promise<APIMessage> = (webhook: WebhookClient): Promise<APIMessage> => {
     return webhook.send({
         content: `<@&540708709945311243> Asistencia ${ getTomorrowsDay() } <a:frisbeeT:1309633549967556619>`
     });

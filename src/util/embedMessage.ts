@@ -13,71 +13,30 @@ interface EmbedResponse {
     embeds: EmbedData[];
     ephemeral?: boolean;
     files?: any[];
+    withFile?: (file: any) => EmbedResponse;
+    withEphemeral?: () => EmbedResponse;
 }
 
 const createEmbedResponse = (data: EmbedData, color: number): EmbedResponse => {
-    return { embeds: [{ ...data, color }], ephemeral: false };
+    let response: EmbedResponse = { embeds: [{ ...data, color }], ephemeral: false };
+
+    response.withFile = (file: any) => {
+        response.files = [file];
+        return response;
+    };
+
+    response.withEphemeral = () => {
+        response.ephemeral = true;
+        return response;
+    };
+
+    return response;
 };
 
-const Error = (data: EmbedData) => {
-    let response = createEmbedResponse(data, EmbedColor.Error);
-    return {
-        withFile: (file: any) => {
-            response.files = [file];
-            return response;
-        },
-        withEphemeral: () => {
-            response.ephemeral = true;
-            return response;
-        },
-        getResponse: () => response
-    };
-};
-
-const Success = (data: EmbedData) => {
-    let response = createEmbedResponse(data, EmbedColor.Success);
-    return {
-        withFile: (file: any) => {
-            response.files = [file];
-            return response;
-        },
-        withEphemeral: () => {
-            response.ephemeral = true;
-            return response;
-        },
-        getResponse: () => response
-    };
-};
-
-const Warning = (data: EmbedData) => {
-    let response = createEmbedResponse(data, EmbedColor.Warning);
-    return {
-        withFile: (file: any) => {
-            response.files = [file];
-            return response;
-        },
-        withEphemeral: () => {
-            response.ephemeral = true;
-            return response;
-        },
-        getResponse: () => response
-    };
-};
-
-const Info = (data: EmbedData) => {
-    let response = createEmbedResponse(data, EmbedColor.Info);
-    return {
-        withFile: (file: any) => {
-            response.files = [file];
-            return response;
-        },
-        withEphemeral: () => {
-            response.ephemeral = true;
-            return response;
-        },
-        getResponse: () => response
-    };
-};
+const Error = (data: EmbedData): EmbedResponse => createEmbedResponse(data, EmbedColor.Error);
+const Success = (data: EmbedData): EmbedResponse => createEmbedResponse(data, EmbedColor.Success);
+const Warning = (data: EmbedData): EmbedResponse => createEmbedResponse(data, EmbedColor.Warning);
+const Info = (data: EmbedData): EmbedResponse => createEmbedResponse(data, EmbedColor.Info);
 
 export {
     Error,

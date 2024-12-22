@@ -1,5 +1,4 @@
 const { useMainPlayer, QueueRepeatMode } = require("discord-player");
-const { YoutubeiExtractor } = require("discord-player-youtubei");
 const { SlashCommandBuilder } = require("@discordjs/builders");
 const { Error, Warning } = require("@util/embedMessage");
 
@@ -15,7 +14,6 @@ module.exports = {
     async execute(interaction, guildDB) {
         if (!interaction.inCachedGuild()) return;
         const player = useMainPlayer();
-        await player.extractors.register(YoutubeiExtractor, {})
         const channel = interaction.member.voice.channel;
         const name = interaction.options.getString('song', true);
 
@@ -37,6 +35,8 @@ module.exports = {
 
             return interaction.editReply(Error(embed));
         }
+
+        console.log(searchResult.hasPlaylist() ? searchResult?.playlist : null)
 
         const embed = {
             title: 'Song added to Queue',

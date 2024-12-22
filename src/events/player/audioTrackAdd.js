@@ -10,12 +10,14 @@ module.exports = {
                 title: 'Now Playing',
                 thumbnail: { url: track.thumbnail },
                 ...(queue.metadata.queueTitles.length !== 0) && {
-                    fields: [
-                        {
-                            name: 'Queue',
-                            value: queue.metadata.queueTitles.slice(0, 10).join('\n')
-                        }
-                    ]
+                    fields: queue.metadata.queueTitles.reduce((acc, title, index) => {
+                        const field = {
+                            name: `Song ${index + 1}`,
+                            value: title
+                        };
+                        acc.push(field);
+                        return acc;
+                    }, [])
                 },
                 footer: {
                     text: `Requested by ${ track.requestedBy?.displayName }`,
