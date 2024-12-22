@@ -8,6 +8,7 @@ module.exports = {
             if (queue.metadata.queueMessage) {
                 queue.metadata.queueMessage.delete();
                 queue.metadata.queueMessage = null;
+                queue.metadata.currentTrack = '';
             }
         }
         const audioFile = join(process.cwd(), "/discord/commands/say/voice_speech.wav");

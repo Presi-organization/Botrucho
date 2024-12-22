@@ -2,9 +2,10 @@ const { Info } = require("@util/embedMessage");
 
 module.exports = {
     async execute(client, queue) {
+        console.log(`Added to queue **${ queue.tracks.data }**!`)
         queue.metadata.queueTitles = queue.tracks.data.map(track => `[${ track.title } - ${ track.author }](${ track.url })`);
         const track = queue.metadata.currentTrack;
-        if (track && queue.metadata.queueTitles !== 0) {
+        if (track) {
             const embed = {
                 description: `[${ track.title }](${ track.url })`,
                 title: 'Now Playing',
