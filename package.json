@@ -2,11 +2,12 @@
   "name": "botrucho",
   "version": "1.0.0",
   "description": "",
-  "main": "sharder.ts",
+  "main": "src/sharder.ts",
   "scripts": {
-    "start": "node dist/sharder.js",
-    "dev": "tsc && node dist/sharder.js",
-    "build": "tsc",
+    "start": "node dist/src/sharder.js",
+    "clean": "rmdir /s /q dist",
+    "build": "npm run clean && tsc && tsc-alias && npm run copy-assets",
+    "copy-assets": "npx cpx 'assets/**/*' dist",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
@@ -33,6 +34,7 @@
   "devDependencies": {
     "@types/express": "^5.0.0",
     "@types/node-cron": "^3.0.11",
+    "tsc-alias": "^1.8.10",
     "typescript": "^5.7.2"
   }
 }
