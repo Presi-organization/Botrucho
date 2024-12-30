@@ -6,7 +6,7 @@ import config, { Config } from "@config";
  * Create the client variables
  * @param client The discord client instance
  */
-const createClientVars = (client: Botrucho): void => {
+const createClientVars: (client: Botrucho) => void = (client: Botrucho): void => {
     client.config = config;
     client.color = config.color;
     client.owners = ["429375441267195924", "219637158162464768"];
@@ -20,7 +20,7 @@ const createClientVars = (client: Botrucho): void => {
  * Check the configuration
  * @param config The config.json file
  */
-const checkConfig = async (config: Config): Promise<boolean> => {
+const checkConfig: (config: Config) => Promise<boolean> = async (config: Config): Promise<boolean> => {
     if (!config) {
         console.error('✗ The provided config is not an object.');
         return true;

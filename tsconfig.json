@@ -37,6 +37,7 @@
       "@events/*": ["src/events/*"],
       "@mongodb/*": ["src/mongodb/*"],
       "@util/*": ["src/util/*"],
+      "@customTypes/*": ["src/types/*"],
       "@config": ["src/config/index.ts"]
     },
     // "rootDirs": [],                                   /* Allow multiple folders to be treated as one when resolving modules. */

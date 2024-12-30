@@ -14,7 +14,7 @@ interface Translations {
     };
 }
 
-function translateText(text: string, guildDBLang: string = 'en'): string {
+function translateText(text: string, guildDBLang: string = 'en'): string | { [p: string]: string } {
     if (!text || !(lang.translations as Translations)[text]) {
         throw new Error(`Translate: Params error: Unknown text ID or missing text ${ text }`);
     }
@@ -22,11 +22,12 @@ function translateText(text: string, guildDBLang: string = 'en'): string {
         console.log('Missing guildDBLang');
         return '';
     }
-    const translation = (lang.translations as Translations)[text][guildDBLang];
-    if (typeof translation === 'string') {
+    const translation: string | { [p: string]: string } = (lang.translations as Translations)[text][guildDBLang];
+    console.log(translation)
+    if (translation) {
         return translation;
     }
-    throw new Error(`Translate: Params error: Translation for text ID ${ text } is not a string`);
+    throw new Error(`Translate: Params error: Translation for text ID ${ text } is not setted`);
 }
 
 declare module 'discord.js' {
@@ -39,15 +40,15 @@ declare module 'discord.js' {
 
         fetchEventDB(eventData: EventDataController, messageID: string, guildID?: string): Promise<IEventData | null>;
 
-        translate(text: string, guildData: GuildDataController): Promise<string>;
+        translate(text: string, guildData: GuildDataController): Promise<string | { [p: string]: string }>;
     }
 
     interface CommandInteraction {
-        translate(text: string, guildDBLang?: string): string;
+        translate(text: string, guildDBLang?: string): string | { [p: string]: string };
     }
 
     interface Message {
-        translate(text: string, guildDBLang?: string): string;
+        translate(text: string, guildDBLang?: string): string | { [p: string]: string };
     }
 }
 
@@ -91,15 +92,16 @@ Guild.prototype.fetchEventDB = async function (eventData: EventDataController, m
     return eventData.showEvent(guildID, messageID);
 };
 
-CommandInteraction.prototype.translate = function (text: string, guildDBLang: string = 'en'): string {
+CommandInteraction.prototype.translate = function (text: string, guildDBLang: string = 'en'): string | { [p: string]: string } {
+    console.log("TRANSLATION OF COMMAND", text, guildDBLang)
     return translateText(text, guildDBLang);
 };
 
-Message.prototype.translate = function (text: string, guildDBLang: string = 'en'): string {
+Message.prototype.translate = function (text: string, guildDBLang: string = 'en'): string | { [p: string]: string } {
     return translateText(text, guildDBLang);
 };
 
-Guild.prototype.translate = async function (text: string, guildData: GuildDataController): Promise<string> {
+Guild.prototype.translate = async function (text: string, guildData: GuildDataController): Promise<string | { [p: string]: string }> {
     if (!text) {
         throw new Error('No text provided');
     }

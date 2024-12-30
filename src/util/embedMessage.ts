@@ -1,31 +1,25 @@
+import { EmbedBuilder } from "discord.js";
 import EmbedColor from '@util/constants';
 
-interface EmbedData {
-    title?: string;
-    description?: string;
-    color?: number;
-    fields?: { name: string; value: string; inline?: boolean }[];
-    footer?: { text: string; icon_url?: string };
-    timestamp?: Date;
-}
+type EmbedInit = ConstructorParameters<typeof EmbedBuilder>[0];
 
 interface EmbedResponse {
-    embeds: EmbedData[];
+    embeds: EmbedInit[];
     ephemeral?: boolean;
     files?: any[];
     withFile?: (file: any) => EmbedResponse;
     withEphemeral?: () => EmbedResponse;
 }
 
-const createEmbedResponse = (data: EmbedData, color: number): EmbedResponse => {
+const createEmbedResponse: (data: EmbedInit, color: number) => EmbedResponse = (data: EmbedInit, color: number): EmbedResponse => {
     let response: EmbedResponse = { embeds: [{ ...data, color }], ephemeral: false };
 
-    response.withFile = (file: any) => {
+    response.withFile = (file: any): EmbedResponse => {
         response.files = [file];
         return response;
     };
 
-    response.withEphemeral = () => {
+    response.withEphemeral = (): EmbedResponse => {
         response.ephemeral = true;
         return response;
     };
@@ -33,10 +27,10 @@ const createEmbedResponse = (data: EmbedData, color: number): EmbedResponse => {
     return response;
 };
 
-const Error = (data: EmbedData): EmbedResponse => createEmbedResponse(data, EmbedColor.Error);
-const Success = (data: EmbedData): EmbedResponse => createEmbedResponse(data, EmbedColor.Success);
-const Warning = (data: EmbedData): EmbedResponse => createEmbedResponse(data, EmbedColor.Warning);
-const Info = (data: EmbedData): EmbedResponse => createEmbedResponse(data, EmbedColor.Info);
+const Error: (data: EmbedInit) => EmbedResponse = (data: EmbedInit): EmbedResponse => createEmbedResponse(data, EmbedColor.Error);
+const Success: (data: EmbedInit) => EmbedResponse = (data: EmbedInit): EmbedResponse => createEmbedResponse(data, EmbedColor.Success);
+const Warning: (data: EmbedInit) => EmbedResponse = (data: EmbedInit): EmbedResponse => createEmbedResponse(data, EmbedColor.Warning);
+const Info: (data: EmbedInit) => EmbedResponse = (data: EmbedInit): EmbedResponse => createEmbedResponse(data, EmbedColor.Info);
 
 export {
     Error,

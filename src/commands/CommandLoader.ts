@@ -39,22 +39,20 @@ class CommandLoader {
             .then(() => console.log('[Commands] Successfully registered application commands.'))
             .catch(console.error);
 
-        const discord_events: string[] = await readdir(`${__dirname}/../events/discord`);
-        discord_events.forEach((discord_event: string) => {
+        const discord_events: string[] = await readdir(`${ __dirname }/../events/discord`);
+        for (const discord_event of discord_events) {
             const event_name: string = discord_event.split(".")[0];
-            const event_file = require(`${__dirname}/../events/discord/${ discord_event }`);
-            this.client.on(event_name, (...e: any[]) => event_file.execute(this.client, ...e));
-            delete require.cache[require.resolve(`${__dirname}/../events/discord/${ discord_event }`)];
-        });
+            const { execute } = await import(`${ __dirname }/../events/discord/${ discord_event }`);
+            this.client.on(event_name, (...e: any[]) => execute(this.client, ...e));
+        }
         console.log(`[Discord Events] ${ discord_events.length } Discord events loaded.`, discord_events);
 
-        const player_events: string[] = await readdir(`${__dirname}/../events/player`);
-        player_events.forEach((player_event: string) => {
+        const player_events: string[] = await readdir(`${ __dirname }/../events/player`);
+        for (const player_event of player_events) {
             const player_event_name: string = player_event.split(".")[0];
-            const player_event_file = require(`${__dirname}/../events/player/${ player_event }`);
-            this.client.player.events.on(player_event_name as keyof GuildQueueEvents, (...e: any[]) => player_event_file.execute(this.client, ...e));
-            delete require.cache[require.resolve(`${__dirname}/../events/player/${ player_event }`)];
-        });
+            const { execute } = await import(`${ __dirname }/../events/player/${ player_event }`);
+            this.client.player.events.on(player_event_name as keyof GuildQueueEvents, (...e: any[]) => execute(this.client, ...e));
+        }
         console.log(`[Player Events] ${ player_events.length } Player events loaded.`, player_events);
     }
 }

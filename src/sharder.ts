@@ -1,5 +1,5 @@
 import { ShardingManager } from "discord.js";
-import express from 'express';
+import express, { Express } from 'express';
 import dotenv from "dotenv";
 import healthRoute from "@routes/health";
 
@@ -18,7 +18,7 @@ const validateEnv = () => {
 };
 validateEnv();
 
-const app = express();
+const app: Express = express();
 
 const port = process.env.PORT || 3000;
 
@@ -32,8 +32,8 @@ app.use("/", healthRoute);
 
 console.log("[Shards] Starting spawn...");
 
-manager.spawn({ timeout: -1 }).then(() => {
-    app.listen(port, () => {
+manager.spawn({ timeout: -1 }).then((): void => {
+    app.listen(port, (): void => {
         console.log(`[Express] Bot app listening on port ${ port }`)
     });
 });

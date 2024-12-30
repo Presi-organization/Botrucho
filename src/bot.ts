@@ -10,9 +10,9 @@ import {
     Partials,
     Role
 } from "discord.js";
+import { GuildQueue } from "discord-player";
 import { DefaultExtractors } from '@discord-player/extractor';
 import { YoutubeiExtractor } from "discord-player-youtubei";
-import { GuildQueue } from "discord-player";
 import Botrucho from "@mongodb/base/Botrucho";
 import CommandLoader from "@commands/CommandLoader";
 import { sendAMessageAndThread } from "@services/webhooks/ultimateThread";
@@ -41,10 +41,11 @@ if (!client.config.isProduction) {
         console.log(`[${ queue.guild.name }: ${ queue.guild.id }] ${ message }`)
     );
 } else {
-    console.warn = () => {};
+    console.warn = () => {
+    };
 }
 
-const loadExtractors = async () => {
+const loadExtractors: () => Promise<void> = async (): Promise<void> => {
     const extractorsToExclude = [
         'SoundCloudExtractor',
         'VimeoExtractor',
@@ -55,7 +56,7 @@ const loadExtractors = async () => {
     await client.player.extractors.register(YoutubeiExtractor, {})
 };
 
-const connectToDatabase = async () => {
+const connectToDatabase: () => Promise<void> = async (): Promise<void> => {
     try {
         await mongoose.connect(client.config.database.MongoURL);
         console.log('Connected to MongoDB Atlas');
@@ -65,12 +66,12 @@ const connectToDatabase = async () => {
     }
 };
 
-const loadCommands = async () => {
+const loadCommands: () => Promise<void> = async (): Promise<void> => {
     const commandLoader = new CommandLoader(client);
     await commandLoader.loadCommands();
 };
 
-const setupCronJobs = () => {
+const setupCronJobs: () => void = (): void => {
     cron.schedule('30 19 * * 4', async (): Promise<void> => {
         const webhook = new WebhookClient(client.config.frisbeeHook);
 
@@ -90,14 +91,12 @@ const setupCronJobs = () => {
         for (const interaction of client.deleted_messages) {
             try {
                 client.deleted_messages.delete(interaction) && await interaction.deleteReply();
-            } catch {
-                // Handle error
-            }
+            } catch { }
         }
     });
 };
 
-const setupClientEvents = () => {
+const setupClientEvents: () => void = (): void => {
     client.once('ready', async () => {
         client.user?.setPresence({
             status: 'dnd',
@@ -122,7 +121,7 @@ const setupClientEvents = () => {
     client.on('error', (e: Error): void => console.error(e));
 };
 
-const startBot = async () => {
+const startBot: () => Promise<void> = async (): Promise<void> => {
     await loadExtractors();
     await connectToDatabase();
     await loadCommands();
@@ -132,6 +131,6 @@ const startBot = async () => {
     });
 };
 
-startBot().catch(e => {
+startBot().catch((e: any): void => {
     console.error('Failed to start the bot:', e);
 });
