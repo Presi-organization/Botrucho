@@ -1,4 +1,5 @@
-import { createReadStream } from 'node:fs';
+import { Readable } from 'node:stream';
+import { Buffer } from 'node:buffer';
 import { join } from "path";
 import { CommandInteraction, SlashCommandOptionsOnlyBuilder, VoiceBasedChannel } from "discord.js";
 import { Player, useMainPlayer, QueueRepeatMode } from "discord-player";
@@ -50,8 +51,10 @@ export async function execute(interaction: CommandInteraction, guildDB: IGuildDa
     synthesizer.speakTextAsync(phrase,
         async function (result: SpeechSynthesisResult) {
             if (result.reason === ResultReason.SynthesizingAudioCompleted) {
-                const stream = createReadStream(audioFile);
-                let resource = createAudioResource(stream, { metadata: { title: phrase } });
+                const arrayBuffer = result.audioData
+                const nodeBuffer = Buffer.from(arrayBuffer);
+                const nodeStream = Readable.from(nodeBuffer);
+                let resource = createAudioResource(nodeStream, { metadata: { title: phrase } });
 
                 const { track } = await player.play(channel, resource, {
                     nodeOptions: {
@@ -61,7 +64,6 @@ export async function execute(interaction: CommandInteraction, guildDB: IGuildDa
                             currentTrack: undefined,
                             queueTitles: [],
                             message: interaction,
-                            isRaw: true
                         },
                         volume: guildDB.defaultVolume,
                         repeatMode: QueueRepeatMode[guildDB.loopMode as keyof typeof QueueRepeatMode],

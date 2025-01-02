@@ -1,5 +1,5 @@
 # Build Stage
-FROM node:22-bookworm-slim AS build
+FROM node:22-alpine AS build
 
 WORKDIR /botrucho
 
@@ -12,9 +12,9 @@ COPY . .
 RUN npm run build
 
 # Production Stage
-FROM node:22-bookworm-slim AS production
+FROM node:22-alpine AS production
 
-RUN apt-get update && apt-get install -y ffmpeg
+RUN apk add --no-cache ffmpeg
 
 ENV FFMPEG_PATH=/usr/bin/ffmpeg
 

@@ -2,7 +2,7 @@ import { CommandInteraction } from "discord.js";
 import { useQueue, GuildQueue, Track } from "discord-player";
 import { SlashCommandBuilder } from "@discordjs/builders";
 import { IGuildData } from "@mongodb/models/GuildData";
-import { PlayerMetadata, Track as CTrack } from "@customTypes/playerMetadata";
+import { PlayerMetadata } from "@customTypes/playerMetadata";
 import { updateQueueMessage } from "@util/embedUtils";
 import Botrucho from "@mongodb/base/Botrucho";
 
@@ -21,7 +21,7 @@ export async function execute(interaction: CommandInteraction & { client: Botruc
     queue.tracks.clear();
     shuffleArray(tracksArray).forEach(track => queue.tracks.add(track));
     await interaction.reply('The queue has been shuffled!');
-    await updateQueueMessage(queue, queue?.currentTrack as CTrack);
+    await updateQueueMessage(queue, queue?.currentTrack as Track);
     interaction.client.deleted_messages.add(interaction);
 }
 

@@ -1,10 +1,10 @@
 import { EmbedBuilder, MessageCreateOptions, MessageEditOptions } from 'discord.js';
-import { GuildQueue } from 'discord-player';
+import { GuildQueue, Track } from 'discord-player';
 import { Info, createReplyOptions } from '@util/embedMessage';
-import { PlayerMetadata, Track } from "@customTypes/playerMetadata";
+import { PlayerMetadata } from "@customTypes/playerMetadata";
 
 const updateQueueMessage = async (queue: GuildQueue<PlayerMetadata>, track: Track): Promise<void> => {
-    if (queue.metadata.isRaw) return;
+    if (track.raw) return;
 
     queue.metadata.queueTitles = queue.tracks.data.map((track: Track): string => `[${ track.title } - ${ track.author }](${ track.url })`);
     queue.metadata.currentTrack = track;

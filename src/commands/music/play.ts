@@ -61,7 +61,6 @@ export async function execute(interaction: CommandInteraction, guildDB: IGuildDa
                     currentTrack: undefined,
                     queueTitles: [],
                     message: interaction,
-                    isRaw: false
                 },
                 volume: guildDB.defaultVolume,
                 repeatMode: QueueRepeatMode[guildDB.loopMode as keyof typeof QueueRepeatMode],
