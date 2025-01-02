@@ -1,6 +1,6 @@
 import { join } from "path";
 import { HorizontalAlign, Jimp, JimpMime, VerticalAlign } from 'jimp';
-import { AttachmentBuilder, CommandInteraction, MessageFlags } from "discord.js";
+import { AttachmentBuilder, CommandInteraction } from "discord.js";
 import { SlashCommandBuilder } from '@discordjs/builders';
 
 export const name = 'siata';
@@ -9,7 +9,7 @@ export const data = new SlashCommandBuilder()
     .setDescription('Siata\'s image');
 
 export async function execute(interaction: CommandInteraction) {
-    await interaction.deferReply({ flags: MessageFlags.Ephemeral });
+    await interaction.deferReply();
 
     async function getCroppedImage(url: string, centerX: number, centerY: number, cropWidth: number, cropHeight: number) {
         const image = await Jimp.read(url);
