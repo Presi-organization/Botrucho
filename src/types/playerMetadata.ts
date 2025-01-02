@@ -1,10 +1,11 @@
-import { User } from 'discord.js';
+import { GuildTextBasedChannel, Message, User } from 'discord.js';
 
 export interface PlayerMetadata {
     queueTitles: string[];
     currentTrack?: Track;
-    queueMessage: any;
-    channel: any;
+    queueMessage: Message | null;
+    channel: GuildTextBasedChannel | null;
+    isRaw: boolean;
 }
 
 export interface Track {

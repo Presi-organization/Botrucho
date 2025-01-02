@@ -1,24 +1,29 @@
-FROM node:22-bookworm-slim
+# Build Stage
+FROM node:22-bookworm-slim AS build
 
-# Install FFMPEG
+WORKDIR /botrucho
+
+COPY package*.json .
+
+RUN npm install
+
+COPY . .
+
+RUN npm run build
+
+# Production Stage
+FROM node:22-bookworm-slim AS production
+
 RUN apt-get update && apt-get install -y ffmpeg
 
 ENV FFMPEG_PATH=/usr/bin/ffmpeg
 
-# Set working directory
-WORKDIR /usr/src/bot
+WORKDIR /usr/src/botrucho
 
-# Copy package.json and package-lock.json first
-COPY ../package*.json ./
+COPY package*.json .
 
-# Install dependencies
-RUN npm install --verbose --frozen-lockfile
+RUN npm ci --only=production
 
-# Copy the rest of the code
-COPY ../ ./
+COPY --from=build /botrucho/dist ./
 
-# Compile TypeScript files
-RUN npm run build
-
-# Expose ports and set the entry point
-CMD ["npm", "start"]
+CMD ["node", "src/sharder.js"]

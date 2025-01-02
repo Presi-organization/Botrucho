@@ -8,9 +8,9 @@ import { PlayerMetadata, Track } from "@customTypes/playerMetadata";
 export async function execute(_: Botrucho, queue: GuildQueue<PlayerMetadata>, track: Track): Promise<void> {
     if (queue.metadata.queueTitles.length === 0) {
         if (queue.metadata.queueMessage) {
-            queue.metadata.queueMessage.delete();
+            await queue.metadata.queueMessage.delete();
             queue.metadata.queueMessage = null;
-            queue.metadata.currentTrack = {} as Track;
+            queue.metadata.currentTrack = undefined;
         }
     }
     const audioFile: string = join(process.cwd(), "/discord/commands/say/voice_speech.wav");

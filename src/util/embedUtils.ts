@@ -1,9 +1,11 @@
-import { EmbedBuilder } from 'discord.js';
+import { EmbedBuilder, MessageCreateOptions, MessageEditOptions } from 'discord.js';
 import { GuildQueue } from 'discord-player';
-import { Info } from '@util/embedMessage';
+import { Info, createReplyOptions } from '@util/embedMessage';
 import { PlayerMetadata, Track } from "@customTypes/playerMetadata";
 
-async function updateQueueMessage(queue: GuildQueue<PlayerMetadata>, track: Track): Promise<void> {
+const updateQueueMessage = async (queue: GuildQueue<PlayerMetadata>, track: Track): Promise<void> => {
+    if (queue.metadata.isRaw) return;
+
     queue.metadata.queueTitles = queue.tracks.data.map((track: Track): string => `[${ track.title } - ${ track.author }](${ track.url })`);
     queue.metadata.currentTrack = track;
     const embed: EmbedBuilder = new EmbedBuilder()
@@ -21,11 +23,13 @@ async function updateQueueMessage(queue: GuildQueue<PlayerMetadata>, track: Trac
             iconURL: track.requestedBy?.displayAvatarURL()
         });
 
+    const replyOptions: MessageCreateOptions & MessageEditOptions = createReplyOptions(Info(embed.data));
+
     if (!queue.metadata.queueMessage) {
-        queue.metadata.queueMessage = await queue.metadata.channel.send(Info(embed.data));
+        queue.metadata.queueMessage = await queue.metadata.channel!.send(replyOptions);
     } else {
-        queue.metadata.queueMessage.editReply(Info(embed.data));
+        await queue.metadata.queueMessage.edit(replyOptions);
     }
-}
+};
 
 export { updateQueueMessage };

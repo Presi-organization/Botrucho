@@ -23,7 +23,6 @@ function translateText(text: string, guildDBLang: string = 'en'): string | { [p:
         return '';
     }
     const translation: string | { [p: string]: string } = (lang.translations as Translations)[text][guildDBLang];
-    console.log(translation)
     if (translation) {
         return translation;
     }
@@ -93,7 +92,6 @@ Guild.prototype.fetchEventDB = async function (eventData: EventDataController, m
 };
 
 CommandInteraction.prototype.translate = function (text: string, guildDBLang: string = 'en'): string | { [p: string]: string } {
-    console.log("TRANSLATION OF COMMAND", text, guildDBLang)
     return translateText(text, guildDBLang);
 };
 

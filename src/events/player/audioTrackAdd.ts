@@ -8,6 +8,7 @@ export async function execute(_: Botrucho, queue: GuildQueue<PlayerMetadata>): P
     queue.metadata.queueTitles = queue.tracks.data.map(track => `[${ track.title } - ${ track.author }](${ track.url })`);
     const track: Track | undefined = queue.metadata.currentTrack;
     if (track) {
+        console.log(track)
         await updateQueueMessage(queue, track);
     }
 }

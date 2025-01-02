@@ -18,7 +18,7 @@ interface LeagueEntryDTO {
     inactive: boolean;
 }
 
-const getEntriesBySummoner = async (username: string): Promise<LeagueEntryDTO[]> => {
+export const getEntriesBySummoner = async (username: string): Promise<LeagueEntryDTO[]> => {
     const [gameName, tagLine] = username.split("#").map((part) => part.trim());
     if (!gameName || !tagLine) {
         throw new Error("Invalid username format. Expected format: 'USER#TAG'");
@@ -53,5 +53,3 @@ const getSummonerInfoByPuuID = async ({ gameName, tagLine }: { gameName: string;
     const puuid = await getEncryptedUserByID({ gameName, tagLine });
     return makeRequest<{ id: string }>(`${ TFT_BASE_URL }/tft/summoner/v1/summoners/by-puuid/${ puuid }`, "GET");
 };
-
-export default { getEntriesBySummoner };

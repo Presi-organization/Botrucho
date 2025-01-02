@@ -5,7 +5,7 @@ export interface IGuildData extends Document {
     serverID: string;
     lang?: string;
     defaultVolume?: number;
-    loopMode?: number;
+    loopMode?: "OFF" | "AUTOPLAY" | "TRACK" | "QUEUE";
     color?: string;
     plugins?: {
         welcome?: {
@@ -61,7 +61,7 @@ const GuildDataSchema = new Schema<IGuildData>({
     serverID: { type: String, required: true },
     lang: { type: String, default: config.defaultLanguage.toLowerCase() },
     defaultVolume: { type: Number, default: 60 },
-    loopMode: { type: Number, default: 0 },
+    loopMode: { type: String, enum: ["OFF", "AUTOPLAY", "TRACK", "QUEUE"], default: "OFF" },
     color: { type: String, default: config.color },
     plugins: {
         type: Object,
