@@ -22,9 +22,9 @@ export async function execute(interaction: CommandInteraction) {
         return image.crop({ x: validStartX, y: validStartY, w: maxCropWidth, h: maxCropHeight });
     }
 
-    const map = await getCroppedImage(join(process.cwd(), "/assets/map.png"), 1012, 680, 620, 620);
+    const map = await getCroppedImage(join(process.cwd(), "/assets/map.png"), 1012, 680, 630, 630);
     map.resize({ w: 1000, h: 1000 });
-    const rain = await getCroppedImage("https://siata.gov.co/kml/00_Radar/Ultimo_Barrido/AreaMetRadar_10_120_DBZH.png", 480, 512, 200, 200);
+    const rain = await getCroppedImage("https://siata.gov.co/kml/00_Radar/Ultimo_Barrido/AreaMetRadar_10_120_DBZH.png", 480, 503, 200, 200);
     rain.resize({ w: 1000, h: 1000 }).opacity(0.50);
 
     map.composite(rain, HorizontalAlign.CENTER, VerticalAlign.MIDDLE);
