@@ -8,12 +8,12 @@ import { ThreadAutoArchiveDuration } from "discord-api-types/v10";
 const getTomorrowsDay: () => string = (): string => {
     const today = new Date();
     today.setDate(today.getDate() + 2);
-    const yyyy = today.getFullYear();
-    let mm: number | string = today.getMonth() + 1;
-    let dd: number | string = today.getDate();
-    if (dd < 10) dd = '0' + dd;
-    if (mm < 10) mm = '0' + mm;
-    return `${ dd }/${ mm }/${ yyyy }`;
+    return today.toLocaleDateString('es-CO', {
+        timeZone: 'America/Bogota',
+        day: '2-digit',
+        month: '2-digit',
+        year: 'numeric'
+    });
 }
 
 /**
