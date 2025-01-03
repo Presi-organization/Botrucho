@@ -1,6 +1,6 @@
 import { EmbedBuilder, MessageCreateOptions, MessageEditOptions } from 'discord.js';
 import { GuildQueue, Track } from 'discord-player';
-import { Info, createReplyOptions } from '@util/embedMessage';
+import { Info } from '@util/embedMessage';
 import { PlayerMetadata } from "@customTypes/playerMetadata";
 
 const updateQueueMessage = async (queue: GuildQueue<PlayerMetadata>, track: Track): Promise<void> => {
@@ -23,7 +23,7 @@ const updateQueueMessage = async (queue: GuildQueue<PlayerMetadata>, track: Trac
             iconURL: track.requestedBy?.displayAvatarURL()
         });
 
-    const replyOptions: MessageCreateOptions & MessageEditOptions = createReplyOptions(Info(embed.data));
+    const replyOptions: MessageCreateOptions & MessageEditOptions = { embeds: [Info(embed.data)] };
 
     if (!queue.metadata.queueMessage) {
         queue.metadata.queueMessage = await queue.metadata.channel!.send(replyOptions);

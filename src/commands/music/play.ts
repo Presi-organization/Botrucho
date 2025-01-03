@@ -1,7 +1,7 @@
 import { CommandInteraction, MessageFlags, VoiceBasedChannel } from "discord.js";
 import { Player, QueueRepeatMode, SearchResult, useMainPlayer } from "discord-player";
 import { SlashCommandBuilder } from "@discordjs/builders";
-import { createReplyOptions, Error, Warning } from "@util/embedMessage";
+import { Error, Warning } from "@util/embedMessage";
 import { IGuildData } from "@mongodb/models/GuildData";
 
 export const name = 'play';
@@ -21,7 +21,7 @@ export async function execute(interaction: CommandInteraction, guildDB: IGuildDa
     const channel: VoiceBasedChannel = interaction.member.voice.channel!;
     const name: string = interaction.options.getString('song', true);
 
-    if (!interaction.member.voice?.channel) return interaction.reply(createReplyOptions(Error({ description: 'Connect to a Voice Channel' })));
+    if (!interaction.member.voice?.channel) return interaction.reply({ embeds: [Error({ description: 'Connect to a Voice Channel' })] });
 
     await interaction.deferReply({ flags: MessageFlags.Ephemeral });
 
@@ -37,7 +37,7 @@ export async function execute(interaction: CommandInteraction, guildDB: IGuildDa
             }
         };
 
-        return interaction.editReply(createReplyOptions(Error(embed)));
+        return interaction.editReply({ embeds: [Error(embed)] });
     }
 
     console.log(searchResult.hasPlaylist() ? searchResult?.playlist : "SINGLE SONG");
@@ -47,7 +47,7 @@ export async function execute(interaction: CommandInteraction, guildDB: IGuildDa
         description: `[${ searchResult.tracks[0].title } - ${ searchResult.tracks[0].author }](${ searchResult.tracks[0].url }) has been added to Queue`
     };
 
-    await interaction.editReply(createReplyOptions(Warning(embed), { flags: MessageFlags.Ephemeral }));
+    await interaction.editReply({ embeds: [Warning(embed)] });
     setTimeout(() => {
         interaction.deleteReply();
     }, 5000);

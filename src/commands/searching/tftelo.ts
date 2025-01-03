@@ -9,7 +9,7 @@ import {
 import { Jimp, JimpMime } from "jimp";
 import { SlashCommandBuilder } from '@discordjs/builders';
 import { getEntriesBySummoner } from "@services/REST/riotAPI";
-import { Info, Error, Warning, createReplyOptions } from "@util/embedMessage";
+import { Info, Error, Warning } from "@util/embedMessage";
 
 const transformQueueType = (queueType: string): string => {
     switch (queueType) {
@@ -68,54 +68,56 @@ export async function execute(interaction: CommandInteraction) {
                 iconURL: 'attachment://UNRANKED.png'
             }
         });
-        return interaction.editReply(createReplyOptions(embed, { files: [await getRankPic('UNRANKED')] }));
+        return interaction.editReply({ embeds: [embed], files: [await getRankPic('UNRANKED')] });
     }
 
     for (const entry of entries) {
         const index: number = entries.indexOf(entry);
-        const embed = createReplyOptions(Info({
-            title: "TFT ELO",
-            image: {
-                url: `attachment://${ entry.tier }.png`
-            },
-            fields: [
-                {
-                    name: "Game Mode",
-                    value: transformQueueType(entry.queueType),
-                    inline: true
+        const embed = {
+            embeds: [Info({
+                title: "TFT ELO",
+                image: {
+                    url: `attachment://${ entry.tier }.png`
                 },
-                {
-                    name: "Rank/Tier",
-                    value: `${ entry.tier } ${ entry.rank } (${ entry.leaguePoints } LP)`,
-                    inline: true
-                },
-                {
-                    name: "Wins | Loss",
-                    value: `**W:** ${ entry.wins } | **L:** ${ entry.losses }`
-                },
-                { name: '\u200B', value: '\u200B' },
-                {
-                    name: "Hot Streak",
-                    value: `${ entry.hotStreak ? "Yes" : "No" }`,
-                    inline: true
-                },
-                {
-                    name: "Fresh Blood",
-                    value: `${ entry.freshBlood ? "Yes" : "No" }`,
-                    inline: true
-                },
-                {
-                    name: "Inactive",
-                    value: `${ entry.inactive ? "Yes" : "No" }`,
-                    inline: true
+                fields: [
+                    {
+                        name: "Game Mode",
+                        value: transformQueueType(entry.queueType),
+                        inline: true
+                    },
+                    {
+                        name: "Rank/Tier",
+                        value: `${ entry.tier } ${ entry.rank } (${ entry.leaguePoints } LP)`,
+                        inline: true
+                    },
+                    {
+                        name: "Wins | Loss",
+                        value: `**W:** ${ entry.wins } | **L:** ${ entry.losses }`
+                    },
+                    { name: '\u200B', value: '\u200B' },
+                    {
+                        name: "Hot Streak",
+                        value: `${ entry.hotStreak ? "Yes" : "No" }`,
+                        inline: true
+                    },
+                    {
+                        name: "Fresh Blood",
+                        value: `${ entry.freshBlood ? "Yes" : "No" }`,
+                        inline: true
+                    },
+                    {
+                        name: "Inactive",
+                        value: `${ entry.inactive ? "Yes" : "No" }`,
+                        inline: true
+                    }
+                ],
+                timestamp: new Date().toISOString(),
+                footer: {
+                    text: `${ username }`,
+                    iconURL: `attachment://${ entry.tier }.png`
                 }
-            ],
-            timestamp: new Date().toISOString(),
-            footer: {
-                text: `${ username }`,
-                iconURL: `attachment://${ entry.tier }.png`
-            }
-        }), { files: [await getRankPic(entry.tier)] });
+            })], files: [await getRankPic(entry.tier)]
+        };
         index === 0 ? await interaction.editReply(embed) : await interaction.followUp(embed);
     }
 }

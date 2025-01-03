@@ -2,6 +2,7 @@ import { join } from "path";
 import { HorizontalAlign, Jimp, JimpMime, VerticalAlign } from 'jimp';
 import { AttachmentBuilder, CommandInteraction, SlashCommandOptionsOnlyBuilder } from "discord.js";
 import { SlashCommandBuilder } from '@discordjs/builders';
+import { Error, Success } from "@util/embedMessage";
 
 export const name = 'siata';
 export const data: SlashCommandOptionsOnlyBuilder = new SlashCommandBuilder()
@@ -48,12 +49,20 @@ export async function execute(interaction: CommandInteraction) {
         mapCropped.composite(radarCropped, HorizontalAlign.CENTER, VerticalAlign.MIDDLE);
 
         const imageBuffer = await mapCropped.getBuffer(JimpMime.jpeg);
-        const attachment = new AttachmentBuilder(imageBuffer);
+        const attachment: AttachmentBuilder = new AttachmentBuilder(imageBuffer, { name: 'siata.jpg' });
 
-        return interaction.editReply({ content: "Siata", files: [attachment] });
+        return interaction.editReply({
+            embeds: [Success({
+                title: "SIATA",
+                description: `Radar Zoom x${ circles }`,
+                image: {
+                    url: `attachment://siata.jpg`
+                }
+            })], files: [attachment]
+        });
     } catch (error) {
         console.error('Error processing images:', error);
-        return interaction.editReply({ content: 'An error occurred while processing the images.' });
+        return interaction.editReply({ embeds: [Error({ description: 'An error occurred while processing the images.' })] });
     }
 }
 
