@@ -4,7 +4,7 @@ import { Info, createReplyOptions } from '@util/embedMessage';
 import { PlayerMetadata } from "@customTypes/playerMetadata";
 
 const updateQueueMessage = async (queue: GuildQueue<PlayerMetadata>, track: Track): Promise<void> => {
-    if (track.raw) return;
+    if (track.extractor === null) return;
 
     queue.metadata.queueTitles = queue.tracks.data.map((track: Track): string => `[${ track.title } - ${ track.author }](${ track.url })`);
     queue.metadata.currentTrack = track;
