@@ -4,7 +4,6 @@ import {
     GatewayIntentBits as Intents,
     WebhookClient,
     ClientOptions,
-    ActivityType,
     GuildMember,
     TextChannel,
     Partials,
@@ -16,6 +15,7 @@ import { YoutubeiExtractor } from "discord-player-youtubei";
 import Botrucho from "@mongodb/base/Botrucho";
 import CommandLoader from "@commands/CommandLoader";
 import { sendAMessageAndThread } from "@services/webhooks/ultimateThread";
+import { ActivityPresence } from "@config";
 import '@util/extenders';
 
 const client: Botrucho = new Botrucho({
@@ -98,10 +98,19 @@ const setupCronJobs: () => void = (): void => {
 
 const setupClientEvents: () => void = (): void => {
     client.once('ready', async () => {
-        client.user?.setPresence({
-            status: 'dnd',
-            activities: [{ name: client.config.game, type: ActivityType.Competing }]
-        });
+        const statusArray: ActivityPresence[] = client.config.presence;
+        const pickPresence = async (): Promise<void> => {
+            const option: number = Math.floor(Math.random() * statusArray.length);
+            try {
+                client.user?.setPresence({
+                    status: statusArray[option].status,
+                    activities: [{ name: statusArray[option].content, type: statusArray[option].type }]
+                });
+            } catch (error: unknown) {
+                console.error(error);
+            }
+        };
+        setInterval(pickPresence, 5000);
         console.log('Ready!');
         setupCronJobs();
     });

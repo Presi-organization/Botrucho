@@ -1,3 +1,4 @@
+import { ActivityType, PresenceStatusData } from "discord.js";
 import dotenv from 'dotenv';
 
 dotenv.config();
@@ -25,11 +26,17 @@ interface Database {
     delay: number;
 }
 
+export interface ActivityPresence {
+    status: PresenceStatusData | undefined,
+    type: ActivityType,
+    content: string
+}
+
 export interface Config {
     token: string;
     owners: string[];
     footer: string;
-    game: string;
+    presence: ActivityPresence[];
     color: number;
     defaultLanguage: string;
     devMode: boolean;
@@ -50,7 +57,12 @@ const config: Config = {
     token: process.env.DISCORD_TOKEN as string,
     owners: ["jonathanstrf", '.presi'],
     footer: "Botrucho",
-    game: "nada importante",
+    presence: [
+        { status: 'dnd', type: ActivityType.Competing, content: "nada importante" },
+        { status: 'dnd', type: ActivityType.Watching, content: 'el techo (del server)' },
+        { status: 'dnd', type: ActivityType.Listening, content: 'los lloros de los @BOTS' },
+        { status: 'dnd', type: ActivityType.Custom, content: 'Planeando un ataque inminente' }
+    ],
     color: 0xF5B719,
     defaultLanguage: "en",
     devMode: true,
