@@ -8,9 +8,12 @@ export const name = 'siata';
 export const data: SlashCommandOptionsOnlyBuilder = new SlashCommandBuilder()
     .setName('siata')
     .setDescription('Siata\'s image')
-    .addNumberOption(input => input.setName('circulos')
-        .setDescription('Cantidad de circulos (zoom) a mostrar')
-        .addChoices({ name: 'One Circle', value: 1 })
+    .addNumberOption(input => input.setName('circles')
+        .setDescription('Number of circles (zoom) to display')
+        .addChoices({ name: 'One', value: 1 }, { name: 'Two', value: 2 })
+    )
+    .addBooleanOption(input => input.setName('locations')
+        .setDescription('Addresses shown on map')
     );
 
 interface ImageCenter {
@@ -28,35 +31,49 @@ export async function execute(interaction: CommandInteraction) {
 
     await interaction.deferReply();
 
-    const circles: number = interaction.options.getNumber('circulos') ?? 1;
+    const circles: number = interaction.options.getNumber('circles') ?? 1;
+    const locations: boolean = interaction.options.getBoolean('locations') ?? false;
 
     try {
-        const mapCenter: ImageCenter = { x: 1012, y: 680 };
+        const mapCenter: ImageCenter = { x: 1024, y: 540 };
         const radarCenter: ImageCenter = { x: 480, y: 503 };
-        const mapInfo = await getCropInfo(630, 630, mapCenter, circles);
-        const radarInfo = await getCropInfo(200, 200, radarCenter, circles);
+        const mapCropData: number[] = [650, 720];
 
-        const mapImage = await Jimp.read(join(process.cwd(), "/assets/map.png"));
+        const mapInfo: CropInfo = {
+            ...mapCenter,
+            width: mapCropData[circles - 1],
+            height: mapCropData[circles - 1]
+        };
+        const radarInfo: CropInfo = {
+            ...radarCenter,
+            width: 200 + ((circles - 1) * 250),
+            height: 200 + ((circles - 1) * 250)
+        };
+
+        const mapImage = await Jimp.read(join(process.cwd(), `/assets/siata/${ locations ? 'locations' : 'clean' }/mapsmoothdark${ circles }x.png`));
         const radarImage = await Jimp.read("https://siata.gov.co/kml/00_Radar/Ultimo_Barrido/AreaMetRadar_10_120_DBZH.png");
+        const legend = await Jimp.read(join(process.cwd(), '/assets/siata/radarLegend.png'));
 
         const mapCropped = await getCroppedImage(mapImage, mapInfo);
         const radarCropped = await getCroppedImage(radarImage, radarInfo);
 
-        const outputSize = 1000;
+        const outputSize = 1080;
         mapCropped.resize({ w: outputSize, h: outputSize });
-        radarCropped.resize({ w: outputSize, h: outputSize }).opacity(0.5);
+        radarCropped.resize({ w: outputSize, h: outputSize }).invert().opacity(0.5);
+        legend.invert().scale(0.17).opacity(0.5);
 
         mapCropped.composite(radarCropped, HorizontalAlign.CENTER, VerticalAlign.MIDDLE);
+        mapCropped.composite(legend, mapCropped.bitmap.width - legend.bitmap.width - 10, mapCropped.bitmap.height - legend.bitmap.height - 10);
 
-        const imageBuffer = await mapCropped.getBuffer(JimpMime.jpeg);
-        const attachment: AttachmentBuilder = new AttachmentBuilder(imageBuffer, { name: 'siata.jpg' });
+        const imageBuffer = await mapCropped.getBuffer(JimpMime.png);
+        const attachment: AttachmentBuilder = new AttachmentBuilder(imageBuffer, { name: 'siata.png' });
 
         return interaction.editReply({
             embeds: [Success({
                 title: "SIATA",
                 description: `Radar Zoom x${ circles }`,
                 image: {
-                    url: `attachment://siata.jpg`
+                    url: `attachment://siata.png`
                 }
             })], files: [attachment]
         });
@@ -64,15 +81,6 @@ export async function execute(interaction: CommandInteraction) {
         console.error('Error processing images:', error);
         return interaction.editReply({ embeds: [Error({ description: 'An error occurred while processing the images.' })] });
     }
-}
-
-async function getCropInfo(cropW: number, cropH: number, center: ImageCenter, circles: number): Promise<CropInfo> {
-    const proportion = 250;
-    return {
-        ...center,
-        width: cropW + ((circles - 1) * proportion),
-        height: cropH + ((circles - 1) * proportion)
-    };
 }
 
 async function getCroppedImage(image: any, cropInfo: CropInfo) {
