@@ -35,7 +35,7 @@ class CommandLoader {
 
         const rest: REST = new REST({ version: '10' }).setToken(process.env.DISCORD_TOKEN as string);
 
-        rest.put(Routes.applicationGuildCommands(process.env.CLIENT_ID as string, process.env.GUILD_ID as string), { body: commands })
+        rest.put(Routes.applicationCommands(process.env.CLIENT_ID as string), { body: commands })
             .then(() => console.log('[Commands] Successfully registered application commands.'))
             .catch(console.error);
 

@@ -1,7 +1,7 @@
 import { Readable } from 'node:stream';
 import { Buffer } from 'node:buffer';
 import { join } from "path";
-import { CommandInteraction, SlashCommandOptionsOnlyBuilder, VoiceBasedChannel } from "discord.js";
+import { CommandInteraction, MessageFlags, SlashCommandOptionsOnlyBuilder, VoiceBasedChannel } from "discord.js";
 import { Player, useMainPlayer, QueueRepeatMode } from "discord-player";
 import { SlashCommandBuilder } from "@discordjs/builders";
 import {
@@ -30,7 +30,7 @@ export async function execute(interaction: CommandInteraction, guildDB: IGuildDa
     const channel: VoiceBasedChannel | null = interaction.member.voice.channel;
     const player: Player = useMainPlayer();
 
-    await interaction.deferReply();
+    await interaction.deferReply({ flags: MessageFlags.Ephemeral });
 
     const phrase: string = interaction.options.getString('phrase', true);
     if (!channel) return interaction.editReply('Connect to a Voice Channel');
@@ -91,7 +91,7 @@ export async function execute(interaction: CommandInteraction, guildDB: IGuildDa
                     embeds: [{
                         description: `Synthesizing phrase.`,
                         color: 16103193
-                    }]
+                    }],
                 });
 
             } else {

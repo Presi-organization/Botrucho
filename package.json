@@ -17,7 +17,6 @@
     "@discord-player/extractor": "^7.0.0",
     "@discordjs/builders": "^1.10.0",
     "@discordjs/rest": "^2.4.2",
-    "@distube/ytdl-core": "^4.15.8",
     "debug": "^4.4.0",
     "discord-api-types": "^0.37.115",
     "discord-player": "^7.0.0",
@@ -27,7 +26,6 @@
     "dotenv": "^16.4.7",
     "express": "^5.0.1",
     "jimp": "^1.6.0",
-    "mediaplex": "^1.0.0",
     "microsoft-cognitiveservices-speech-sdk": "^1.42.0",
     "mongoose": "^8.9.4",
     "node-cron": "^3.0.3"
