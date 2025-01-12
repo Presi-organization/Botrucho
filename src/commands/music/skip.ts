@@ -1,8 +1,10 @@
 import { CommandInteraction } from "discord.js";
 import { SlashCommandBuilder } from "@discordjs/builders";
 import { useQueue } from "discord-player";
-import { Success, Error } from "@util/embedMessage";
 import Botrucho from "@mongodb/base/Botrucho";
+import { IGuildData } from "@mongodb/models/GuildData";
+import { Success, Error } from "@util/embedMessage";
+import { MusicKeys, SkipKeys, TranslationElement } from "@customTypes/Translations";
 
 export const name = 'skip';
 export const description = 'Skip to the next track.';
@@ -12,8 +14,14 @@ export const data = new SlashCommandBuilder()
     .setName('skip')
     .setDescription('Skip to the next track.');
 
-export async function execute(interaction: CommandInteraction & { client: Botrucho }) {
+export async function execute(interaction: CommandInteraction & { client: Botrucho }, guildDB: IGuildData) {
     if (!interaction.inCachedGuild()) return;
+
+    const { SKIPPED_TITLE, SKIPPED_DESC }: TranslationElement<SkipKeys> = interaction.translate("SKIP", guildDB.lang)
+    const {
+        NOT_PLAYING_TITLE,
+        NOT_PLAYING_DESC
+    }: TranslationElement<MusicKeys> = interaction.translate("MUSIC", guildDB.lang)
 
     await interaction.deferReply();
 
@@ -21,8 +29,8 @@ export async function execute(interaction: CommandInteraction & { client: Botruc
 
     if (!queue?.isPlaying()) {
         const embed = Error({
-            title: 'Not playing',
-            description: 'I am not playing anything right now',
+            title: NOT_PLAYING_TITLE,
+            description: NOT_PLAYING_DESC,
             author: {
                 name: interaction.guild.name,
                 iconURL: interaction.guild.iconURL() ?? undefined
@@ -35,8 +43,8 @@ export async function execute(interaction: CommandInteraction & { client: Botruc
     queue.node.skip();
 
     const embed = Success({
-        title: 'Track Skipped!',
-        description: 'I have successfully skipped to the next track.',
+        title: SKIPPED_TITLE,
+        description: SKIPPED_DESC,
         author: {
             name: interaction.guild.name,
             icon_url: interaction.guild.iconURL() ?? undefined

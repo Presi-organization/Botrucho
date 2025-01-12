@@ -1,19 +1,22 @@
-import { CommandInteraction, SlashCommandOptionsOnlyBuilder } from "discord.js";
+import { CommandInteraction, SlashCommandOptionsOnlyBuilder, SlashCommandUserOption } from "discord.js";
 import { SlashCommandBuilder } from '@discordjs/builders';
 import { IGuildData } from "@mongodb/models/GuildData";
+import { AvatarKeys, TranslationElement } from "@customTypes/Translations";
 
 export const name = 'avatar';
 export const data: SlashCommandOptionsOnlyBuilder = new SlashCommandBuilder()
     .setName('avatar')
     .setDescription('Get the avatar URL of the selected user, or your own avatar.')
-    .addUserOption(option => option.setName('user-tag').setDescription('The user\'s avatar to show'));
+    .addUserOption((option: SlashCommandUserOption) => option.setName('user-tag').setDescription('The user\'s avatar to show'));
 
 export async function execute(interaction: CommandInteraction, guildDB: IGuildData) {
     if (!interaction.isChatInputCommand()) return;
 
-    const user = interaction.options.getUser('user-tag');
-    const avatarTranslate = (interaction.translate("AVATAR_USER", guildDB.lang) as { [p: string]: string })
+    const { USER, SELF }: TranslationElement<AvatarKeys> = interaction.translate("AVATAR", guildDB.lang);
 
-    if (user) return interaction.reply(avatarTranslate['user'].replace("${username}", user.username).replace("${image}", user.displayAvatarURL()));
-    return interaction.reply(avatarTranslate["self"].replace("${image}", interaction.user.displayAvatarURL()));
+    const user = interaction.options.getUser('user-tag');
+    if (user) {
+        return interaction.reply(USER.replace("${username}", user.username).replace("${image}", user.displayAvatarURL()));
+    }
+    return interaction.reply(SELF.replace("${image}", interaction.user.displayAvatarURL()));
 }

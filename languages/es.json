@@ -1,0 +1,126 @@
+{
+  "_GLOBAL": "TRADUCCIONES GLOBALES",
+  "LANGUAGES": {
+    "ES": "Español",
+    "EN": "Inglés"
+  },
+  "MISC": {
+    "YES": "Sí",
+    "NO": "No",
+    "ERROR": "¡Ocurrió un error al ejecutar este comando!"
+  },
+  "VC": {
+    "CONNECT_VC": "Tienes que estar en un canal de voz para usar este comando.",
+    "USER_NOT_IN": "El usuario necesita estar en un canal de voz para usar este comando."
+  },
+  "MUSIC": {
+    "NOT_PLAYING_TITLE": "No se está reproduciendo",
+    "NOT_PLAYING_DESC": "No estoy reproduciendo nada en este momento"
+  },
+  "_COMMANDS": "TRADUCCIONES DE COMANDOS",
+  "AVATAR": {
+    "USER": "Avatar de ${username}: ${image}",
+    "SELF": "Tu Avatar: ${image}"
+  },
+  "EVENT": {
+    "MODAL_TITLE": "Se viene evento, gente 🥵",
+    "NAME": "Nombre del evento",
+    "DATE": "Fecha del evento (añomesdía)",
+    "TIME": "Hora del evento (hh:mm-hh:mm)",
+    "DESCRIPTION": "Descripción del evento",
+    "LOCATION": "Ubicación del evento",
+    "EVENT_CREATED": "${user} ha creado un evento",
+    "ASSISTANCE_CONFIRMATION": "<@&540708709945311243> Confirma tu asistencia en: ${eventName}",
+    "ASSISTANCE_CONFIRMED": "Tu asistencia para el evento ${eventName}, ha sido confirmada",
+    "INVITATION_LINK": "Aquí está tu invitación: ${calendarLink}\n\nTen en cuenta que este mensaje se autodestruirá en 2 minutos.",
+    "EVENT_GENERATED": "Evento generado por ${username}"
+  },
+  "LANGUAGE": {
+    "CURRENT_LANG": "El idioma del servidor actualmente es: ${lang}",
+    "LANG_CHANGED": "Idioma cambiado exitosamente a ${lang}"
+  },
+  "MOVE": {
+    "USER_MOVED": "Moviste a ${username} a ${channel}"
+  },
+  "PING": {
+    "PINGING": "Pinging...",
+    "PONG": ":ping_pong: Latencia de ida y vuelta: ${latency}ms\n:ping_pong: Latencia del websocket: ${heartbeat}ms."
+  },
+  "PRUNE": {
+    "AMOUNT_ERR": "Debes ingresar un número entre 1 y 99.",
+    "ERR": "¡Ocurrió un error tratando de eliminar los mensajes en este canal!",
+    "SUCCESS": "Se eliminaron `${amount}` mensajes exitosamente."
+  },
+  "SERVER_INFO": {
+    "TITLE": "Servidor",
+    "ONLY_SERVER": "Este comando solo puede ser utilizado en un servidor.",
+    "a": "Miembros: ${count}",
+    "b": "Cuenta: ${count}",
+    "c": "Administradores: ${count}",
+    "d": "Canales: ${count}",
+    "e": "Banner: ${count}",
+    "f": "Otros: ${count}"
+  },
+  "USER_INFO": {
+    "USERNAME": "Nombre de usuario: ${name}",
+    "ID": "Identificación: ${id}"
+  },
+  "LEAVE": {
+    "DISCONNECTED": "¡Desconectado!",
+    "SUCCESS": "He salido del canal de voz exitosamente."
+  },
+  "LYRICS": {
+    "NO_QUEUE": "No hay cola",
+    "NOT_FOUND": "No se encontraron letras"
+  },
+  "PLAY": {
+    "NO_RESULTS_TITLE": "No se encontraron resultados",
+    "NO_RESULTS_DESC": "No se encontraron resultados para ${songName}",
+    "ADDED_2_QUEUE_TITLE": "Canción añadida a la cola",
+    "ADDED_2_QUEUE_DESC": "[${songName}](${songUrl}) ha sido añadida a la cola"
+  },
+  "SHUFFLE": {
+    "SHUFFLED": "¡La cola ha sido mezclada!"
+  },
+  "SKIP": {
+    "SKIPPED_TITLE": "¡Pista saltada!",
+    "SKIPPED_DESC": "He saltado a la siguiente pista exitosamente."
+  },
+  "VOLUME": {
+    "VOLUME_CHANGED_TITLE": "Volumen cambiado",
+    "VOLUME_CHANGED_DESC": "He cambiado el volumen a ${gain}% exitosamente",
+    "CURRENT_VOLUME_TITLE": "Volumen",
+    "CURRENT_VOLUME_DESC": "El volumen actual es ${gain}"
+  },
+  "SAY": {
+    "SYNTHESIZING": "Sintetizando frase."
+  },
+  "FINES": {
+    "TITLE": "Multas de la cédula ${id}",
+    "DESC": "Multas por secretaría"
+  },
+  "SIATA": {
+    "ZOOM": "Radar Zoom x${zoom}",
+    "ERR": "Ocurrió un error mientras se procesaban las imágenes."
+  },
+  "TFT_ELO": {
+    "ELO": "TFT ELO",
+    "SUMMONER_NOT_FOUND": "No pude encontrar un invocador. ${error}",
+    "UNRANKED": "Probablemente no estás clasificado",
+    "GAME_MODE": "Modo de Juego",
+    "RANK": "Rango/Nivel",
+    "WINS_LOSSES": "Victorias | Derrotas",
+    "STREAK": "Racha",
+    "FRESH_BLOOD": "Sangre Nueva",
+    "INACTIVE": "Inactivo"
+  },
+  "_EVENTS": "TRADUCCIONES DE EVENTOS",
+  "DELETE": {
+    "LEAVE": ":broken_heart: | Me entristece ver que no me necesitas más en tu server"
+  },
+  "PLAYER": {
+    "NOW_PLAYING": "Reproduciendo ahora",
+    "SONG": "Canción ${index}",
+    "REQUESTED_BY": "Solicitado por ${username}"
+  }
+}

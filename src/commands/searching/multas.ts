@@ -1,6 +1,8 @@
 import { CommandInteraction, SlashCommandOptionsOnlyBuilder } from "discord.js";
 import { SlashCommandBuilder } from '@discordjs/builders';
+import { IGuildData } from "@mongodb/models/GuildData";
 import { Info } from "@util/embedMessage";
+import { FinesKeys, MiscKeys, TranslationElement } from "@customTypes/Translations";
 
 export const name = 'multas';
 export const data: SlashCommandOptionsOnlyBuilder = new SlashCommandBuilder()
@@ -10,8 +12,11 @@ export const data: SlashCommandOptionsOnlyBuilder = new SlashCommandBuilder()
         .setDescription('Identification of user to search for infractions')
         .setRequired(true));
 
-export async function execute(interaction: CommandInteraction) {
+export async function execute(interaction: CommandInteraction, guildDB: IGuildData) {
     if (!interaction.isChatInputCommand()) return;
+
+    const { YES, NO }: TranslationElement<MiscKeys> = interaction.translate("MISC", guildDB.lang);
+    const { TITLE, DESC }: TranslationElement<FinesKeys> = interaction.translate("FINES", guildDB.lang);
 
     let identification: number = interaction.options.getNumber('identification', true);
 
@@ -19,24 +24,24 @@ export async function execute(interaction: CommandInteraction) {
     //TODO: API CALL
     return interaction.editReply({
         embeds: [Info({
-            title: `Multas de la cédula: ${ identification }`,
-            description: `Multas por secretaria`,
+            title: TITLE.replace("${id}", identification.toString()),
+            description: DESC,
             fields: [
                 {
                     name: 'Sabaneta',
-                    value: 'Sí'
+                    value: YES
                 },
                 {
                     name: 'Envigado',
-                    value: 'No'
+                    value: NO
                 },
                 {
                     name: 'Medellín',
-                    value: 'Sí'
+                    value: YES
                 },
                 {
                     name: 'Bello',
-                    value: 'No'
+                    value: NO
                 }
             ]
         })]

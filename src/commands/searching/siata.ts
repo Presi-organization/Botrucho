@@ -2,7 +2,9 @@ import { join } from "path";
 import { HorizontalAlign, Jimp, JimpMime, VerticalAlign } from 'jimp';
 import { AttachmentBuilder, CommandInteraction, SlashCommandOptionsOnlyBuilder } from "discord.js";
 import { SlashCommandBuilder } from '@discordjs/builders';
+import { IGuildData } from "@mongodb/models/GuildData";
 import { Error, Success } from "@util/embedMessage";
+import { SiataKeys, TranslationElement } from "@customTypes/Translations";
 
 export const name = 'siata';
 export const data: SlashCommandOptionsOnlyBuilder = new SlashCommandBuilder()
@@ -26,8 +28,10 @@ interface CropInfo extends ImageCenter {
     height: number;
 }
 
-export async function execute(interaction: CommandInteraction) {
+export async function execute(interaction: CommandInteraction, guildDB: IGuildData) {
     if (!interaction.isChatInputCommand()) return;
+
+    const { ZOOM, ERR }: TranslationElement<SiataKeys> = interaction.translate("SIATA", guildDB.lang);
 
     await interaction.deferReply();
 
@@ -71,7 +75,7 @@ export async function execute(interaction: CommandInteraction) {
         return interaction.editReply({
             embeds: [Success({
                 title: "SIATA",
-                description: `Radar Zoom x${ circles }`,
+                description: ZOOM.replace("${zoom}", circles.toString()),
                 image: {
                     url: `attachment://siata.png`
                 }
@@ -79,7 +83,7 @@ export async function execute(interaction: CommandInteraction) {
         });
     } catch (error) {
         console.error('Error processing images:', error);
-        return interaction.editReply({ embeds: [Error({ description: 'An error occurred while processing the images.' })] });
+        return interaction.editReply({ embeds: [Error({ description: ERR })] });
     }
 }
 

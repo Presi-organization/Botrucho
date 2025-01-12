@@ -13,6 +13,7 @@ import {
 } from "microsoft-cognitiveservices-speech-sdk";
 import { createAudioResource } from 'discord-voip';
 import { IGuildData } from "@mongodb/models/GuildData";
+import { SayKeys, TranslationElement, VCKeys } from "@customTypes/Translations";
 
 export const name = 'say';
 export const description = 'Plays a phrase';
@@ -27,13 +28,16 @@ export async function execute(interaction: CommandInteraction, guildDB: IGuildDa
     if (!interaction.inCachedGuild()) return;
     if (!interaction.isChatInputCommand()) return;
 
+    const { SYNTHESIZING }: TranslationElement<SayKeys> = interaction.translate("SAY", guildDB.lang);
+    const { CONNECT_VC }: TranslationElement<VCKeys> = interaction.translate("VC", guildDB.lang);
+
     const channel: VoiceBasedChannel | null = interaction.member.voice.channel;
     const player: Player = useMainPlayer();
 
     await interaction.deferReply({ flags: MessageFlags.Ephemeral });
 
     const phrase: string = interaction.options.getString('phrase', true);
-    if (!channel) return interaction.editReply('Connect to a Voice Channel');
+    if (!channel) return interaction.editReply(CONNECT_VC);
 
     const key: string = process.env.AISPEECH_TOKEN!;
     const region = "eastus";
@@ -89,7 +93,7 @@ export async function execute(interaction: CommandInteraction, guildDB: IGuildDa
 
                 await interaction.editReply({
                     embeds: [{
-                        description: `Synthesizing phrase.`,
+                        description: SYNTHESIZING,
                         color: 16103193
                     }],
                 });

@@ -2,24 +2,33 @@ import { EmbedBuilder, MessageCreateOptions, MessageEditOptions } from 'discord.
 import { GuildQueue, Track } from 'discord-player';
 import { Info } from '@util/embedMessage';
 import { PlayerMetadata } from "@customTypes/playerMetadata";
+import { PlayerKeys, TranslationElement } from "@customTypes/Translations";
 
-const updateQueueMessage = async (queue: GuildQueue<PlayerMetadata>, track: Track): Promise<void> => {
+const updateQueueMessage = async (
+    queue: GuildQueue<PlayerMetadata>,
+    track: Track,
+    {
+        NOW_PLAYING,
+        SONG,
+        REQUESTED_BY
+    }: TranslationElement<PlayerKeys>
+): Promise<void> => {
     if (track.extractor === null) return;
 
     queue.metadata.queueTitles = queue.tracks.data.map((track: Track): string => `[${ track.title } - ${ track.author }](${ track.url })`);
     queue.metadata.currentTrack = track;
     const embed: EmbedBuilder = new EmbedBuilder()
         .setDescription(`[${ track.title }](${ track.url })`)
-        .setTitle('Now Playing')
+        .setTitle(NOW_PLAYING)
         .setThumbnail(track.thumbnail)
         .addFields(
             queue.metadata.queueTitles.slice(0, 25).map((title: string, index: number) => ({
-                name: `Song ${ index + 1 }`,
+                name: SONG.replace("${index}", (index + 1).toString()),
                 value: title
             }))
         )
         .setFooter({
-            text: `Requested by ${ track.requestedBy?.displayName }`,
+            text: REQUESTED_BY.replace("${username}", <string>track.requestedBy?.displayName),
             iconURL: track.requestedBy?.displayAvatarURL()
         });
 
