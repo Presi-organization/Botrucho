@@ -7,6 +7,7 @@ import {
 import { SlashCommandBuilder } from '@discordjs/builders';
 import { IGuildData } from "@mongodb/models/GuildData";
 import Botrucho from "@mongodb/base/Botrucho";
+import { Error, Success } from "@util/embedMessage";
 import { PruneKeys, TranslationElement } from "@customTypes/Translations";
 
 export const name = 'prune';
@@ -25,7 +26,7 @@ export async function execute(interaction: CommandInteraction & { client: Botruc
 
     if (amount < 1 || amount > 100) {
         return interaction.reply({
-            content: AMOUNT_ERR,
+            embeds: [Error({ description: AMOUNT_ERR })],
             flags: MessageFlags.Ephemeral
         });
     }
@@ -33,13 +34,13 @@ export async function execute(interaction: CommandInteraction & { client: Botruc
     await interaction.channel!.bulkDelete(amount, true).catch(error => {
         console.error(error);
         interaction.reply({
-            content: ERR,
+            embeds: [Error({ description: ERR })],
             flags: MessageFlags.Ephemeral
         });
     });
 
     await interaction.reply({
-        content: SUCCESS.replace("${amount}", amount.toString()),
+        embeds: [Success({ description: SUCCESS.replace("${amount}", amount.toString()) })],
         flags: MessageFlags.Ephemeral
     });
     interaction.client.deleted_messages.add(interaction);

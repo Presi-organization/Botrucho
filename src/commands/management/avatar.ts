@@ -1,6 +1,7 @@
 import { CommandInteraction, SlashCommandOptionsOnlyBuilder, SlashCommandUserOption } from "discord.js";
 import { SlashCommandBuilder } from '@discordjs/builders';
 import { IGuildData } from "@mongodb/models/GuildData";
+import { Info } from "@util/embedMessage";
 import { AvatarKeys, TranslationElement } from "@customTypes/Translations";
 
 export const name = 'avatar';
@@ -16,7 +17,7 @@ export async function execute(interaction: CommandInteraction, guildDB: IGuildDa
 
     const user = interaction.options.getUser('user-tag');
     if (user) {
-        return interaction.reply(USER.replace("${username}", user.username).replace("${image}", user.displayAvatarURL()));
+        return interaction.reply({ embeds: [Info({ description: USER.replace("${username}", user.username).replace("${image}", user.displayAvatarURL()) })] });
     }
-    return interaction.reply(SELF.replace("${image}", interaction.user.displayAvatarURL()));
+    return interaction.reply({ embeds: [Info({ description: SELF.replace("${image}", interaction.user.displayAvatarURL()) })] });
 }

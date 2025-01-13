@@ -4,6 +4,7 @@ import { AttachmentBuilder, CommandInteraction, SlashCommandOptionsOnlyBuilder }
 import { SlashCommandBuilder } from '@discordjs/builders';
 import { IGuildData } from "@mongodb/models/GuildData";
 import { Error, Success } from "@util/embedMessage";
+import { CropInfo, ImageCenter } from "@customTypes/ImageData";
 import { SiataKeys, TranslationElement } from "@customTypes/Translations";
 
 export const name = 'siata';
@@ -17,16 +18,6 @@ export const data: SlashCommandOptionsOnlyBuilder = new SlashCommandBuilder()
     .addBooleanOption(input => input.setName('locations')
         .setDescription('Addresses shown on map')
     );
-
-interface ImageCenter {
-    x: number;
-    y: number;
-}
-
-interface CropInfo extends ImageCenter {
-    width: number;
-    height: number;
-}
 
 export async function execute(interaction: CommandInteraction, guildDB: IGuildData) {
     if (!interaction.isChatInputCommand()) return;

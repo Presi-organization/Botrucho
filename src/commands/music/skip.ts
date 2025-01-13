@@ -1,16 +1,17 @@
-import { CommandInteraction } from "discord.js";
+import { CommandInteraction, EmbedBuilder, SlashCommandOptionsOnlyBuilder } from "discord.js";
 import { SlashCommandBuilder } from "@discordjs/builders";
-import { useQueue } from "discord-player";
+import { GuildQueue, useQueue } from "discord-player";
 import Botrucho from "@mongodb/base/Botrucho";
 import { IGuildData } from "@mongodb/models/GuildData";
 import { Success, Error } from "@util/embedMessage";
 import { MusicKeys, SkipKeys, TranslationElement } from "@customTypes/Translations";
+import { PlayerMetadata } from "@customTypes/PlayerMetadata";
 
 export const name = 'skip';
 export const description = 'Skip to the next track.';
 export const cat = 'music';
-export const botpermissions = ['CONNECT', 'SPEAK'];
-export const data = new SlashCommandBuilder()
+export const botpermissions: string[] = ['CONNECT', 'SPEAK'];
+export const data: SlashCommandOptionsOnlyBuilder = new SlashCommandBuilder()
     .setName('skip')
     .setDescription('Skip to the next track.');
 
@@ -25,10 +26,10 @@ export async function execute(interaction: CommandInteraction & { client: Botruc
 
     await interaction.deferReply();
 
-    const queue = useQueue(interaction.guildId);
+    const queue: GuildQueue<PlayerMetadata> | null = useQueue(interaction.guildId);
 
     if (!queue?.isPlaying()) {
-        const embed = Error({
+        const embed: EmbedBuilder = Error({
             title: NOT_PLAYING_TITLE,
             description: NOT_PLAYING_DESC,
             author: {

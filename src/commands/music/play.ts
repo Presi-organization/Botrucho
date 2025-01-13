@@ -8,7 +8,7 @@ import {
 import { Player, QueueRepeatMode, SearchResult, useMainPlayer } from "discord-player";
 import { SlashCommandBuilder } from "@discordjs/builders";
 import { IGuildData } from "@mongodb/models/GuildData";
-import { Error, Warning } from "@util/embedMessage";
+import { Error, Success, Warning } from "@util/embedMessage";
 import { PlayKeys, TranslationElement, VCKeys } from "@customTypes/Translations";
 
 export const name = 'play';
@@ -36,7 +36,7 @@ export async function execute(interaction: CommandInteraction, guildDB: IGuildDa
     const channel: VoiceBasedChannel = interaction.member.voice.channel!;
     const name: string = interaction.options.getString('song', true);
 
-    if (!interaction.member.voice?.channel) return interaction.reply({ embeds: [Error({ description: CONNECT_VC })] });
+    if (!interaction.member.voice?.channel) return interaction.reply({ embeds: [Warning({ description: CONNECT_VC })] });
 
     await interaction.deferReply({ flags: MessageFlags.Ephemeral });
 
@@ -66,7 +66,7 @@ export async function execute(interaction: CommandInteraction, guildDB: IGuildDa
         description: description
     };
 
-    await interaction.editReply({ embeds: [Warning(embed)] });
+    await interaction.editReply({ embeds: [Success(embed)] });
     setTimeout(() => {
         interaction.deleteReply();
     }, 5000);

@@ -1,7 +1,7 @@
-import { CommandInteraction, SlashCommandOptionsOnlyBuilder } from "discord.js";
+import { CommandInteraction, EmbedBuilder, SlashCommandOptionsOnlyBuilder } from "discord.js";
 import { SlashCommandBuilder } from "@discordjs/builders";
 import { GuildQueue, useQueue } from "discord-player";
-import { PlayerMetadata } from "@customTypes/playerMetadata";
+import { PlayerMetadata } from "@customTypes/PlayerMetadata";
 import Botrucho from "@mongodb/base/Botrucho";
 import { IGuildData } from "@mongodb/models/GuildData";
 import { Success, Error } from "@util/embedMessage";
@@ -29,7 +29,7 @@ export async function execute(interaction: CommandInteraction & { client: Botruc
     const queue: GuildQueue<PlayerMetadata> | null = useQueue(interaction.guildId);
 
     if (!queue) {
-        const embed = Error({
+        const embed: EmbedBuilder = Error({
             title: NOT_PLAYING_TITLE,
             description: NOT_PLAYING_DESC,
             author: {

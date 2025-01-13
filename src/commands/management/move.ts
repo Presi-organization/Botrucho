@@ -10,6 +10,7 @@ import {
 } from 'discord.js';
 import { SlashCommandBuilder } from '@discordjs/builders';
 import { IGuildData } from "@mongodb/models/GuildData";
+import { Success, Warning } from "@util/embedMessage";
 import { MoveKeys, TranslationElement, VCKeys } from "@customTypes/Translations";
 
 export const name = 'move';
@@ -31,13 +32,13 @@ export async function execute(interaction: CommandInteraction, guildDB: IGuildDa
 
     if (!(interaction.member.voice.channel)) {
         return await interaction.reply({
-            content: CONNECT_VC,
+            embeds: [Warning({ description: CONNECT_VC })],
             flags: MessageFlags.Ephemeral
         });
     }
     if (!(user.voice.channelId)) {
         return await interaction.reply({
-            content: USER_NOT_IN,
+            embeds: [Warning({ description: USER_NOT_IN })],
             flags: MessageFlags.Ephemeral
         });
     }
@@ -46,5 +47,8 @@ export async function execute(interaction: CommandInteraction, guildDB: IGuildDa
     const user_moved = USER_MOVED
         .replace("${username}", user.user.displayName)
         .replace("${channel}", channel.name);
-    return interaction.reply({ content: user_moved, flags: MessageFlags.Ephemeral });
+    return interaction.reply({
+        embeds: [Success({ description: user_moved })],
+        flags: MessageFlags.Ephemeral
+    });
 }

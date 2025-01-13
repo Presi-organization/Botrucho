@@ -22,7 +22,7 @@ const app: Express = express();
 
 const port = process.env.PORT || 3000;
 
-const manager = new ShardingManager("./src/bot.js", {
+const manager = new ShardingManager(`${ __dirname }/bot.js`, {
     token: config.token,
     shardArgs: process.argv,
     totalShards: config.shards ?? "auto",

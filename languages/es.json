@@ -71,7 +71,8 @@
   },
   "LYRICS": {
     "NO_QUEUE": "No hay cola",
-    "NOT_FOUND": "No se encontraron letras"
+    "NOT_FOUND": "No se encontraron letras",
+    "SYNCED_LYRICS": "Letras sincronizadas"
   },
   "PLAY": {
     "NO_RESULTS_TITLE": "No se encontraron resultados",

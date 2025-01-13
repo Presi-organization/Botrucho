@@ -1,7 +1,7 @@
 import { GuildQueue, Track } from "discord-player";
 import Botrucho from "@mongodb/base/Botrucho";
 import { updateQueueMessage } from "@util/embedUtils";
-import { PlayerMetadata } from "@customTypes/playerMetadata";
+import { PlayerMetadata } from "@customTypes/PlayerMetadata";
 import { IGuildData } from "@mongodb/models/GuildData";
 import { PlayerKeys, TranslationElement } from "@customTypes/Translations";
 

@@ -2,7 +2,7 @@ import { GuildQueue, Track } from "discord-player";
 import { updateQueueMessage } from "@util/embedUtils";
 import Botrucho from "@mongodb/base/Botrucho";
 import { IGuildData } from "@mongodb/models/GuildData";
-import { PlayerMetadata } from "@customTypes/playerMetadata";
+import { PlayerMetadata } from "@customTypes/PlayerMetadata";
 import { PlayerKeys, TranslationElement } from "@customTypes/Translations";
 
 export async function execute(client: Botrucho, queue: GuildQueue<PlayerMetadata>): Promise<void> {

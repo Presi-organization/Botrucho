@@ -1,6 +1,7 @@
 import { CommandInteraction, SlashCommandOptionsOnlyBuilder } from "discord.js";
 import { SlashCommandBuilder } from '@discordjs/builders';
 import { IGuildData } from "@mongodb/models/GuildData";
+import { Error, Success } from "@util/embedMessage";
 import { ServerInfoKeys, TranslationElement } from "@customTypes/Translations";
 
 export const name = 'server';
@@ -21,7 +22,7 @@ export async function execute(interaction: CommandInteraction, guildDB: IGuildDa
     const others: string = serverTranslation.f.replace("${count}", interaction.guild.features.join(', '));
 
     if (!interaction.guild) {
-        return interaction.reply(serverTranslation.ONLY_SERVER);
+        return interaction.reply({ embeds: [Error({ description: serverTranslation.ONLY_SERVER })] });
     }
-    return interaction.reply(`${ server }\n\n${ members }\n${ account }\n${ channels }\n${ banner }\n${ others }`);
+    return interaction.reply({ embeds: [Success({ description: `${ server }\n\n${ members }\n${ account }\n${ channels }\n${ banner }\n${ others }` })] });
 }

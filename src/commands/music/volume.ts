@@ -1,6 +1,12 @@
-import { CommandInteraction, EmbedBuilder, MessageFlags } from "discord.js";
+import {
+    CommandInteraction,
+    EmbedBuilder,
+    MessageFlags,
+    SlashCommandIntegerOption,
+    SlashCommandOptionsOnlyBuilder
+} from "discord.js";
 import { SlashCommandBuilder } from "@discordjs/builders";
-import { useTimeline } from "discord-player";
+import { GuildQueueTimeline, useTimeline } from "discord-player";
 import Botrucho from "@mongodb/base/Botrucho";
 import { IGuildData } from "@mongodb/models/GuildData";
 import { Error, Success } from "@util/embedMessage";
@@ -9,14 +15,14 @@ import { MusicKeys, TranslationElement, VolumeKeys } from "@customTypes/Translat
 export const name = 'volume';
 export const description = 'Changes the Volume';
 export const permissions = false;
-export const aliases = ['sound', 'v', "vol"];
+export const aliases: string[] = ['sound', 'v', "vol"];
 export const cat = 'music';
 export const exemple = '70';
-export const botpermissions = ['CONNECT', 'SPEAK'];
-export const data = new SlashCommandBuilder()
+export const botpermissions: string[] = ['CONNECT', 'SPEAK'];
+export const data: SlashCommandOptionsOnlyBuilder = new SlashCommandBuilder()
     .setName('volume')
     .setDescription('Changes the Volume')
-    .addIntegerOption(option => option.setName('gain').setDescription('The new volume you want me to set to [1-200]').setRequired(false));
+    .addIntegerOption((option: SlashCommandIntegerOption) => option.setName('gain').setDescription('The new volume you want me to set to [1-200]').setRequired(false));
 
 export async function execute(interaction: CommandInteraction & { client: Botrucho }, guildDB: IGuildData) {
     if (!interaction.inCachedGuild()) return;
@@ -37,7 +43,7 @@ export async function execute(interaction: CommandInteraction & { client: Botruc
 
     await interaction.deferReply({ flags: MessageFlags.Ephemeral });
 
-    const timeline = useTimeline({ node: interaction.guildId });
+    const timeline: GuildQueueTimeline | null = useTimeline({ node: interaction.guildId });
 
     if (!timeline?.track) {
         const embed: EmbedBuilder = Error({

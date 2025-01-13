@@ -71,7 +71,8 @@
   },
   "LYRICS": {
     "NO_QUEUE": "No queue",
-    "NOT_FOUND": "No lyrics found"
+    "NOT_FOUND": "No lyrics found",
+    "SYNCED_LYRICS": "Synced Lyrics"
   },
   "PLAY": {
     "NO_RESULTS_TITLE": "No results found",
@@ -96,7 +97,7 @@
     "SYNTHESIZING": "Synthesizing phrase."
   },
   "FINES": {
-    "TITLE": "ID's fines for ${id}",
+    "TITLE": "Fines for ID ${id}",
     "DESC": "Fines by secretary"
   },
   "SIATA": {

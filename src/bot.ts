@@ -15,7 +15,7 @@ import { YoutubeiExtractor } from "discord-player-youtubei";
 import Botrucho from "@mongodb/base/Botrucho";
 import CommandLoader from "@commands/CommandLoader";
 import { sendAMessageAndThread } from "@services/webhooks/ultimateThread";
-import { ActivityPresence } from "@config";
+import { ActivityPresence } from "@customTypes/Config";
 import '@util/extenders';
 
 const client: Botrucho = new Botrucho({

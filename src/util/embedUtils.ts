@@ -1,7 +1,7 @@
 import { EmbedBuilder, MessageCreateOptions, MessageEditOptions } from 'discord.js';
 import { GuildQueue, Track } from 'discord-player';
 import { Info } from '@util/embedMessage';
-import { PlayerMetadata } from "@customTypes/playerMetadata";
+import { PlayerMetadata } from "@customTypes/PlayerMetadata";
 import { PlayerKeys, TranslationElement } from "@customTypes/Translations";
 
 const updateQueueMessage = async (
