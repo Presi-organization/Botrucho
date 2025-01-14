@@ -2,7 +2,10 @@ import { join } from "path";
 import { HorizontalAlign, Jimp, JimpMime, VerticalAlign } from 'jimp';
 import { AttachmentBuilder, CommandInteraction, SlashCommandOptionsOnlyBuilder } from "discord.js";
 import { SlashCommandBuilder } from '@discordjs/builders';
+import { IGuildData } from "@mongodb/models/GuildData";
 import { Error, Success } from "@util/embedMessage";
+import { CropInfo, ImageCenter } from "@customTypes/ImageData";
+import { SiataKeys, TranslationElement } from "@customTypes/Translations";
 
 export const name = 'siata';
 export const data: SlashCommandOptionsOnlyBuilder = new SlashCommandBuilder()
@@ -16,18 +19,10 @@ export const data: SlashCommandOptionsOnlyBuilder = new SlashCommandBuilder()
         .setDescription('Addresses shown on map')
     );
 
-interface ImageCenter {
-    x: number;
-    y: number;
-}
-
-interface CropInfo extends ImageCenter {
-    width: number;
-    height: number;
-}
-
-export async function execute(interaction: CommandInteraction) {
+export async function execute(interaction: CommandInteraction, guildDB: IGuildData) {
     if (!interaction.isChatInputCommand()) return;
+
+    const { ZOOM, ERR }: TranslationElement<SiataKeys> = interaction.translate("SIATA", guildDB.lang);
 
     await interaction.deferReply();
 
@@ -50,9 +45,11 @@ export async function execute(interaction: CommandInteraction) {
             height: 200 + ((circles - 1) * 250)
         };
 
-        const mapImage = await Jimp.read(join(process.cwd(), `/assets/siata/${ locations ? 'locations' : 'clean' }/mapsmoothdark${ circles }x.png`));
-        const radarImage = await Jimp.read("https://siata.gov.co/kml/00_Radar/Ultimo_Barrido/AreaMetRadar_10_120_DBZH.png");
-        const legend = await Jimp.read(join(process.cwd(), '/assets/siata/radarLegend.png'));
+        const [mapImage, radarImage, legend] = await Promise.all([
+            Jimp.read(join(process.cwd(), `/assets/siata/${ locations ? 'locations' : 'clean' }/mapsmoothdark${ circles }x.png`)),
+            Jimp.read("https://siata.gov.co/kml/00_Radar/Ultimo_Barrido/AreaMetRadar_10_120_DBZH.png"),
+            Jimp.read(join(process.cwd(), '/assets/siata/radarLegend.png'))
+        ]);
 
         const mapCropped = await getCroppedImage(mapImage, mapInfo);
         const radarCropped = await getCroppedImage(radarImage, radarInfo);
@@ -71,7 +68,7 @@ export async function execute(interaction: CommandInteraction) {
         return interaction.editReply({
             embeds: [Success({
                 title: "SIATA",
-                description: `Radar Zoom x${ circles }`,
+                description: ZOOM.replace("${zoom}", circles.toString()),
                 image: {
                     url: `attachment://siata.png`
                 }
@@ -79,7 +76,7 @@ export async function execute(interaction: CommandInteraction) {
         });
     } catch (error) {
         console.error('Error processing images:', error);
-        return interaction.editReply({ embeds: [Error({ description: 'An error occurred while processing the images.' })] });
+        return interaction.editReply({ embeds: [Error({ description: ERR })] });
     }
 }
 

@@ -1,27 +1,33 @@
-import { CommandInteraction } from "discord.js";
+import { CommandInteraction, SlashCommandOptionsOnlyBuilder } from "discord.js";
 import { useQueue, GuildQueue, Track } from "discord-player";
 import { SlashCommandBuilder } from "@discordjs/builders";
 import { IGuildData } from "@mongodb/models/GuildData";
-import { PlayerMetadata } from "@customTypes/playerMetadata";
-import { updateQueueMessage } from "@util/embedUtils";
 import Botrucho from "@mongodb/base/Botrucho";
+import { updateQueueMessage } from "@util/embedUtils";
+import { PlayerMetadata } from "@customTypes/PlayerMetadata";
+import { Error, Success } from "@util/embedMessage";
+import { MusicKeys, PlayerKeys, ShuffleKeys, TranslationElement } from "@customTypes/Translations";
 
 export const name = 'shuffle';
 export const description = 'Shuffles the current queue';
-export const data: SlashCommandBuilder = new SlashCommandBuilder()
+export const data: SlashCommandOptionsOnlyBuilder = new SlashCommandBuilder()
     .setName('shuffle')
     .setDescription('Shuffles the current music queue.');
 
-export async function execute(interaction: CommandInteraction & { client: Botrucho }, _: IGuildData) {
+export async function execute(interaction: CommandInteraction & { client: Botrucho }, guildDB: IGuildData) {
+    const { SHUFFLED }: TranslationElement<ShuffleKeys> = interaction.translate("SHUFFLE", guildDB.lang);
+    const { NOT_PLAYING_DESC }: TranslationElement<MusicKeys> = interaction.translate("MUSIC", guildDB.lang);
+    const playerTranslation: TranslationElement<PlayerKeys> = interaction.translate("PLAYER", guildDB.lang);
+
     const queue: GuildQueue<PlayerMetadata> | null = useQueue();
     if (!queue || !queue.isPlaying()) {
-        return interaction.reply('There is no music playing!');
+        return interaction.reply({ embeds: [Error({ description: NOT_PLAYING_DESC })] });
     }
     const tracksArray = queue.tracks.toArray() as Track[];
     queue.tracks.clear();
     shuffleArray(tracksArray).forEach(track => queue.tracks.add(track));
-    await interaction.reply('The queue has been shuffled!');
-    await updateQueueMessage(queue, queue?.currentTrack as Track);
+    await interaction.reply({ embeds: [Success({ description: SHUFFLED })] });
+    await updateQueueMessage(queue, queue?.currentTrack as Track, playerTranslation);
     interaction.client.deleted_messages.add(interaction);
 }
 

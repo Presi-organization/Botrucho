@@ -1,7 +1,13 @@
 import { Readable } from 'node:stream';
 import { Buffer } from 'node:buffer';
 import { join } from "path";
-import { CommandInteraction, MessageFlags, SlashCommandOptionsOnlyBuilder, VoiceBasedChannel } from "discord.js";
+import {
+    CommandInteraction,
+    MessageFlags,
+    SlashCommandOptionsOnlyBuilder,
+    SlashCommandStringOption,
+    VoiceBasedChannel
+} from "discord.js";
 import { Player, useMainPlayer, QueueRepeatMode } from "discord-player";
 import { SlashCommandBuilder } from "@discordjs/builders";
 import {
@@ -11,21 +17,26 @@ import {
     ResultReason,
     SpeechSynthesisResult
 } from "microsoft-cognitiveservices-speech-sdk";
-import { createAudioResource } from 'discord-voip';
+import { AudioResource, createAudioResource } from 'discord-voip';
 import { IGuildData } from "@mongodb/models/GuildData";
+import { Success, Warning } from "@util/embedMessage";
+import { SayKeys, TranslationElement, VCKeys } from "@customTypes/Translations";
 
 export const name = 'say';
 export const description = 'Plays a phrase';
 export const cat = 'sound';
-export const botpermissions = ['CONNECT', 'SPEAK'];
+export const botpermissions: string[] = ['CONNECT', 'SPEAK'];
 export const data: SlashCommandOptionsOnlyBuilder = new SlashCommandBuilder()
     .setName('say')
     .setDescription('Plays a phrasae.')
-    .addStringOption(option => option.setName('phrase').setDescription('The desired phrase').setRequired(true));
+    .addStringOption((option: SlashCommandStringOption) => option.setName('phrase').setDescription('The desired phrase').setRequired(true));
 
 export async function execute(interaction: CommandInteraction, guildDB: IGuildData) {
     if (!interaction.inCachedGuild()) return;
     if (!interaction.isChatInputCommand()) return;
+
+    const { SYNTHESIZING }: TranslationElement<SayKeys> = interaction.translate("SAY", guildDB.lang);
+    const { CONNECT_VC }: TranslationElement<VCKeys> = interaction.translate("VC", guildDB.lang);
 
     const channel: VoiceBasedChannel | null = interaction.member.voice.channel;
     const player: Player = useMainPlayer();
@@ -33,14 +44,14 @@ export async function execute(interaction: CommandInteraction, guildDB: IGuildDa
     await interaction.deferReply({ flags: MessageFlags.Ephemeral });
 
     const phrase: string = interaction.options.getString('phrase', true);
-    if (!channel) return interaction.editReply('Connect to a Voice Channel');
+    if (!channel) return interaction.editReply({ embeds: [Warning({ description: CONNECT_VC })] });
 
     const key: string = process.env.AISPEECH_TOKEN!;
     const region = "eastus";
-    const audioFile = join(__dirname, "voice_speech.wav");
+    const audioFile: string = join(__dirname, "voice_speech.wav");
 
-    const speechConfig = SpeechConfig.fromSubscription(key, region);
-    const audioConfig = AudioConfig.fromAudioFileOutput(audioFile);
+    const speechConfig: SpeechConfig = SpeechConfig.fromSubscription(key, region);
+    const audioConfig: AudioConfig = AudioConfig.fromAudioFileOutput(audioFile);
 
     speechConfig.speechSynthesisVoiceName = "es-CL-LorenzoNeural";
     speechConfig.speechSynthesisVoiceName = "es-CR-JuanNeural";
@@ -51,10 +62,12 @@ export async function execute(interaction: CommandInteraction, guildDB: IGuildDa
     synthesizer.speakTextAsync(phrase,
         async function (result: SpeechSynthesisResult) {
             if (result.reason === ResultReason.SynthesizingAudioCompleted) {
-                const arrayBuffer = result.audioData
-                const nodeBuffer = Buffer.from(arrayBuffer);
-                const nodeStream = Readable.from(nodeBuffer);
-                let resource = createAudioResource(nodeStream, { metadata: { title: phrase } });
+                const arrayBuffer: ArrayBuffer = result.audioData
+                const nodeBuffer: Buffer<ArrayBufferLike> = Buffer.from(arrayBuffer);
+                const nodeStream: Readable = Readable.from(nodeBuffer);
+                let resource: AudioResource<{ title: string } extends (null | undefined) ? null : {
+                    title: string
+                }> = createAudioResource(nodeStream, { metadata: { title: phrase } });
 
                 const { track } = await player.play(channel, resource, {
                     nodeOptions: {
@@ -88,10 +101,9 @@ export async function execute(interaction: CommandInteraction, guildDB: IGuildDa
                 }
 
                 await interaction.editReply({
-                    embeds: [{
-                        description: `Synthesizing phrase.`,
-                        color: 16103193
-                    }],
+                    embeds: [Success({
+                        description: SYNTHESIZING,
+                    })],
                 });
 
             } else {

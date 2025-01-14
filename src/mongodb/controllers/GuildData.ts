@@ -17,6 +17,14 @@ class GuildDataController {
             { new: true, upsert: true }
         ).exec();
     }
+
+    async setLanguage({ guildId, newLanguage }: { guildId: string; newLanguage: string }): Promise<IGuildData | null> {
+        return GuildDataModel.findOneAndUpdate(
+            { serverID: guildId },
+            { lang: newLanguage },
+            { new: true, upsert: true }
+        ).exec();
+    }
 }
 
 export default GuildDataController;

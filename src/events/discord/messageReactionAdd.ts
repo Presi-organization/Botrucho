@@ -1,6 +1,7 @@
 import { EmbedBuilder, MessageReaction, User } from "discord.js";
 import { IEventData } from "@mongodb/models/EventData";
 import Botrucho from "@mongodb/base/Botrucho";
+import { EventKeys, TranslationElement } from "@customTypes/Translations";
 
 export async function execute(client: Botrucho, reaction: MessageReaction, user: User) {
     if (reaction.message.partial) await reaction.message.fetch();
@@ -16,14 +17,21 @@ export async function execute(client: Botrucho, reaction: MessageReaction, user:
             if (!userFind) {
                 await client.eventData.addAssistance(eventInfo.id, user.id);
 
+                const {
+                    ASSISTANCE_CONFIRMED,
+                    INVITATION_LINK,
+                    EVENT_GENERATED
+                }: TranslationElement<EventKeys> = await reaction.message.guild.translate("EVENT", client.guildData);
+
                 const exampleEmbed: EmbedBuilder = new EmbedBuilder()
                     .setColor(client.config.color)
-                    .setTitle(`Tu asistencia para el evento ${ eventInfo.eventName }, ha sido confirmada`)
+                    .setTitle(ASSISTANCE_CONFIRMED.replace("${eventName}", eventInfo.eventName))
                     .setURL(eventInfo.calendarLink)
-                    .setDescription(`Aquí está tu invitación: ${ eventInfo.calendarLink }\n\nTen en cuenta que este mensaje se autodestruirá en 2 minutos.`)
+                    .setDescription(INVITATION_LINK.replace("${calendarLink}", eventInfo.calendarLink))
                     .setTimestamp()
                     .setFooter({
-                        text: `Evento generado por ${ client.user?.username }`, iconURL: client.user?.displayAvatarURL({
+                        text: EVENT_GENERATED.replace("${username}", client.user?.username!),
+                        iconURL: client.user?.displayAvatarURL({
                             size: 512
                         })
                     });

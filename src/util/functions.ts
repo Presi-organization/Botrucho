@@ -1,6 +1,7 @@
 import mongoose from "mongoose";
 import Botrucho from "@mongodb/base/Botrucho";
-import config, { Config } from "@config";
+import config from "@config";
+import { Config } from "@customTypes/Config";
 
 /**
  * Create the client variables

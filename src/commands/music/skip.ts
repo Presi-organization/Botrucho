@@ -1,28 +1,37 @@
-import { CommandInteraction } from "discord.js";
+import { CommandInteraction, EmbedBuilder, SlashCommandOptionsOnlyBuilder } from "discord.js";
 import { SlashCommandBuilder } from "@discordjs/builders";
-import { useQueue } from "discord-player";
-import { Success, Error } from "@util/embedMessage";
+import { GuildQueue, useQueue } from "discord-player";
 import Botrucho from "@mongodb/base/Botrucho";
+import { IGuildData } from "@mongodb/models/GuildData";
+import { Success, Error } from "@util/embedMessage";
+import { MusicKeys, SkipKeys, TranslationElement } from "@customTypes/Translations";
+import { PlayerMetadata } from "@customTypes/PlayerMetadata";
 
 export const name = 'skip';
 export const description = 'Skip to the next track.';
 export const cat = 'music';
-export const botpermissions = ['CONNECT', 'SPEAK'];
-export const data = new SlashCommandBuilder()
+export const botpermissions: string[] = ['CONNECT', 'SPEAK'];
+export const data: SlashCommandOptionsOnlyBuilder = new SlashCommandBuilder()
     .setName('skip')
     .setDescription('Skip to the next track.');
 
-export async function execute(interaction: CommandInteraction & { client: Botrucho }) {
+export async function execute(interaction: CommandInteraction & { client: Botrucho }, guildDB: IGuildData) {
     if (!interaction.inCachedGuild()) return;
+
+    const { SKIPPED_TITLE, SKIPPED_DESC }: TranslationElement<SkipKeys> = interaction.translate("SKIP", guildDB.lang)
+    const {
+        NOT_PLAYING_TITLE,
+        NOT_PLAYING_DESC
+    }: TranslationElement<MusicKeys> = interaction.translate("MUSIC", guildDB.lang)
 
     await interaction.deferReply();
 
-    const queue = useQueue(interaction.guildId);
+    const queue: GuildQueue<PlayerMetadata> | null = useQueue(interaction.guildId);
 
     if (!queue?.isPlaying()) {
-        const embed = Error({
-            title: 'Not playing',
-            description: 'I am not playing anything right now',
+        const embed: EmbedBuilder = Error({
+            title: NOT_PLAYING_TITLE,
+            description: NOT_PLAYING_DESC,
             author: {
                 name: interaction.guild.name,
                 iconURL: interaction.guild.iconURL() ?? undefined
@@ -35,8 +44,8 @@ export async function execute(interaction: CommandInteraction & { client: Botruc
     queue.node.skip();
 
     const embed = Success({
-        title: 'Track Skipped!',
-        description: 'I have successfully skipped to the next track.',
+        title: SKIPPED_TITLE,
+        description: SKIPPED_DESC,
         author: {
             name: interaction.guild.name,
             icon_url: interaction.guild.iconURL() ?? undefined

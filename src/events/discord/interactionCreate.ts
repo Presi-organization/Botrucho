@@ -1,6 +1,7 @@
-import { Guild, Interaction, Message } from 'discord.js';
+import { Guild, Interaction, InteractionCallbackResponse, Message } from 'discord.js';
 import Botrucho from "@mongodb/base/Botrucho";
 import { IGuildData } from "@mongodb/models/GuildData";
+import { EventKeys, MiscKeys, TranslationElement } from "@customTypes/Translations";
 
 module.exports = {
     async execute(client: Botrucho, interaction: Interaction): Promise<void> {
@@ -12,13 +13,18 @@ module.exports = {
                 await client.player.context.provide({ guild: interaction?.guild as Guild }, async () => await command.execute(interaction, guildDB));
             } catch (error) {
                 console.error(error);
+                const { ERROR }: TranslationElement<MiscKeys> = interaction.translate("MISC", guildDB.lang);
                 await interaction.editReply({
-                    content: 'There was an error while executing this command!'
+                    content: ERROR
                 });
             }
         }
         if (interaction.isModalSubmit()) {
             if (interaction.customId === 'event-modal') {
+                const {
+                    EVENT_CREATED,
+                    ASSISTANCE_CONFIRMATION
+                }: TranslationElement<EventKeys> = interaction.translate("EVENT", guildDB.lang);
                 const eventName: string = interaction.fields.getTextInputValue('eventNameInput');
                 const eventDate: string = interaction.fields.getTextInputValue('eventDateInput');
                 const eventTime: string = interaction.fields.getTextInputValue('eventTimeInput');
@@ -33,21 +39,23 @@ module.exports = {
                 const eventDescription: string = interaction.fields.getTextInputValue('eventDescriptionInput');
                 const eventZone: string = interaction.fields.getTextInputValue('eventLinkInput');
                 const addToCalendar: string = `https://calendar.google.com/calendar/r/eventedit?text=${ eventName }&dates=${ calendarDate }&details=<b>Descripción+del+evento</b>:+${ eventDescription }&location=${ eventZone }`;
-                const message: Message = await interaction.reply({
+                interaction.reply({
                     embeds: [{
                         author: {
-                            name: `${ interaction.user.tag } ha creado un evento`,
+                            name: EVENT_CREATED.replace("${user}", interaction.user.tag),
                             icon_url: interaction.user.displayAvatarURL()
                         },
-                        description: `<@&540708709945311243> Confirma tu asistencia en: ${ eventName }`,
+                        description: ASSISTANCE_CONFIRMATION.replace("${eventName}", eventName),
                         color: 0xF5B719,
                     }],
-                    fetchReply: true
+                    withResponse: true
+                }).then(async (interactionCB: InteractionCallbackResponse) => {
+                    const message: Message<boolean> = interactionCB.resource!.message!;
+                    await message.react('👽');
+                    await message.react('🙅🏻');
+                    await interaction.guild?.addEventDB(client.eventData, message.id, eventName, encodeURI(addToCalendar.replace(/ /g, "+")));
                 });
 
-                await message.react('👽');
-                await message.react('🙅🏻');
-                await interaction.guild?.addEventDB(client.eventData, message.id, eventName, encodeURI(addToCalendar.replace(/ /g, "+")));
             }
         }
     }
