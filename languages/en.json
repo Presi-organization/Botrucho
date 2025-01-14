@@ -122,6 +122,7 @@
   "PLAYER": {
     "NOW_PLAYING": "Now Playing",
     "SONG": "Song ${index}",
-    "REQUESTED_BY": "Requested by ${username}"
+    "REQUESTED_BY": "Requested by ${username}",
+    "TRACKS_LEFT": "Tracks Left"
   }
 }

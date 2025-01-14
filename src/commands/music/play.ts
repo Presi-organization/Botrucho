@@ -55,8 +55,6 @@ export async function execute(interaction: CommandInteraction, guildDB: IGuildDa
         return interaction.editReply({ embeds: [Error(embed)] });
     }
 
-    console.log(searchResult.hasPlaylist() ? searchResult?.playlist : "SINGLE SONG");
-
     const description = ADDED_2_QUEUE_DESC
         .replace("${songName}", `${ searchResult.tracks[0].title } - ${ searchResult.tracks[0].author }`)
         .replace("${songUrl}", searchResult.tracks[0].url);

@@ -78,4 +78,4 @@ export type TftEloKeys =
     | 'FRESH_BLOOD'
     | 'INACTIVE';
 export type DeleteKeys = 'LEAVE';
-export type PlayerKeys = 'NOW_PLAYING' | 'SONG' | 'REQUESTED_BY';
+export type PlayerKeys = 'NOW_PLAYING' | 'SONG' | 'REQUESTED_BY' | 'TRACKS_LEFT';

@@ -122,6 +122,7 @@
   "PLAYER": {
     "NOW_PLAYING": "Reproduciendo ahora",
     "SONG": "Canción ${index}",
-    "REQUESTED_BY": "Solicitado por ${username}"
+    "REQUESTED_BY": "Solicitado por ${username}",
+    "TRACKS_LEFT": "Canciones Restantes"
   }
 }

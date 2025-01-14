@@ -45,9 +45,11 @@ export async function execute(interaction: CommandInteraction, guildDB: IGuildDa
             height: 200 + ((circles - 1) * 250)
         };
 
-        const mapImage = await Jimp.read(join(process.cwd(), `/assets/siata/${ locations ? 'locations' : 'clean' }/mapsmoothdark${ circles }x.png`));
-        const radarImage = await Jimp.read("https://siata.gov.co/kml/00_Radar/Ultimo_Barrido/AreaMetRadar_10_120_DBZH.png");
-        const legend = await Jimp.read(join(process.cwd(), '/assets/siata/radarLegend.png'));
+        const [mapImage, radarImage, legend] = await Promise.all([
+            Jimp.read(join(process.cwd(), `/assets/siata/${ locations ? 'locations' : 'clean' }/mapsmoothdark${ circles }x.png`)),
+            Jimp.read("https://siata.gov.co/kml/00_Radar/Ultimo_Barrido/AreaMetRadar_10_120_DBZH.png"),
+            Jimp.read(join(process.cwd(), '/assets/siata/radarLegend.png'))
+        ]);
 
         const mapCropped = await getCroppedImage(mapImage, mapInfo);
         const radarCropped = await getCroppedImage(radarImage, radarInfo);

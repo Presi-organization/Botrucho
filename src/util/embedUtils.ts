@@ -10,7 +10,8 @@ const updateQueueMessage = async (
     {
         NOW_PLAYING,
         SONG,
-        REQUESTED_BY
+        REQUESTED_BY,
+        TRACKS_LEFT
     }: TranslationElement<PlayerKeys>
 ): Promise<void> => {
     if (track.extractor === null) return;
@@ -22,7 +23,7 @@ const updateQueueMessage = async (
         .setTitle(NOW_PLAYING)
         .setThumbnail(track.thumbnail)
         .addFields(
-            queue.metadata.queueTitles.slice(0, 25).map((title: string, index: number) => ({
+            queue.metadata.queueTitles.slice(0, 20).map((title: string, index: number) => ({
                 name: SONG.replace("${index}", (index + 1).toString()),
                 value: title
             }))
@@ -31,6 +32,13 @@ const updateQueueMessage = async (
             text: REQUESTED_BY.replace("${username}", <string>track.requestedBy?.displayName),
             iconURL: track.requestedBy?.displayAvatarURL()
         });
+
+    if (queue.metadata.queueTitles.length > 20) {
+        embed.addFields({
+            name: TRACKS_LEFT,
+            value: (queue.metadata.queueTitles.length - 20).toString()
+        });
+    }
 
     const replyOptions: MessageCreateOptions & MessageEditOptions = { embeds: [Info(embed.data)] };
 
