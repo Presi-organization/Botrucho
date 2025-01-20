@@ -46,7 +46,7 @@ const editWebhook: (webhook: WebhookClient) => Promise<WebhookClient> = (webhook
  */
 const sendMessageWithWebhook: (webhook: WebhookClient) => Promise<APIMessage> = (webhook: WebhookClient): Promise<APIMessage> => {
     return webhook.send({
-        content: `<@&540708709945311243> Asistencia ${ getTomorrowsDay() } <a:frisbeeT:1309633549967556619>`
+        content: `<@&540708709945311243>\n<a:WEEWOO:1329263115530928208> Asistencia ${ getTomorrowsDay() } <a:frisbeeT:1309633549967556619> <a:WEEWOO:1329263115530928208>`
     });
 }
 
