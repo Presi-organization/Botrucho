@@ -45,7 +45,7 @@ export async function execute(interaction: CommandInteraction, guildDB: IGuildDa
     if (!searchResult.hasTracks()) {
         const embed = {
             title: NO_RESULTS_TITLE,
-            description: NO_RESULTS_DESC.replace("${name}", name),
+            description: NO_RESULTS_DESC.replace("${songName}", name),
             author: {
                 name: interaction.guild.name,
                 icon_url: interaction.guild.iconURL() ?? undefined
