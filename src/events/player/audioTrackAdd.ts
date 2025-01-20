@@ -6,7 +6,7 @@ import { PlayerMetadata } from "@customTypes/PlayerMetadata";
 import { PlayerKeys, TranslationElement } from "@customTypes/Translations";
 
 export async function execute(client: Botrucho, queue: GuildQueue<PlayerMetadata>, addedTrack: Track): Promise<void> {
-    console.log(`Added to queue **${ addedTrack?.author } - ${ addedTrack?.title }**!`);
+    console.log(`Added to queue **${ addedTrack.title }**!`);
     queue.metadata.queueTitles = queue.tracks.data.map(track => `[${ track.title } - ${ track.author }](${ track.url })`);
     const track: Track | undefined = queue.metadata.currentTrack;
     const guildDB: IGuildData | null = await client.guildData.showGuild(queue.metadata.message.guild!.id);
