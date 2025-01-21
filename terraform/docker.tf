@@ -1,11 +1,5 @@
 resource "docker_image" "botrucho" {
   name = "jonathanstrf/botrucho:1.1.3"
-
-  lifecycle {
-    ignore_changes = [
-      name
-    ]
-  }
 }
 
 resource "docker_container" "botrucho" {
