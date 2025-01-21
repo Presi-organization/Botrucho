@@ -6,6 +6,11 @@ terraform {
     }
   }
 }
+
+locals {
+  docker_host = (terraform.workspace == "windows") ? "npipe:////./pipe/dockerDesktopLinuxEngine" : "unix:///var/run/docker.sock"
+}
+
 provider "docker" {
-  host = "npipe:////./pipe/dockerDesktopLinuxEngine"
+  host = local.docker_host
 }
