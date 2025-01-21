@@ -1,5 +1,5 @@
 # Build Stage
-FROM node:22-alpine AS build
+FROM node:22-slim AS build
 
 WORKDIR /botrucho
 
@@ -12,11 +12,9 @@ COPY . .
 RUN npm run build
 
 # Production Stage
-FROM node:22-alpine AS production
+FROM node:22-slim AS production
 
-RUN apk update && apk add bind-tools
-
-RUN apk add --no-cache ffmpeg
+RUN apt-get update && apt-get install -y ffmpeg
 
 ENV FFMPEG_PATH=/usr/bin/ffmpeg
 
