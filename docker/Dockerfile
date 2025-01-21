@@ -14,6 +14,8 @@ RUN npm run build
 # Production Stage
 FROM node:22-alpine AS production
 
+RUN apk update && apk add bind-tools
+
 RUN apk add --no-cache ffmpeg
 
 ENV FFMPEG_PATH=/usr/bin/ffmpeg
