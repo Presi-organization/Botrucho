@@ -1,5 +1,6 @@
 import { Client, Collection, ClientOptions } from "discord.js";
 import { Player } from "discord-player";
+import EventAttendanceData from "@mongodb/controllers/EventAttendanceData";
 import EventData from "@mongodb/controllers/EventData";
 import GuildData from "@mongodb/controllers/GuildData";
 import { createClientVars } from "@util/functions";
@@ -28,6 +29,7 @@ class Botrucho extends Client {
     commands: Collection<string, any>;
     guildData: GuildData;
     eventData: EventData;
+    eventAttendanceData: EventAttendanceData;
 
     constructor(options: BotruchoOptions) {
         super(options);
@@ -45,6 +47,7 @@ class Botrucho extends Client {
         this.commands = new Collection();
         this.guildData = new GuildData();
         this.eventData = new EventData();
+        this.eventAttendanceData = new EventAttendanceData();
     }
 }
 

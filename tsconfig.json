@@ -37,6 +37,7 @@
       "@events/*": ["src/events/*"],
       "@mongodb/*": ["src/mongodb/*"],
       "@util/*": ["src/util/*"],
+      "@errors/*": ["src/errors/*"],
       "@customTypes/*": ["src/types/*"],
       "@config": ["src/config/index.ts"]
     },

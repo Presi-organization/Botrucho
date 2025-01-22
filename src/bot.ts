@@ -80,7 +80,7 @@ const setupCronJobs: () => void = (): void => {
             const users = channel.guild.roles.cache.find((role: Role) => role.id === '540708709945311243')?.members
                 .reduce((acc: string[], m: GuildMember) => !m.user.bot ? [...acc, m.user.displayName] : acc, []);
             console.log(users);
-            return sendAMessageAndThread(channel, webhook);
+            return sendAMessageAndThread(channel, webhook, client.eventAttendanceData);
         }
     }, {
         scheduled: true,

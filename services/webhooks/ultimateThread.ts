@@ -1,14 +1,31 @@
-import { WebhookClient, BaseInteraction, TextChannel, APIMessage } from 'discord.js';
+import { WebhookClient, BaseInteraction, TextChannel, APIMessage, Message, PublicThreadChannel } from 'discord.js';
 import { ThreadAutoArchiveDuration } from "discord-api-types/v10";
+import EventAttendanceData from "@mongodb/controllers/EventAttendanceData";
+import { EventAlreadyExistsError } from "@errors/EventAlreadyExistsError";
+
+/**
+ * Retrieves the current Date + one day and + three days
+ * @return { eventDate: Date, expirationDate: Date } The event and expiration dates
+ */
+const getEventDates = (): { eventDate: Date, expirationDate: Date } => {
+    const eventDate = new Date();
+    eventDate.setHours(0, 0, 0, 0);
+    eventDate.setDate(eventDate.getDate() + 2);
+
+    const expirationDate = new Date();
+    expirationDate.setHours(0, 0, 0, 0);
+    expirationDate.setDate(expirationDate.getDate() + 15 + 3);
+
+    return { eventDate, expirationDate };
+}
 
 /**
  * Retrieves the current Date + one day
  * @return string The formatted date (dd/mm/yyyy)
  */
 const getTomorrowsDay: () => string = (): string => {
-    const today = new Date();
-    today.setDate(today.getDate() + 2);
-    return today.toLocaleDateString('es-CO', {
+    const { eventDate } = getEventDates();
+    return eventDate.toLocaleDateString('es-CO', {
         timeZone: 'America/Bogota',
         day: '2-digit',
         month: '2-digit',
@@ -22,8 +39,8 @@ const getTomorrowsDay: () => string = (): string => {
  */
 const createWebhook: (interaction: BaseInteraction) => Promise<void> = async (interaction: BaseInteraction): Promise<void> => {
     (interaction.channel as TextChannel).createWebhook({
-        name: 'El-Profe',
-        avatar: 'https://imgur.com/NdjTV8f',
+        name: 'Botruchook',
+        avatar: 'https://images.deepai.org/art-image/5c017be32cb74260aa1471f36d539b9c/ultimate-frisbee-profile-image-86efab.jpg'
     })
         .then(webhook => console.log(`Created webhook ${ webhook }\n ${ webhook.url }`))
         .catch(console.error);
@@ -50,22 +67,41 @@ const sendMessageWithWebhook: (webhook: WebhookClient) => Promise<APIMessage> = 
     });
 }
 
-const sendAMessageAndThread: (channel: TextChannel, webhook: WebhookClient) => Promise<void> = async (channel: TextChannel, webhook: WebhookClient): Promise<void> => {
+const sendAMessageAndThread: (channel: TextChannel, webhook: WebhookClient, attendanceData: EventAttendanceData) => Promise<void> = async (channel: TextChannel, webhook: WebhookClient, attendanceData: EventAttendanceData): Promise<void> => {
     try {
-        const message = await sendMessageWithWebhook(webhook);
-        const fetchedMessage = await channel.messages.fetch(message.id);
-        const thread = await fetchedMessage.startThread({
+        const message: APIMessage = await sendMessageWithWebhook(webhook);
+        const fetchedMessage: Message<true> = await channel.messages.fetch(message.id);
+        await Promise.all([
+            fetchedMessage.react('<a:Sisi:1331667356388163604>'),
+            fetchedMessage.react('<a:Nono:1331667333223288882>')
+        ]);
+
+        const thread: PublicThreadChannel<false> = await fetchedMessage.startThread({
             name: `Asistencia ${ getTomorrowsDay() }`,
             autoArchiveDuration: ThreadAutoArchiveDuration.ThreeDays,
             reason: 'Diskito en la U'
         });
-        const msg = await thread.send({
-            content: '<@&540708709945311243>'
+
+        const { eventDate, expirationDate } = getEventDates();
+        attendanceData.createEvent(message.id, thread.id, eventDate, expirationDate).then(async _ => {
+            const msg: Message<true> = await thread.send({
+                content: '<@&540708709945311243>'
+            });
+            setTimeout(() => msg.delete(), 10);
+            await thread.send({
+                content: '**Logs de Asistencia**:'
+            });
+
+            console.log(`Event created with message ID: ${ message.id } and thread ID: ${ thread.id }`);
+        }).catch((error: EventAlreadyExistsError) => {
+            console.error('Error creating event: ', error.message);
+
+            fetchedMessage.delete();
+            thread.delete();
         });
-        setTimeout(() => msg.delete(), 100);
     } catch (error) {
-        console.error('Error trying to send: ', error);
+        console.trace('Error trying to send: ', error);
     }
 }
 
-export { sendAMessageAndThread, editWebhook }
+export { sendAMessageAndThread, createWebhook, editWebhook }
