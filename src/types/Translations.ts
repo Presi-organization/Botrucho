@@ -32,7 +32,7 @@ export type TranslationElement<T extends string> = {
 };
 
 export type LanguagesKeys = 'ES' | 'EN';
-export type MiscKeys = 'YES' | 'NO' | 'ERROR';
+export type MiscKeys = 'YES' | 'NO' | 'ERROR' | 'NOT_POSSIBLE';
 export type VCKeys = 'CONNECT_VC' | 'USER_NOT_IN';
 export type MusicKeys = 'NOT_PLAYING_TITLE' | 'NOT_PLAYING_DESC';
 export type AvatarKeys = 'USER' | 'SELF';

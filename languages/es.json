@@ -7,7 +7,8 @@
   "MISC": {
     "YES": "Sí",
     "NO": "No",
-    "ERROR": "¡Ocurrió un error al ejecutar este comando!"
+    "ERROR": "¡Ocurrió un error al ejecutar este comando!",
+    "NOT_POSSIBLE": "¡Este comando no puede ser usado aquí!"
   },
   "VC": {
     "CONNECT_VC": "Tienes que estar en un canal de voz para usar este comando.",
