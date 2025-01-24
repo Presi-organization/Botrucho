@@ -1,18 +1,21 @@
 import EventAttendanceData, { IEventAttendance, IAttendee } from "@mongodb/models/EventAttendanceData";
 import { EventNotFoundError } from "@errors/EventNotFoundError";
 import { EventAlreadyExistsError } from "@errors/EventAlreadyExistsError";
+import { EventExpiredError } from "@errors/EventExpiredError";
 import { UserAlreadyRegisteredError } from "@errors/UserAlreadyRegisteredError";
 
 class AttendanceDataController {
     async getEventAttendance(filter: { messageId?: string; threadId?: string }): Promise<IEventAttendance> {
-        const event = await EventAttendanceData.findOne({ ...filter, expirationDate: { $gt: new Date() } });
-        if (!event) throw new EventNotFoundError('Event not found or has expired');
+        const event: IEventAttendance | null = await EventAttendanceData.findOne(filter);
+        if (!event) throw new EventNotFoundError('Event not found');
+        if (event.expirationDate <= new Date()) throw new EventExpiredError('Event expired');
         return event;
     }
 
     async getAttendees(messageId: string): Promise<IAttendee[]> {
         const event = await EventAttendanceData.findOne({ messageId });
-        if (!event) throw new EventNotFoundError('Event not found or has expired');
+        if (!event) throw new EventNotFoundError('Event not found');
+        if (event.expirationDate <= new Date()) throw new EventExpiredError('Event expired');
         return event.attendees;
     }
 
@@ -33,8 +36,9 @@ class AttendanceDataController {
     }
 
     async registerUserForEvent(messageId: string, reactionEmoji: string, userId: string, username: string): Promise<void> {
-        const event = await EventAttendanceData.findOne({ messageId, expirationDate: { $gt: new Date() } });
-        if (!event) throw new EventNotFoundError('Event not found or has expired');
+        const event = await EventAttendanceData.findOne({ messageId });
+        if (!event) throw new EventNotFoundError('Event not found');
+        if (event.expirationDate <= new Date()) throw new EventExpiredError('Event expired');
 
         const userAlreadyRegistered = event.attendees.some(attendee => attendee.userId === userId);
         if (userAlreadyRegistered) {

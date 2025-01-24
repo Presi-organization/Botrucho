@@ -7,6 +7,7 @@ import {
     GuildMember,
     TextChannel,
     Partials,
+    Message,
     Role
 } from "discord.js";
 import { GuildQueue } from "discord-player";
@@ -14,6 +15,7 @@ import { DefaultExtractors } from '@discord-player/extractor';
 import { YoutubeiExtractor } from "discord-player-youtubei";
 import Botrucho from "@mongodb/base/Botrucho";
 import CommandLoader from "@commands/CommandLoader";
+import { handleReactionAdd } from "@events/discord/messageReactionAdd";
 import { sendAMessageAndThread } from "@services/webhooks/ultimateThread";
 import { ActivityPresence } from "@customTypes/Config";
 import '@util/extenders';
@@ -72,7 +74,7 @@ const loadCommands: () => Promise<void> = async (): Promise<void> => {
 };
 
 const setupCronJobs: () => void = (): void => {
-    cron.schedule('30 19 * * 4', async (): Promise<void> => {
+    cron.schedule('00 19 * * 4', async (): Promise<void> => {
         const webhook = new WebhookClient(client.config.frisbeeHook);
 
         const channel = await client.channels.fetch('1231030584680251432') as TextChannel | null;
@@ -91,13 +93,25 @@ const setupCronJobs: () => void = (): void => {
         for (const interaction of client.deleted_messages) {
             try {
                 client.deleted_messages.delete(interaction) && await interaction.deleteReply();
-            } catch { }
+            } catch {
+            }
         }
     });
 };
 
 const setupClientEvents: () => void = (): void => {
     client.once('ready', async () => {
+        try {
+            const { messageId, threadId } = await client.eventAttendanceData.getEventAttendance({});
+            const channel = await client.channels.fetch('1231030584680251432') as TextChannel | null;
+            const message = await channel?.messages.fetch(messageId) as Message<true>;
+
+            await handleReactions(client, message);
+            await deleteNonBotMessages(channel, threadId);
+        } catch (e) {
+            console.error('Error during client ready event:', e);
+        }
+
         const statusArray: ActivityPresence[] = client.config.presence;
         const pickPresence = async (): Promise<void> => {
             const option: number = Math.floor(Math.random() * statusArray.length);
@@ -129,6 +143,27 @@ const setupClientEvents: () => void = (): void => {
 
     client.on('error', (e: Error): void => console.error(e));
 };
+
+async function handleReactions(client: Botrucho, message: Message<true>): Promise<void> {
+    for (const reaction of message.reactions.cache.values()) {
+        const users = await reaction.users.fetch();
+        users.forEach(user => {
+            if (user.id !== client.user?.id) {
+                handleReactionAdd(client, reaction, user);
+            }
+        });
+    }
+}
+
+async function deleteNonBotMessages(channel: TextChannel | null, threadId: string): Promise<void> {
+    const thread = await channel?.threads.fetch(threadId);
+    const messages = await thread!.messages.fetch();
+    const nonBotMessages = messages.filter(message => message.author.id !== client.user?.id);
+
+    nonBotMessages.forEach(message => {
+        message.delete();
+    });
+}
 
 const startBot: () => Promise<void> = async (): Promise<void> => {
     await loadExtractors();

@@ -11,6 +11,7 @@ import {
 import { IEventData } from "@mongodb/models/EventData";
 import Botrucho from "@mongodb/base/Botrucho";
 import { IEventAttendance } from "@mongodb/models/EventAttendanceData";
+import { EventExpiredError } from "@errors/EventExpiredError";
 import { EventNotFoundError } from "@errors/EventNotFoundError";
 import { UserAlreadyRegisteredError } from "@errors/UserAlreadyRegisteredError";
 import { EventKeys, TranslationElement } from "@customTypes/Translations";
@@ -29,6 +30,38 @@ async function fetchThreadById(client: Botrucho, threadId: string, channelId: st
     } catch (error) {
         console.trace('Error fetching the thread:', error);
         return null;
+    }
+}
+
+export async function handleReactionAdd(client: Botrucho, reaction: MessageReaction, user: User) {
+    try {
+        await client.eventAttendanceData.registerUserForEvent(
+            reaction.message.id,
+            reaction.emoji.name!,
+            user.id,
+            user.displayName
+        );
+        await reaction.users.remove(user.id);
+
+        const attendance: IEventAttendance = await client.eventAttendanceData.getEventAttendance({ messageId: reaction.message.id });
+        const thread: ThreadChannel<boolean> | null = await fetchThreadById(client, attendance.threadId, reaction.message.channel.id);
+        if (thread) {
+            await thread.send(`${ user.displayName } (${ reaction.emoji })`);
+        }
+
+        console.log(`User ${ user.displayName } registered for the event with emoji ${ reaction.emoji.name }`);
+    } catch (error: Error | any) {
+        switch (error.constructor) {
+            case EventNotFoundError || UserAlreadyRegisteredError:
+                break;
+            case EventExpiredError:
+                await reaction.message.delete();
+                await reaction.message.thread?.delete();
+                break;
+            default:
+                console.error('Error handling messageReactionAdd: ', error);
+                break;
+        }
     }
 }
 
@@ -79,33 +112,5 @@ export async function execute(client: Botrucho, reaction: MessageReaction, user:
             }
         }
     }
-
-    try {
-        await reaction.users.remove(user.id);
-        await client.eventAttendanceData.registerUserForEvent(
-            reaction.message.id,
-            reaction.emoji.name!,
-            user.id,
-            user.username
-        );
-
-        const attendance: IEventAttendance = await client.eventAttendanceData.getEventAttendance({ messageId: reaction.message.id });
-        const thread: ThreadChannel<boolean> | null = await fetchThreadById(client, attendance.threadId, reaction.message.channel.id);
-        if (thread) {
-            await thread.send(`${ user.username } (${ reaction.emoji })`);
-        }
-
-        console.log(`User ${ user.username } registered for the event with emoji ${ reaction.emoji.name }`);
-    } catch (error: Error | any) {
-        switch (error.constructor) {
-            case EventNotFoundError:
-                await reaction.message.delete();
-                await reaction.message.thread?.delete();
-                break;
-            case UserAlreadyRegisteredError:
-                break;
-            default:
-                console.error('Error handling messageReactionAdd: ', error);
-        }
-    }
+    await handleReactionAdd(client, reaction, user);
 }
