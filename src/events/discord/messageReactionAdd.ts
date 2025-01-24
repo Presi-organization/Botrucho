@@ -52,7 +52,10 @@ export async function handleReactionAdd(client: Botrucho, reaction: MessageReact
         console.log(`User ${ user.displayName } registered for the event with emoji ${ reaction.emoji.name }`);
     } catch (error: Error | any) {
         switch (error.constructor) {
-            case EventNotFoundError || UserAlreadyRegisteredError:
+            case EventNotFoundError:
+                break;
+            case UserAlreadyRegisteredError:
+                await reaction.users.remove(user.id);
                 break;
             case EventExpiredError:
                 await reaction.message.delete();
@@ -65,7 +68,7 @@ export async function handleReactionAdd(client: Botrucho, reaction: MessageReact
     }
 }
 
-export async function execute(client: Botrucho, reaction: MessageReaction, user: User) {
+export const execute = async (client: Botrucho, reaction: MessageReaction, user: User) => {
     if (reaction.message.partial) await reaction.message.fetch();
     if (reaction.partial) await reaction.fetch();
 
@@ -113,4 +116,4 @@ export async function execute(client: Botrucho, reaction: MessageReaction, user:
         }
     }
     await handleReactionAdd(client, reaction, user);
-}
+};

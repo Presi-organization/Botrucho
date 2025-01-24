@@ -1,7 +1,19 @@
-import { WebhookClient, BaseInteraction, TextChannel, APIMessage, Message, PublicThreadChannel } from 'discord.js';
-import { ThreadAutoArchiveDuration } from "discord-api-types/v10";
+import {
+    WebhookClient,
+    BaseInteraction,
+    TextChannel,
+    APIMessage,
+    Message,
+    PublicThreadChannel,
+    Collection,
+    User,
+    TextThreadChannel
+} from 'discord.js';
+import { Snowflake, ThreadAutoArchiveDuration } from "discord-api-types/v10";
 import EventAttendanceData from "@mongodb/controllers/EventAttendanceData";
 import { EventAlreadyExistsError } from "@errors/EventAlreadyExistsError";
+import Botrucho from "@mongodb/base/Botrucho";
+import { handleReactionAdd } from "@events/discord/messageReactionAdd";
 
 /**
  * Retrieves the current Date + one day and + three days
@@ -57,6 +69,29 @@ const editWebhook: (webhook: WebhookClient) => Promise<WebhookClient> = (webhook
     });
 }
 
+const handleReactions = async (client: Botrucho, message: Message<true>): Promise<void> => {
+    for (const reaction of message.reactions.cache.values()) {
+        const users: Collection<Snowflake, User> = await reaction.users.fetch();
+        users.forEach((user: User) => {
+            if (user.id !== client.user?.id) {
+                handleReactionAdd(client, reaction, user);
+            }
+        });
+    }
+};
+
+const deleteNonBotMessages = async (client: Botrucho, channel: TextChannel, threadId: string): Promise<void> => {
+    const thread: TextThreadChannel | null = await channel.threads.fetch(threadId);
+    if (thread) {
+        const messages: Collection<string, Message<true>> = await thread.messages.fetch();
+        const nonBotMessages: Collection<string, Message<true>> = messages.filter(message => message.author.id !== client.user?.id);
+
+        nonBotMessages.forEach((message: Message<true>) => {
+            message.delete();
+        });
+    }
+};
+
 /**
  * Send a message with an existing webhook
  * @arg {WebhookClient} webhook The Webhook client
@@ -104,4 +139,4 @@ const sendAMessageAndThread: (channel: TextChannel, webhook: WebhookClient, atte
     }
 }
 
-export { sendAMessageAndThread, createWebhook, editWebhook }
+export { sendAMessageAndThread, createWebhook, editWebhook, handleReactions, deleteNonBotMessages }
