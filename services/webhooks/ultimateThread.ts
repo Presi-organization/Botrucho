@@ -107,8 +107,8 @@ const sendAMessageAndThread: (channel: TextChannel, webhook: WebhookClient, atte
         const message: APIMessage = await sendMessageWithWebhook(webhook);
         const fetchedMessage: Message<true> = await channel.messages.fetch(message.id);
         await Promise.all([
-            fetchedMessage.react('<:pepe_no:1332572291317502014>'),
-            fetchedMessage.react('<:pepe_si:1332572265677586572>')
+            fetchedMessage.react('<:pepe_si:1332572265677586572>'),
+            fetchedMessage.react('<:pepe_no:1332572291317502014>')
         ]);
 
         const thread: PublicThreadChannel<false> = await fetchedMessage.startThread({
