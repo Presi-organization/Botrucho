@@ -2,6 +2,7 @@ import {
     Channel,
     ChannelType,
     EmbedBuilder,
+    GuildMember,
     MessageReaction,
     TextChannel,
     TextThreadChannel,
@@ -35,21 +36,23 @@ async function fetchThreadById(client: Botrucho, threadId: string, channelId: st
 
 export async function handleReactionAdd(client: Botrucho, reaction: MessageReaction, user: User) {
     try {
+        const member: GuildMember = await reaction.message.guild?.members.fetch(user.id)!;
+        const nickname: string = member.nickname || member.user.username;
         await client.eventAttendanceData.registerUserForEvent(
             reaction.message.id,
             reaction.emoji.name!,
             user.id,
-            user.displayName
+            nickname
         );
         await reaction.users.remove(user.id);
 
         const attendance: IEventAttendance = await client.eventAttendanceData.getEventAttendance({ messageId: reaction.message.id });
         const thread: ThreadChannel<boolean> | null = await fetchThreadById(client, attendance.threadId, reaction.message.channel.id);
         if (thread) {
-            await thread.send(`${ user.displayName } (${ reaction.emoji })`);
+            await thread.send(`${ nickname } (${ reaction.emoji })`);
         }
 
-        console.log(`User ${ user.displayName } registered for the event with emoji ${ reaction.emoji.name }`);
+        console.log(`User ${ nickname } registered for the event with emoji ${ reaction.emoji.name }`);
     } catch (error: Error | any) {
         switch (error.constructor) {
             case EventNotFoundError:
