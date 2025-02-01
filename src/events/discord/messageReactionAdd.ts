@@ -37,10 +37,11 @@ async function fetchThreadById(client: Botrucho, threadId: string, channelId: st
 export async function handleReactionAdd(client: Botrucho, reaction: MessageReaction, user: User) {
     try {
         const member: GuildMember = await reaction.message.guild?.members.fetch(user.id)!;
-        const nickname: string = member.nickname || member.user.username;
-        await client.eventAttendanceData.registerUserForEvent(
+        const nickname: string = member.displayName;
+        const emojiMarkdown = `<:${ reaction.emoji.name }:${ reaction.emoji.id }>`;
+        const msg: string = await client.eventAttendanceData.registerUserForEvent(
             reaction.message.id,
-            reaction.emoji.name!,
+            emojiMarkdown,
             user.id,
             nickname
         );
@@ -49,7 +50,7 @@ export async function handleReactionAdd(client: Botrucho, reaction: MessageReact
         const attendance: IEventAttendance = await client.eventAttendanceData.getEventAttendance({ messageId: reaction.message.id });
         const thread: ThreadChannel<boolean> | null = await fetchThreadById(client, attendance.threadId, reaction.message.channel.id);
         if (thread) {
-            await thread.send(`${ nickname } (${ reaction.emoji })`);
+            await thread.send(msg);
         }
 
         console.log(`User ${ nickname } registered for the event with emoji ${ reaction.emoji.name }`);

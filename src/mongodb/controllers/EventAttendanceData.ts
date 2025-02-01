@@ -35,18 +35,26 @@ class AttendanceDataController {
         await event.save();
     }
 
-    async registerUserForEvent(messageId: string, reactionEmoji: string, userId: string, username: string): Promise<void> {
+    async registerUserForEvent(messageId: string, reactionEmoji: string, userId: string, username: string): Promise<string> {
         const event: IEventAttendance | null = await EventAttendanceData.findOne({ messageId }).sort({ eventDate: -1 });
         if (!event) throw new EventNotFoundError('Event not found');
         if (event.expirationDate <= new Date()) throw new EventExpiredError('Event expired');
 
-        const userAlreadyRegistered: boolean = event.attendees.some(attendee => attendee.userId === userId);
-        if (userAlreadyRegistered) {
-            throw new UserAlreadyRegisteredError('You are already registered for this event');
+        const attendee: IAttendee | undefined = event.attendees.find((attendee: IAttendee) => attendee.userId === userId);
+        if (attendee) {
+            const oldReaction: string = attendee.reaction;
+            if (oldReaction !== reactionEmoji) {
+                attendee.reaction = reactionEmoji;
+                await event.save();
+                return `${ username } (${ oldReaction }) -> (${ reactionEmoji })`;
+            } else {
+                throw new UserAlreadyRegisteredError('You are already registered for this event');
+            }
         }
 
         event.attendees.push({ userId, username, reaction: reactionEmoji });
         await event.save();
+        return `${ username } (${ reactionEmoji })`;
     }
 
     async removeAttendance(messageId: string): Promise<void> {
