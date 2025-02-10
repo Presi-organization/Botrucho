@@ -1,11 +1,11 @@
-import EventAttendanceData, { IEventAttendance, IAttendee } from "@mongodb/models/EventAttendanceData";
+import EventAttendanceData, { IEventAttendance, IAttendee, IThread } from "@mongodb/models/EventAttendanceData";
 import { EventNotFoundError } from "@errors/EventNotFoundError";
 import { EventAlreadyExistsError } from "@errors/EventAlreadyExistsError";
 import { EventExpiredError } from "@errors/EventExpiredError";
 import { UserAlreadyRegisteredError } from "@errors/UserAlreadyRegisteredError";
 
 class AttendanceDataController {
-    async getEventAttendance(filter: { messageId?: string; threadId?: string }): Promise<IEventAttendance> {
+    async getEventAttendance(filter: { messageId?: string; "thread.threadId"?: string }): Promise<IEventAttendance> {
         const event: IEventAttendance | null = await EventAttendanceData.findOne(filter).sort({ eventDate: -1 });
         if (!event) throw new EventNotFoundError('Event not found');
         if (event.expirationDate <= new Date()) throw new EventExpiredError('Event expired');
@@ -19,7 +19,7 @@ class AttendanceDataController {
         return event.attendees;
     }
 
-    async createEvent(messageId: string, threadId: string, eventDate: Date, expirationDate: Date): Promise<void> {
+    async createEvent(messageId: string, thread: IThread, eventDate: Date, expirationDate: Date): Promise<IEventAttendance> {
         const existingEvent: IEventAttendance | null = await EventAttendanceData.findOne({ eventDate });
         if (existingEvent) {
             throw new EventAlreadyExistsError('An event already exists on this date');
@@ -27,12 +27,12 @@ class AttendanceDataController {
 
         const event = new EventAttendanceData({
             messageId,
-            threadId,
+            thread,
             eventDate,
             expirationDate,
             attendees: []
         });
-        await event.save();
+        return event.save();
     }
 
     async registerUserForEvent(messageId: string, reactionEmoji: string, userId: string, username: string): Promise<string> {
@@ -42,17 +42,18 @@ class AttendanceDataController {
 
         const attendee: IAttendee | undefined = event.attendees.find((attendee: IAttendee) => attendee.userId === userId);
         if (attendee) {
-            const oldReaction: string = attendee.reaction;
-            if (oldReaction !== reactionEmoji) {
-                attendee.reaction = reactionEmoji;
+            const oldReaction: string[] = attendee.reaction;
+            if (oldReaction.at(-1) !== reactionEmoji) {
+                attendee.reaction.push(reactionEmoji);
                 await event.save();
-                return `${ username } (${ oldReaction }) -> (${ reactionEmoji })`;
+                const reactionHistory: string = oldReaction.map((reaction: string) => `(${ reaction })`).join(' -> ');
+                return `${ username } ${ reactionHistory }`;
             } else {
                 throw new UserAlreadyRegisteredError('You are already registered for this event');
             }
         }
 
-        event.attendees.push({ userId, username, reaction: reactionEmoji });
+        event.attendees.push({ userId, username, reaction: [reactionEmoji] });
         await event.save();
         return `${ username } (${ reactionEmoji })`;
     }

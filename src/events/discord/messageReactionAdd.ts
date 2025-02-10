@@ -1,76 +1,7 @@
-import {
-    Channel,
-    ChannelType,
-    EmbedBuilder,
-    GuildMember,
-    MessageReaction,
-    TextChannel,
-    TextThreadChannel,
-    ThreadChannel,
-    User
-} from "discord.js";
-import { IEventData } from "@mongodb/models/EventData";
+import { MessageReaction, User } from "discord.js";
 import Botrucho from "@mongodb/base/Botrucho";
-import { IEventAttendance } from "@mongodb/models/EventAttendanceData";
-import { EventExpiredError } from "@errors/EventExpiredError";
-import { EventNotFoundError } from "@errors/EventNotFoundError";
-import { UserAlreadyRegisteredError } from "@errors/UserAlreadyRegisteredError";
-import { EventKeys, TranslationElement } from "@customTypes/Translations";
-
-async function fetchThreadById(client: Botrucho, threadId: string, channelId: string): Promise<ThreadChannel | null> {
-    try {
-        const channel: Channel | null = await client.channels.fetch(channelId);
-
-        if (channel?.isTextBased() && channel.type === ChannelType.GuildText) {
-            const textChannel = channel as TextChannel;
-            const thread: TextThreadChannel | null = await textChannel.threads.fetch(threadId);
-            if (thread) return thread;
-        }
-        console.error('Channel is not a valid text-based channel or thread not found.');
-        return null;
-    } catch (error) {
-        console.trace('Error fetching the thread:', error);
-        return null;
-    }
-}
-
-export async function handleReactionAdd(client: Botrucho, reaction: MessageReaction, user: User) {
-    try {
-        const member: GuildMember = await reaction.message.guild?.members.fetch(user.id)!;
-        const nickname: string = member.displayName;
-        const emojiMarkdown = `<:${ reaction.emoji.name }:${ reaction.emoji.id }>`;
-        const msg: string = await client.eventAttendanceData.registerUserForEvent(
-            reaction.message.id,
-            emojiMarkdown,
-            user.id,
-            nickname
-        );
-        await reaction.users.remove(user.id);
-
-        const attendance: IEventAttendance = await client.eventAttendanceData.getEventAttendance({ messageId: reaction.message.id });
-        const thread: ThreadChannel<boolean> | null = await fetchThreadById(client, attendance.threadId, reaction.message.channel.id);
-        if (thread) {
-            await thread.send(msg);
-        }
-
-        console.log(`User ${ nickname } registered for the event with emoji ${ reaction.emoji.name }`);
-    } catch (error: Error | any) {
-        switch (error.constructor) {
-            case EventNotFoundError:
-                break;
-            case UserAlreadyRegisteredError:
-                await reaction.users.remove(user.id);
-                break;
-            case EventExpiredError:
-                await reaction.message.delete();
-                await reaction.message.thread?.delete();
-                break;
-            default:
-                console.error('Error handling messageReactionAdd: ', error);
-                break;
-        }
-    }
-}
+import AttendanceReactionHandler from "@events/discord/reactionHandlers/AttendanceReactionHandler";
+import EventHandler from "@events/discord/reactionHandlers/EventHandler";
 
 export const execute = async (client: Botrucho, reaction: MessageReaction, user: User) => {
     if (reaction.message.partial) await reaction.message.fetch();
@@ -79,45 +10,9 @@ export const execute = async (client: Botrucho, reaction: MessageReaction, user:
     if (user.bot) return;
     if (!reaction.message.guild) return;
 
-    if (reaction.emoji.name === '👽') {
-        let eventInfo: IEventData | null = await reaction.message.guild.fetchEventDB(client.eventData, reaction.message.id);
-        if (eventInfo) {
-            const userFind: string | undefined = eventInfo.userAssisting ? eventInfo.userAssisting.find((userID: string) => userID === user.id) : undefined;
-            if (!userFind) {
-                await client.eventData.addAssistance(eventInfo.id, user.id);
+    const attendanceReactionHandler: AttendanceReactionHandler = new AttendanceReactionHandler(client);
+    const eventHandler: EventHandler = new EventHandler(client, reaction, user);
 
-                const {
-                    ASSISTANCE_CONFIRMED,
-                    INVITATION_LINK,
-                    EVENT_GENERATED
-                }: TranslationElement<EventKeys> = await reaction.message.guild.translate("EVENT", client.guildData);
-
-                const exampleEmbed: EmbedBuilder = new EmbedBuilder()
-                    .setColor(client.config.color)
-                    .setTitle(ASSISTANCE_CONFIRMED.replace("${eventName}", eventInfo.eventName))
-                    .setURL(eventInfo.calendarLink)
-                    .setDescription(INVITATION_LINK.replace("${calendarLink}", eventInfo.calendarLink))
-                    .setTimestamp()
-                    .setFooter({
-                        text: EVENT_GENERATED.replace("${username}", client.user?.username!),
-                        iconURL: client.user?.displayAvatarURL({
-                            size: 512
-                        })
-                    });
-
-                user.send({
-                    embeds: [exampleEmbed]
-                })
-                    .then(msg => {
-                        setTimeout(() => {
-                            client.deleted_messages.add(msg);
-                        }, 120000)
-                    })
-                    .catch(() => {
-                        console.log('I couldn\'t send a DM');
-                    });
-            }
-        }
-    }
-    await handleReactionAdd(client, reaction, user);
+    await eventHandler.handleEventReaction();
+    await attendanceReactionHandler.handleAttendanceReaction(reaction, user);
 };

@@ -7,7 +7,7 @@ export async function execute(client: Botrucho, message: Message) {
     try {
         if (message.channel.isThread()) {
             const threadId: string = message.channel.id;
-            await client.eventAttendanceData.getEventAttendance({ threadId });
+            await client.eventAttendanceData.getEventAttendance({ "thread.threadId": threadId });
             await message.delete();
             console.log(`Deleted message from thread ${ threadId }`);
         }

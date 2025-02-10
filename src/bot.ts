@@ -99,7 +99,7 @@ const setupCronJobs: () => void = (): void => {
 
 const cleanUnreadAttendance = async (): Promise<void> => {
     try {
-        const { messageId, threadId } = await client.eventAttendanceData.getEventAttendance({});
+        const { messageId, thread: { threadId } } = await client.eventAttendanceData.getEventAttendance({});
         const channel = await client.channels.fetch('1231030584680251432') as TextChannel | null;
         if (channel?.isTextBased()) {
             const message: Message<true> = await channel.messages.fetch(messageId);

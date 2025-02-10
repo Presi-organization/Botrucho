@@ -13,7 +13,8 @@ import { Snowflake, ThreadAutoArchiveDuration } from "discord-api-types/v10";
 import EventAttendanceData from "@mongodb/controllers/EventAttendanceData";
 import { EventAlreadyExistsError } from "@errors/EventAlreadyExistsError";
 import Botrucho from "@mongodb/base/Botrucho";
-import { handleReactionAdd } from "@events/discord/messageReactionAdd";
+import AttendanceReactionHandler from "@events/discord/reactionHandlers/AttendanceReactionHandler";
+import { IEventAttendance, IThread } from "@mongodb/models/EventAttendanceData";
 
 /**
  * Retrieves the current Date + one day and + three days
@@ -70,11 +71,12 @@ const editWebhook: (webhook: WebhookClient) => Promise<WebhookClient> = (webhook
 }
 
 const handleReactions = async (client: Botrucho, message: Message<true>): Promise<void> => {
+    const attendanceReactionHandler: AttendanceReactionHandler = new AttendanceReactionHandler(client);
     for (const reaction of message.reactions.cache.values()) {
         const users: Collection<Snowflake, User> = await reaction.users.fetch();
         users.forEach((user: User) => {
             if (user.id !== client.user?.id) {
-                handleReactionAdd(client, reaction, user);
+                attendanceReactionHandler.handleAttendanceReaction(reaction, user);
             }
         });
     }
@@ -118,14 +120,16 @@ const sendAMessageAndThread: (channel: TextChannel, webhook: WebhookClient, atte
         });
 
         const { eventDate, expirationDate } = getEventDates();
-        attendanceData.createEvent(message.id, thread.id, eventDate, expirationDate).then(async _ => {
+        const threadObj: IThread = { threadId: thread.id }
+        await attendanceData.createEvent(message.id, threadObj, eventDate, expirationDate).then(async (event: IEventAttendance) => {
             const msg: Message<true> = await thread.send({
                 content: '<@&540708709945311243>'
             });
             setTimeout(() => msg.delete(), 10);
-            await thread.send({
-                content: '**Logs de Asistencia**:'
-            });
+            const threadMessage: Message<true> = await thread.send({ content: '**Sin Votos**' });
+            await thread.send({ content: '__**Logs de Asistencia**__\n' });
+            event.thread.countMessageId = threadMessage.id;
+            await event.save();
 
             console.log(`Event created with message ID: ${ message.id } and thread ID: ${ thread.id }`);
         }).catch((error: EventAlreadyExistsError) => {

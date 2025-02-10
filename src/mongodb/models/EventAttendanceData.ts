@@ -3,20 +3,29 @@ import mongoose, { Document, Schema } from 'mongoose';
 export interface IAttendee {
     userId: string;
     username: string;
-    reaction: string;
+    reaction: string[];
+    threadMessageId?: string;
 }
 
 export interface IEventAttendance extends Document {
     messageId: string;
-    threadId: string;
+    thread: IThread;
     eventDate: Date;
     expirationDate: Date;
     attendees: IAttendee[];
 }
 
+export interface IThread {
+    threadId: string;
+    countMessageId?: string;
+}
+
 const eventAttendanceSchema = new Schema<IEventAttendance>({
     messageId: { type: String, required: true, index: true },
-    threadId: { type: String, required: true, index: true },
+    thread: {
+        threadId: { type: String, required: true, index: true },
+        countMessageId: { type: String, required: false }
+    },
     eventDate: { type: Date, default: Date.now },
     expirationDate: {
         type: Date,
@@ -26,12 +35,13 @@ const eventAttendanceSchema = new Schema<IEventAttendance>({
     attendees: [{
         userId: { type: String, required: true },
         username: { type: String, required: true },
-        reaction: { type: String, required: true }
+        reaction: [{ type: String, required: true }],
+        threadMessageId: { type: String, required: false }
     }],
 }, {
     timestamps: true
 });
 
-eventAttendanceSchema.index({ messageId: 1, threadId: 1 }, { unique: true });
+eventAttendanceSchema.index({ messageId: 1, 'thread.threadId': 1 }, { unique: true });
 
 export default mongoose.model<IEventAttendance>('EventAttendanceData', eventAttendanceSchema);
