@@ -19,6 +19,14 @@
     "NOT_PLAYING_DESC": "No estoy reproduciendo nada en este momento"
   },
   "_COMMANDS": "TRADUCCIONES DE COMANDOS",
+  "DICE": {
+    "ROLL": "Tirada de dados",
+    "RESULT": "Has sacado un ${dice}",
+    "INITIAL_TITLE": "🎲 Tirada de Dados 🎲",
+    "INITIAL_FOOTER": "Tirando los dados...",
+    "RESULT_TITLE": "🎲 Resultado de la Tirada 🎲",
+    "RESULT_FOOTER": "¡Buena suerte!"
+  },
   "AVATAR": {
     "USER": "Avatar de ${username}: ${image}",
     "SELF": "Tu Avatar: ${image}"

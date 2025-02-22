@@ -19,6 +19,14 @@
     "NOT_PLAYING_DESC": "I am not playing anything right now"
   },
   "_COMMANDS": "COMMAND TRANSLATIONS",
+  "DICE": {
+    "ROLL": "Dice roll",
+    "RESULT": "You rolled a ${dice}",
+    "INITIAL_TITLE": "🎲 Dice Roll 🎲",
+    "INITIAL_FOOTER": "Rolling the dice...",
+    "RESULT_TITLE": "🎲 Dice Roll Result 🎲",
+    "RESULT_FOOTER": "Good luck!"
+  },
   "AVATAR": {
     "USER": "${username}'s avatar: ${image}",
     "SELF": "Your avatar: ${image}"
