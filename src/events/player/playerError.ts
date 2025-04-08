@@ -1,3 +1,3 @@
-export async function execute(_: any) {
-    console.log("[ERROR]")
+export async function execute(error: any) {
+    console.log("[ERROR]", error)
 }

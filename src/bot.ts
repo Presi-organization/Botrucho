@@ -24,7 +24,6 @@ const client: Botrucho = new Botrucho({
         Intents.Guilds,
         Intents.GuildMembers,
         Intents.GuildMessages,
-        Intents.GuildMessages,
         Intents.GuildPresences,
         Intents.GuildVoiceStates,
         Intents.GuildMessageReactions,

@@ -23,9 +23,9 @@
     "ROLL": "Tirada de dados",
     "RESULT": "Has sacado un ${dice}",
     "INITIAL_TITLE": "🎲 Tirada de Dados 🎲",
-    "INITIAL_FOOTER": "Tirando los dados...",
+    "INITIAL_FOOTER": "🎲 Tirando los dados...",
     "RESULT_TITLE": "🎲 Resultado de la Tirada 🎲",
-    "RESULT_FOOTER": "¡Buena suerte!"
+    "RESULT_FOOTER": "🎲 ¡Buena suerte!"
   },
   "AVATAR": {
     "USER": "Avatar de ${username}: ${image}",

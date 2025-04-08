@@ -42,7 +42,7 @@ class AttendanceReactionHandler {
         try {
             const member: GuildMember = await reaction.message.guild?.members.fetch(user.id)!;
             const nickname: string = member.displayName;
-            const emojiMarkdown = `<:${ reaction.emoji.name }:${ reaction.emoji.id }>`;
+            const emojiMarkdown: string = reaction.emoji.id ? `<:${reaction.emoji.name}:${reaction.emoji.id}>` : reaction.emoji.name!;
             const msg: string = await this.client.eventAttendanceData.registerUserForEvent(
                 reaction.message.id,
                 emojiMarkdown,
@@ -78,7 +78,7 @@ class AttendanceReactionHandler {
                 }
             }
 
-            console.log(`User ${ nickname } registered for the event with emoji ${ reaction.emoji.name }`);
+            console.log(`User ${ nickname } registered for the event with emoji ${ reaction.emoji.name } (${ emojiMarkdown })`);
         } catch (error: Error | any) {
             switch (error.constructor) {
                 case EventNotFoundError:
