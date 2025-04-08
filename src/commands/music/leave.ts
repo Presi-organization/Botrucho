@@ -1,29 +1,37 @@
-import { CommandInteraction } from "discord.js";
+import { CommandInteraction, EmbedBuilder, SlashCommandOptionsOnlyBuilder } from "discord.js";
 import { SlashCommandBuilder } from "@discordjs/builders";
 import { GuildQueue, useQueue } from "discord-player";
-import { Success, Error } from "@util/embedMessage";
-import { PlayerMetadata } from "@customTypes/playerMetadata";
+import { PlayerMetadata } from "@customTypes/PlayerMetadata";
 import Botrucho from "@mongodb/base/Botrucho";
+import { IGuildData } from "@mongodb/models/GuildData";
+import { Success, Error } from "@util/embedMessage";
+import { LeaveKeys, MusicKeys, TranslationElement } from "@customTypes/Translations";
 
 export const name = 'leave';
 export const description = 'Makes the bot leaving your voice channel.';
 export const cat = 'music';
-export const botpermissions = ['CONNECT', 'SPEAK'];
-export const data = new SlashCommandBuilder()
+export const botpermissions: string[] = ['CONNECT', 'SPEAK'];
+export const data: SlashCommandOptionsOnlyBuilder = new SlashCommandBuilder()
     .setName('leave')
     .setDescription('Makes the bot leaving your voice channel.');
 
-export async function execute(interaction: CommandInteraction & { client: Botrucho }) {
+export async function execute(interaction: CommandInteraction & { client: Botrucho }, guildDB: IGuildData) {
     if (!interaction.inCachedGuild()) return;
+
+    const { DISCONNECTED, SUCCESS }: TranslationElement<LeaveKeys> = interaction.translate("LEAVE", guildDB.lang);
+    const {
+        NOT_PLAYING_TITLE,
+        NOT_PLAYING_DESC
+    }: TranslationElement<MusicKeys> = interaction.translate("MUSIC", guildDB.lang);
 
     await interaction.deferReply();
 
     const queue: GuildQueue<PlayerMetadata> | null = useQueue(interaction.guildId);
 
     if (!queue) {
-        const embed = Error({
-            title: 'Not playing',
-            description: 'I am not playing anything right now',
+        const embed: EmbedBuilder = Error({
+            title: NOT_PLAYING_TITLE,
+            description: NOT_PLAYING_DESC,
             author: {
                 name: interaction.guild.name,
                 iconURL: interaction.guild.iconURL() ?? undefined
@@ -41,8 +49,8 @@ export async function execute(interaction: CommandInteraction & { client: Botruc
     queue.delete();
 
     const embed = Success({
-        title: 'Disconnected!',
-        description: 'I have successfully left the voice channel.',
+        title: DISCONNECTED,
+        description: SUCCESS,
         author: {
             name: interaction.guild.name,
             iconURL: interaction.guild.iconURL() ?? undefined

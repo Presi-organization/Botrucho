@@ -7,6 +7,7 @@ import {
     GuildMember,
     TextChannel,
     Partials,
+    Message,
     Role
 } from "discord.js";
 import { GuildQueue } from "discord-player";
@@ -14,15 +15,14 @@ import { DefaultExtractors } from '@discord-player/extractor';
 import { YoutubeiExtractor } from "discord-player-youtubei";
 import Botrucho from "@mongodb/base/Botrucho";
 import CommandLoader from "@commands/CommandLoader";
-import { sendAMessageAndThread } from "@services/webhooks/ultimateThread";
-import { ActivityPresence } from "@config";
+import { deleteNonBotMessages, handleReactions, sendAMessageAndThread } from "@services/webhooks/ultimateThread";
+import { ActivityPresence } from "@customTypes/Config";
 import '@util/extenders';
 
 const client: Botrucho = new Botrucho({
     intents: [
         Intents.Guilds,
         Intents.GuildMembers,
-        Intents.GuildMessages,
         Intents.GuildMessages,
         Intents.GuildPresences,
         Intents.GuildVoiceStates,
@@ -72,7 +72,7 @@ const loadCommands: () => Promise<void> = async (): Promise<void> => {
 };
 
 const setupCronJobs: () => void = (): void => {
-    cron.schedule('30 19 * * 4', async (): Promise<void> => {
+    cron.schedule('00 19 * * 4', async (): Promise<void> => {
         const webhook = new WebhookClient(client.config.frisbeeHook);
 
         const channel = await client.channels.fetch('1231030584680251432') as TextChannel | null;
@@ -80,7 +80,7 @@ const setupCronJobs: () => void = (): void => {
             const users = channel.guild.roles.cache.find((role: Role) => role.id === '540708709945311243')?.members
                 .reduce((acc: string[], m: GuildMember) => !m.user.bot ? [...acc, m.user.displayName] : acc, []);
             console.log(users);
-            return sendAMessageAndThread(channel, webhook);
+            return sendAMessageAndThread(channel, webhook, client.eventAttendanceData);
         }
     }, {
         scheduled: true,
@@ -96,8 +96,24 @@ const setupCronJobs: () => void = (): void => {
     });
 };
 
+const cleanUnreadAttendance = async (): Promise<void> => {
+    try {
+        const { messageId, thread: { threadId } } = await client.eventAttendanceData.getEventAttendance({});
+        const channel = await client.channels.fetch('1231030584680251432') as TextChannel | null;
+        if (channel?.isTextBased()) {
+            const message: Message<true> = await channel.messages.fetch(messageId);
+
+            await handleReactions(client, message);
+            await deleteNonBotMessages(client, channel, threadId);
+        }
+    } catch (e) {
+        console.error('Error during client ready event:', e);
+    }
+}
+
 const setupClientEvents: () => void = (): void => {
     client.once('ready', async () => {
+        cleanUnreadAttendance().catch(error => console.error('Error cleaning unread attendance:', error));
         const statusArray: ActivityPresence[] = client.config.presence;
         const pickPresence = async (): Promise<void> => {
             const option: number = Math.floor(Math.random() * statusArray.length);

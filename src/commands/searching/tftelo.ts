@@ -8,8 +8,10 @@ import {
 } from "discord.js";
 import { Jimp, JimpMime } from "jimp";
 import { SlashCommandBuilder } from '@discordjs/builders';
+import { IGuildData } from "@mongodb/models/GuildData";
 import { getEntriesBySummoner } from "@services/REST/riotAPI";
 import { Info, Error, Warning } from "@util/embedMessage";
+import { MiscKeys, TftEloKeys, TranslationElement } from "@customTypes/Translations";
 
 const transformQueueType = (queueType: string): string => {
     switch (queueType) {
@@ -39,26 +41,40 @@ export const data: SlashCommandOptionsOnlyBuilder = new SlashCommandBuilder()
         .setDescription('Username and tag. \'Username#TAG\'')
         .setRequired(true));
 
-export async function execute(interaction: CommandInteraction) {
+export async function execute(interaction: CommandInteraction, guildDB: IGuildData) {
     if (!interaction.isChatInputCommand()) return;
+
+    const { YES, NO }: TranslationElement<MiscKeys> = interaction.translate("MISC", guildDB.lang);
+    const {
+        ELO,
+        SUMMONER_NOT_FOUND,
+        UNRANKED,
+        GAME_MODE,
+        RANK,
+        WINS_LOSSES,
+        STREAK,
+        FRESH_BLOOD,
+        INACTIVE
+    }: TranslationElement<TftEloKeys> = interaction.translate("TFT_ELO", guildDB.lang);
+
     let username: string = interaction.options.getString('username')!;
     await interaction.deferReply();
     let entries = [];
     try {
         entries = await getEntriesBySummoner(username);
-    } catch (error) {
+    } catch (error: any) {
         return interaction.editReply({
             embeds: [Error({
                 title: 'ERROR',
-                description: 'I couldn\'t find a summoner.' + error,
+                description: SUMMONER_NOT_FOUND.replace("${error}", error)
             })]
         });
     }
 
     if (entries.length === 0) {
         const embed: EmbedBuilder = Warning({
-            title: 'TFT ELO',
-            description: 'You\'re probably unranked',
+            title: ELO,
+            description: UNRANKED,
             thumbnail: {
                 url: 'attachment://UNRANKED.png'
             },
@@ -75,39 +91,39 @@ export async function execute(interaction: CommandInteraction) {
         const index: number = entries.indexOf(entry);
         const embed = {
             embeds: [Info({
-                title: "TFT ELO",
+                title: ELO,
                 image: {
                     url: `attachment://${ entry.tier }.png`
                 },
                 fields: [
                     {
-                        name: "Game Mode",
+                        name: GAME_MODE,
                         value: transformQueueType(entry.queueType),
                         inline: true
                     },
                     {
-                        name: "Rank/Tier",
+                        name: RANK,
                         value: `${ entry.tier } ${ entry.rank } (${ entry.leaguePoints } LP)`,
                         inline: true
                     },
                     {
-                        name: "Wins | Loss",
+                        name: WINS_LOSSES,
                         value: `**W:** ${ entry.wins } | **L:** ${ entry.losses }`
                     },
                     { name: '\u200B', value: '\u200B' },
                     {
-                        name: "Hot Streak",
-                        value: `${ entry.hotStreak ? "Yes" : "No" }`,
+                        name: STREAK,
+                        value: entry.hotStreak ? YES : NO,
                         inline: true
                     },
                     {
-                        name: "Fresh Blood",
-                        value: `${ entry.freshBlood ? "Yes" : "No" }`,
+                        name: FRESH_BLOOD,
+                        value: entry.freshBlood ? YES : NO,
                         inline: true
                     },
                     {
-                        name: "Inactive",
-                        value: `${ entry.inactive ? "Yes" : "No" }`,
+                        name: INACTIVE,
+                        value: entry.inactive ? YES : NO,
                         inline: true
                     }
                 ],

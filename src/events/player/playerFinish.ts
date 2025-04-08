@@ -3,7 +3,7 @@ import { unlinkSync } from "node:fs";
 import { join } from "path";
 import { GuildQueue, Track } from "discord-player";
 import Botrucho from "@mongodb/base/Botrucho";
-import { PlayerMetadata } from "@customTypes/playerMetadata";
+import { PlayerMetadata } from "@customTypes/PlayerMetadata";
 
 export async function execute(_: Botrucho, queue: GuildQueue<PlayerMetadata>, track: Track): Promise<void> {
     if (queue.metadata.queueTitles.length === 0) {

@@ -1,32 +1,26 @@
-import { Message, Guild, CommandInteraction } from 'discord.js';
+import { Message, Guild, BaseInteraction } from 'discord.js';
 import EventDataController from '@mongodb/controllers/EventData';
 import GuildDataController from '@mongodb/controllers/GuildData';
 import { IGuildData } from "@mongodb/models/GuildData";
 import { IEventData } from "@mongodb/models/EventData";
-import lang from '@languages';
+import { TranslationElement, Translations } from "@customTypes/Translations";
+import en from '@languages/en.json';
+import es from '@languages/es.json';
 import config from '@config';
 
-interface Translations {
-    [key: string]: {
-        [key: string]: string | {
-            [key: string]: string;
-        };
-    };
-}
+function translateText(text: keyof Translations, guildDBLang: string = 'en'): TranslationElement<string> {
+    const languages: { [key: string]: Translations } = { en, es };
 
-function translateText(text: string, guildDBLang: string = 'en'): string | { [p: string]: string } {
-    if (!text || !(lang.translations as Translations)[text]) {
+    if (!text || !languages[guildDBLang] || !languages[guildDBLang][text]) {
         throw new Error(`Translate: Params error: Unknown text ID or missing text ${ text }`);
     }
-    if (!guildDBLang) {
-        console.log('Missing guildDBLang');
-        return '';
-    }
-    const translation: string | { [p: string]: string } = (lang.translations as Translations)[text][guildDBLang];
-    if (translation) {
+
+    const translation: TranslationElement<string> | string = languages[guildDBLang][text];
+    if (typeof translation === 'object') {
         return translation;
     }
-    throw new Error(`Translate: Params error: Translation for text ID ${ text } is not setted`);
+
+    throw new Error(`Translate: Params error: Translation for text ID ${ text } is not an object`);
 }
 
 declare module 'discord.js' {
@@ -39,15 +33,15 @@ declare module 'discord.js' {
 
         fetchEventDB(eventData: EventDataController, messageID: string, guildID?: string): Promise<IEventData | null>;
 
-        translate(text: string, guildData: GuildDataController): Promise<string | { [p: string]: string }>;
+        translate(text: keyof Translations, guildData: GuildDataController): Promise<TranslationElement<string>>;
     }
 
-    interface CommandInteraction {
-        translate(text: string, guildDBLang?: string): string | { [p: string]: string };
+    interface BaseInteraction {
+        translate(text: keyof Translations, guildDBLang?: string): TranslationElement<string>;
     }
 
     interface Message {
-        translate(text: string, guildDBLang?: string): string | { [p: string]: string };
+        translate(text: keyof Translations, guildDBLang?: string): TranslationElement<string>;
     }
 }
 
@@ -91,21 +85,19 @@ Guild.prototype.fetchEventDB = async function (eventData: EventDataController, m
     return eventData.showEvent(guildID, messageID);
 };
 
-CommandInteraction.prototype.translate = function (text: string, guildDBLang: string = 'en'): string | { [p: string]: string } {
+BaseInteraction.prototype.translate = function (text: keyof Translations, guildDBLang: string = 'en'): TranslationElement<string> {
     return translateText(text, guildDBLang);
 };
 
-Message.prototype.translate = function (text: string, guildDBLang: string = 'en'): string | { [p: string]: string } {
+Message.prototype.translate = function (text: keyof Translations, guildDBLang: string = 'en'): TranslationElement<string> {
     return translateText(text, guildDBLang);
 };
 
-Guild.prototype.translate = async function (text: string, guildData: GuildDataController): Promise<string | { [p: string]: string }> {
+Guild.prototype.translate = async function (text: keyof Translations, guildData: GuildDataController): Promise<TranslationElement<string>> {
     if (!text) {
         throw new Error('No text provided');
     }
-    if (!(lang.translations as Translations)[text]) {
-        throw new Error(`Unknown text ID "${ text }"`);
-    }
+
     const guild = await guildData.showGuild(this.id);
     const langDB = guild?.lang || 'en';
     return translateText(text, langDB);

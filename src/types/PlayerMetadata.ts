@@ -1,4 +1,4 @@
-import { GuildTextBasedChannel, Message } from 'discord.js';
+import { BaseInteraction, GuildTextBasedChannel, Message } from 'discord.js';
 import { Track } from "discord-player";
 
 export interface PlayerMetadata {
@@ -6,4 +6,5 @@ export interface PlayerMetadata {
     currentTrack?: Track;
     queueMessage: Message | null;
     channel: GuildTextBasedChannel | null;
+    message: BaseInteraction;
 }

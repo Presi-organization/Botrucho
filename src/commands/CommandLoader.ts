@@ -39,7 +39,8 @@ class CommandLoader {
             .then(() => console.log('[Commands] Successfully registered application commands.'))
             .catch(console.error);
 
-        const discord_events: string[] = await readdir(`${ __dirname }/../events/discord`);
+        const discord_events: string[] = (await readdir(`${ __dirname }/../events/discord`)).filter(e => e.endsWith(".js"));
+        console.log(discord_events)
         for (const discord_event of discord_events) {
             const event_name: string = discord_event.split(".")[0];
             const { execute } = await import(`${ __dirname }/../events/discord/${ discord_event }`);

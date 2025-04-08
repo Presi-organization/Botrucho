@@ -9,3 +9,14 @@ package-lock.json
 .flaskenv*
 !.env.project
 !.env.vault
+**/.terraform/*
+*.tfstate
+*.tfstate.*
+*.tfvars
+override.tf
+override.tf.json
+*_override.tf
+*_override.tf.json
+.terraform.tfstate.lock.info
+.terraformrc
+terraform.rc
