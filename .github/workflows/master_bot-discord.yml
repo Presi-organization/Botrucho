@@ -36,3 +36,4 @@ jobs:
           TF_VAR_ssh_private_key: ${{ secrets.SSH_PRIVATE_KEY }}
           TF_VAR_dotenv: ${{ secrets.DOTENV_KEY }}
         run: terraform apply -auto-approve
+        working-directory: terraform
