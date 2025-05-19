@@ -8,7 +8,7 @@ resource "null_resource" "deploy_botrucho" {
       echo "${var.ssh_private_key}" > /tmp/ssh_key && \
       chmod 600 /tmp/ssh_key && \
       docker save botrucho:1.1.4 | \
-      ssh -T -i /tmp/ssh_key -o StrictHostKeyChecking=no ${var.ssh_user}@${var.ssh_host} '
+      ssh -T -i /tmp/ssh_key -p ${var.ssh_port} -o StrictHostKeyChecking=no ${var.ssh_user}@${var.ssh_host} '
         docker load && \
         docker rm -f botrucho || true && \
         docker run -e DOTENV_KEY=${var.dotenv} --name botrucho -p 3000:3000 -d --restart unless-stopped --init botrucho:1.1.4
