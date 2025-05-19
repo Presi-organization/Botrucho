@@ -18,8 +18,8 @@ jobs:
 
       - name: Build Docker image
         run: |
-          docker build -f docker/Dockerfile -t jonathanstrf/botrucho:1.1.4 .
-          docker save jonathanstrf/botrucho:1.1.4 > botrucho.tar
+          docker build -f docker/Dockerfile -t botrucho:1.1.4 .
+          docker save botrucho:1.1.4 > botrucho.tar
 
       - name: Install Terraform
         uses: hashicorp/setup-terraform@v2
