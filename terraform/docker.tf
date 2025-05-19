@@ -1,5 +1,13 @@
 resource "docker_image" "botrucho" {
-  name = "jonathanstrf/botrucho:1.1.3"
+  name = "jonathanstrf/botrucho:1.1.4"
+}
+
+resource "null_resource" "deploy_botrucho" {
+  provisioner "local-exec" {
+    command = <<EOT
+      docker save jonathanstrf/botrucho:1.1.4 | ssh -i ${var.ssh_private_key} ${var.ssh_user}@${var.ssh_host} "docker load && docker run -e DOTENV_KEY=${var.dotenv} --name botrucho -p 3000:3000 -d --restart unless-stopped --init jonathanstrf/botrucho:1.1.4"
+    EOT
+  }
 }
 
 resource "docker_container" "botrucho" {
