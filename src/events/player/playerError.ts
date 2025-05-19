@@ -1,3 +1,5 @@
+import { logger } from '@util/Logger';
+
 export async function execute(error: any) {
-    console.log("[ERROR]", error)
+  logger.error("[ERROR]", error)
 }

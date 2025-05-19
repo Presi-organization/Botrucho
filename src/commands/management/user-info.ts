@@ -6,11 +6,11 @@ import { TranslationElement, UserInfoKeys } from "@customTypes/Translations";
 
 export const name = 'user-info';
 export const data: SlashCommandOptionsOnlyBuilder = new SlashCommandBuilder()
-    .setName('user-info')
-    .setDescription('Display info about yourself.');
+  .setName('user-info')
+  .setDescription('Display info about yourself.');
 
 export async function execute(interaction: CommandInteraction, guildDB: IGuildData) {
-    const { USERNAME, ID }: TranslationElement<UserInfoKeys> = interaction.translate("USER_INFO", guildDB.lang);
+  const { USERNAME, ID }: TranslationElement<UserInfoKeys> = interaction.translate("USER_INFO", guildDB.lang);
 
-    return interaction.reply({ embeds: [Success({ description: `${ USERNAME.replace("${name}", interaction.user.username) }\n${ ID.replace("${id}", interaction.user.id) }` })] });
+  return interaction.reply({ embeds: [Success({ description: `${USERNAME.replace("${name}", interaction.user.username)}\n${ID.replace("${id}", interaction.user.id)}` })] });
 }

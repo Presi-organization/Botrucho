@@ -1,6 +1,6 @@
 export class EventExpiredError extends Error {
-    constructor(message: string) {
-        super(message);
-        this.name = "EventExpiredError";
-    }
+  constructor(message: string) {
+    super(message);
+    this.name = "EventExpiredError";
+  }
 }

@@ -3,7 +3,7 @@ import { Colors, EmbedBuilder } from "discord.js";
 type EmbedInit = ConstructorParameters<typeof EmbedBuilder>[0];
 
 const createEmbedResponse = (data: EmbedInit, color: number): EmbedBuilder => {
-    return new EmbedBuilder(data).setColor(color);
+  return new EmbedBuilder(data).setColor(color);
 };
 
 export const Error = (data: EmbedInit): EmbedBuilder => createEmbedResponse(data, Colors.LuminousVividPink);
