@@ -2,7 +2,6 @@ recordings
 node_modules
 dist
 config.json
-package-lock.json
 /discord/commands_imple
 .idea
 .env*
