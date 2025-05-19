@@ -7,11 +7,13 @@ variable "dotenv" {
 variable "ssh_user" {
   description = "SSH user for remote Docker host"
   type        = string
+  sensitive   = true
 }
 
 variable "ssh_host" {
   description = "SSH host for remote Docker host"
   type        = string
+  sensitive   = true
 }
 
 variable "ssh_private_key" {
