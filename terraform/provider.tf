@@ -4,6 +4,10 @@ terraform {
       source  = "kreuzwerker/docker"
       version = "3.0.2"
     }
+    random = {
+      source  = "hashicorp/random"
+      version = "~> 3.5"
+    }
   }
   required_version = ">= 1.1.7"
 }
@@ -14,4 +18,10 @@ locals {
 
 provider "docker" {
   host = local.docker_host
+
+  registry_auth {
+    address = "registry-1.docker.io"
+    username = "presi11"
+    password = "" # token of dockerhub
+  }
 }
