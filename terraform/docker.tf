@@ -4,13 +4,13 @@ resource "docker_image" "botrucho" {
 
 resource "null_resource" "deploy_botrucho" {
   provisioner "local-exec" {
-    command = <<EOT
+    command = <<-EOT
       echo "${var.ssh_private_key}" > /tmp/ssh_key && \
       chmod 600 /tmp/ssh_key && \
       docker save botrucho:1.1.4 | \
-      ssh -T -i /tmp/ssh_key -p ${var.ssh_port} -o StrictHostKeyChecking=no ${var.ssh_user}@${var.ssh_host} '
+      ssh -i /tmp/ssh_key -p ${var.ssh_port} -o StrictHostKeyChecking=no ${var.ssh_user}@${var.ssh_host} '
         docker load && \
-        docker rm -f botrucho || true && \
+        (docker rm -f botrucho || true) && \
         docker run -e DOTENV_KEY=${var.dotenv} --name botrucho -p 3000:3000 -d --restart unless-stopped --init botrucho:1.1.4
       '
     EOT
