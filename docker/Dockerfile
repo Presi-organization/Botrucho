@@ -3,7 +3,7 @@ FROM node:22-slim AS build
 
 WORKDIR /botrucho
 
-COPY package*.json .
+COPY package*.json ./
 
 RUN npm install
 
@@ -21,7 +21,9 @@ ENV TZ=America/Bogota
 
 WORKDIR /usr/src/botrucho
 
-COPY package*.json .
+RUN curl -sfS https://dotenvx.sh/install.sh | sh
+
+COPY package*.json ./
 
 RUN npm ci --only=production
 
@@ -29,4 +31,4 @@ COPY --from=build /botrucho/dist ./
 
 EXPOSE 3000
 
-CMD ["node", "src/sharder.js"]
+CMD ["npx", "dotenvx", "run", "--", "node", "src/sharder.js"]
