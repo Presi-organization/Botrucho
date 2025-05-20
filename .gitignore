@@ -4,10 +4,8 @@ dist
 config.json
 /discord/commands_imple
 .idea
-.env*
 .flaskenv*
-!.env.project
-!.env.vault
+.env.keys
 **/.terraform/*
 *.tfstate
 *.tfstate.*

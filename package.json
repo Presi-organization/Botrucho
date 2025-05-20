@@ -1,13 +1,13 @@
 {
   "name": "botrucho",
-  "version": "1.1.4",
+  "version": "1.2.0",
   "description": "",
   "main": "src/sharder.ts",
   "scripts": {
     "clean": "rmdir /s /q dist",
     "copy-assets": "npx cpx 'assets/**/*' dist/assets",
-    "copy-envvault": "npx cpx '.env.vault' dist",
-    "build": "tsc && tsc-alias && npm run copy-assets && npm run copy-envvault",
+    "copy-env": "npx cpx '.env' dist",
+    "build": "tsc && tsc-alias && npm run copy-assets && npm run copy-env",
     "start": "npm run build && node dist/src/sharder.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -17,6 +17,7 @@
     "@discord-player/extractor": "^7.1.0",
     "@discordjs/builders": "^1.11.2",
     "@discordjs/rest": "^2.5.0",
+    "@dotenvx/dotenvx-pro": "^0.21.0",
     "debug": "^4.4.1",
     "discord-api-types": "^0.38.8",
     "discord-player": "^7.1.0",
@@ -28,7 +29,7 @@
     "jimp": "^1.6.0",
     "microsoft-cognitiveservices-speech-sdk": "^1.44.0",
     "mongoose": "^8.15.0",
-    "node-cron": "^4.0.5"
+    "node-cron": "^4.0.6"
   },
   "devDependencies": {
     "@types/express": "^5.0.2",
