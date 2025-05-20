@@ -17,6 +17,7 @@ FROM node:22-slim AS production
 RUN apt-get update && apt-get install -y ffmpeg
 
 ENV FFMPEG_PATH=/usr/bin/ffmpeg
+ENV TZ=America/Bogota
 
 WORKDIR /usr/src/botrucho
 
