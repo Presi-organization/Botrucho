@@ -5,11 +5,11 @@ import {
   SlashCommandOptionsOnlyBuilder
 } from "discord.js";
 import { SlashCommandBuilder } from '@discordjs/builders';
-import { IGuildData } from "@mongodb/models/GuildData";
-import Botrucho from "@mongodb/base/Botrucho";
-import { Error, Success } from "@util/embedMessage";
-import { logger } from "@util/Logger";
-import { MiscKeys, PruneKeys, TranslationElement } from "@customTypes/Translations";
+import { IGuildData } from "@/mongodb/models/GuildData";
+import Botrucho from "@/mongodb/base/Botrucho";
+import { MiscKeys, PruneKeys, TranslationElement } from "@/types/Translations";
+import { Error, Success } from "@/util/embedMessage";
+import { logger } from "@/util/Logger";
 
 export const name = 'prune';
 export const data: SlashCommandOptionsOnlyBuilder = new SlashCommandBuilder()

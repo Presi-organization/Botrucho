@@ -1,7 +1,7 @@
 import { Guild } from "discord.js";
-import Botrucho from "@mongodb/base/Botrucho";
-import { DeleteKeys, TranslationElement } from "@customTypes/Translations";
-import { logger } from '@util/Logger';
+import Botrucho from "@/mongodb/base/Botrucho";
+import { DeleteKeys, TranslationElement } from "@/types/Translations";
+import { logger } from '@/util/Logger';
 
 export async function execute(client: Botrucho, guild: Guild) {
   logger.log("\x1b[32m%s\x1b[0m", "OLD GUILD ", "\x1b[0m", `${guild.name}`);

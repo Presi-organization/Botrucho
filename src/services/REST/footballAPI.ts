@@ -1,5 +1,5 @@
-import { ApiMatch, Competitions, FootballResult, Matches, Results } from "@customTypes/Football";
 import * as process from 'node:process';
+import { ApiMatch, Competitions, FootballResult, Matches, Results } from "@/types/Football";
 
 const FOOTBALL_URI = "https://api.football-data.org/v4";
 const headers = new Headers({

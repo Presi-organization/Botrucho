@@ -3,8 +3,8 @@ import util from "util";
 import { GuildQueueEvents } from "discord-player";
 import { Routes } from "discord-api-types/v10";
 import { REST } from "@discordjs/rest";
-import Botrucho from "@mongodb/base/Botrucho";
-import { logger } from '@util/Logger';
+import Botrucho from "@/mongodb/base/Botrucho";
+import { logger } from '@/util/Logger';
 
 const readdir = util.promisify(fs.readdir);
 const stat = util.promisify(fs.stat);
@@ -48,7 +48,7 @@ class CommandLoader {
     }
     logger.log(`[Discord Events] ${discord_events.length} Discord events loaded.`, discord_events);
 
-    const player_events: string[] = await readdir(`${__dirname}/../events/player`);
+    const player_events: string[] = (await readdir(`${__dirname}/../events/player`)).filter(e => e.endsWith(".js"));
     for (const player_event of player_events) {
       const player_event_name: string = player_event.split(".")[0];
       const { execute } = await import(`${__dirname}/../events/player/${player_event}`);

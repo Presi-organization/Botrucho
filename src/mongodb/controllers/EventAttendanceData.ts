@@ -1,8 +1,8 @@
-import EventAttendanceData, { IAttendee, IEventAttendance, IThread } from "@mongodb/models/EventAttendanceData";
-import { EventNotFoundError } from "@errors/EventNotFoundError";
-import { EventAlreadyExistsError } from "@errors/EventAlreadyExistsError";
-import { EventExpiredError } from "@errors/EventExpiredError";
-import { UserAlreadyRegisteredError } from "@errors/UserAlreadyRegisteredError";
+import { EventNotFoundError } from "@/errors/EventNotFoundError";
+import { EventAlreadyExistsError } from "@/errors/EventAlreadyExistsError";
+import { EventExpiredError } from "@/errors/EventExpiredError";
+import { UserAlreadyRegisteredError } from "@/errors/UserAlreadyRegisteredError";
+import EventAttendanceData, { IAttendee, IEventAttendance, IThread } from "@/mongodb/models/EventAttendanceData";
 
 class AttendanceDataController {
   async getEventAttendance(filter: { messageId?: string; "thread.threadId"?: string }): Promise<IEventAttendance> {

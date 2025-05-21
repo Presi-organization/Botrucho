@@ -7,8 +7,8 @@ import {
   TextInputBuilder,
   TextInputStyle
 } from 'discord.js';
-import { IGuildData } from "@mongodb/models/GuildData";
-import { EventKeys, TranslationElement } from "@customTypes/Translations";
+import { IGuildData } from "@/mongodb/models/GuildData";
+import { EventKeys, TranslationElement } from "@/types/Translations";
 
 export const name = 'event';
 export const data: SlashCommandOptionsOnlyBuilder = new SlashCommandBuilder()

@@ -7,10 +7,10 @@ import {
 } from "discord.js";
 import { Player, QueueRepeatMode, SearchResult, useMainPlayer } from "discord-player";
 import { SlashCommandBuilder } from "@discordjs/builders";
-import { IGuildData } from "@mongodb/models/GuildData";
-import { Error, Success, Warning } from "@util/embedMessage";
-import { PlayKeys, TranslationElement, VCKeys } from "@customTypes/Translations";
-import { logger } from '@util/Logger';
+import { IGuildData } from "@/mongodb/models/GuildData";
+import { PlayKeys, TranslationElement, VCKeys } from "@/types/Translations";
+import { Error, Success, Warning } from "@/util/embedMessage";
+import { logger } from '@/util/Logger';
 
 export const name = 'play';
 export const description = 'Plays a music in your voice channel.';

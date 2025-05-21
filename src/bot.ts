@@ -13,12 +13,12 @@ import {
 import { GuildQueue } from "discord-player";
 import { DefaultExtractors } from '@discord-player/extractor';
 import { YoutubeiExtractor } from "discord-player-youtubei";
-import Botrucho from "@mongodb/base/Botrucho";
-import CommandLoader from "@commands/CommandLoader";
-import { deleteNonBotMessages, handleReactions, sendAMessageAndThread } from "@services/webhooks/ultimateThread";
-import { ActivityPresence } from "@customTypes/Config";
-import { logger } from '@util/Logger';
-import '@util/extenders';
+import Botrucho from "@/mongodb/base/Botrucho";
+import CommandLoader from "@/commands/CommandLoader";
+import { deleteNonBotMessages, handleReactions, sendAMessageAndThread } from "@/services/webhooks/ultimateThread";
+import { ActivityPresence } from "@/types/Config";
+import { logger } from '@/util/Logger';
+import '@/util/extenders';
 
 const client: Botrucho = new Botrucho({
   intents: [
@@ -140,7 +140,7 @@ const setupClientEvents: () => void = (): void => {
     logger.log('Disconnect!');
   });
 
-  client.on('guildMemberSpeaking', async (member, speaking): Promise<void> => {
+  client.on('guildMemberSpeaking', async (member: any, speaking: any): Promise<void> => {
     logger.log(member.displayName || member.user.username, 'is talking?', speaking);
   });
 

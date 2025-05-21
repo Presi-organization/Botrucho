@@ -18,10 +18,10 @@ import {
   SpeechSynthesizer
 } from "microsoft-cognitiveservices-speech-sdk";
 import { AudioResource, createAudioResource } from 'discord-voip';
-import { IGuildData } from "@mongodb/models/GuildData";
-import { Success, Warning } from "@util/embedMessage";
-import { logger } from "@util/Logger";
-import { SayKeys, TranslationElement, VCKeys } from "@customTypes/Translations";
+import { IGuildData } from "@/mongodb/models/GuildData";
+import { SayKeys, TranslationElement, VCKeys } from "@/types/Translations";
+import { Success, Warning } from "@/util/embedMessage";
+import { logger } from "@/util/Logger";
 
 export const name = 'say';
 export const description = 'Plays a phrase';

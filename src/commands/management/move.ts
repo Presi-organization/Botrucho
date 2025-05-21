@@ -9,9 +9,9 @@ import {
   VoiceChannel
 } from 'discord.js';
 import { SlashCommandBuilder } from '@discordjs/builders';
-import { IGuildData } from "@mongodb/models/GuildData";
-import { Success, Warning } from "@util/embedMessage";
-import { MoveKeys, TranslationElement, VCKeys } from "@customTypes/Translations";
+import { IGuildData } from "@/mongodb/models/GuildData";
+import { Success, Warning } from "@/util/embedMessage";
+import { MoveKeys, TranslationElement, VCKeys } from "@/types/Translations";
 
 export const name = 'move';
 export const data: SlashCommandOptionsOnlyBuilder = new SlashCommandBuilder()

@@ -1,6 +1,6 @@
 import { Guild } from "discord.js";
-import Botrucho from "@mongodb/base/Botrucho";
-import { logger } from '@util/Logger';
+import Botrucho from "@/mongodb/base/Botrucho";
+import { logger } from '@/util/Logger';
 
 export async function execute(client: Botrucho, guild: Guild) {
   const allowedServers: string[] = ['775108414560534588', '381983499005067264'];

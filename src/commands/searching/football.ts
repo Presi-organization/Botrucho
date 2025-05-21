@@ -5,8 +5,7 @@ import {
   SlashCommandSubcommandsOnlyBuilder
 } from "discord.js";
 import { SlashCommandBuilder } from "@discordjs/builders";
-import { getCompetitions } from "@services/REST/footballAPI";
-import { Error, Info } from "@util/embedMessage";
+import { getCompetitions } from "@/services/REST/footballAPI";
 import {
   competitionNames,
   Competitions,
@@ -16,7 +15,8 @@ import {
   Match,
   Result,
   subcommandToCompetition
-} from "@customTypes/Football";
+} from "@/types/Football";
+import { Error, Info } from "@/util/embedMessage";
 
 const competitions = [
   { name: "champions", description: "Champions League" },

@@ -1,4 +1,4 @@
-import EventData, { IEventData } from '@mongodb/models/EventData';
+import EventData, { IEventData } from '@/mongodb/models/EventData';
 
 class EventDataController {
   async showEvent(serverID: string, messageID: string): Promise<IEventData | null> {

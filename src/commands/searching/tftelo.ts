@@ -8,10 +8,10 @@ import {
 } from "discord.js";
 import { Jimp, JimpMime } from "jimp";
 import { SlashCommandBuilder } from '@discordjs/builders';
-import { IGuildData } from "@mongodb/models/GuildData";
-import { getEntriesBySummoner } from "@services/REST/riotAPI";
-import { Error, Info, Warning } from "@util/embedMessage";
-import { MiscKeys, TftEloKeys, TranslationElement } from "@customTypes/Translations";
+import { IGuildData } from "@/mongodb/models/GuildData";
+import { getEntriesBySummoner } from "@/services/REST/riotAPI";
+import { MiscKeys, TftEloKeys, TranslationElement } from "@/types/Translations";
+import { Error, Info, Warning } from "@/util/embedMessage";
 
 const transformQueueType = (queueType: string): string => {
   switch (queueType) {

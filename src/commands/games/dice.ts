@@ -5,9 +5,9 @@ import {
   SlashCommandOptionsOnlyBuilder
 } from "discord.js";
 import { SlashCommandBuilder } from "@discordjs/builders";
-import { IGuildData } from "@mongodb/models/GuildData";
-import { DiceKeys, TranslationElement } from "@customTypes/Translations";
-import { Info } from "@util/embedMessage";
+import { IGuildData } from "@/mongodb/models/GuildData";
+import { DiceKeys, TranslationElement } from "@/types/Translations";
+import { Info } from "@/util/embedMessage";
 
 export const name = 'dado';
 export const data: SlashCommandOptionsOnlyBuilder = new SlashCommandBuilder()

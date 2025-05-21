@@ -1,12 +1,12 @@
 import { BaseInteraction, Guild, Message } from 'discord.js';
-import EventDataController from '@mongodb/controllers/EventData';
-import GuildDataController from '@mongodb/controllers/GuildData';
-import { IGuildData } from "@mongodb/models/GuildData";
-import { IEventData } from "@mongodb/models/EventData";
-import { TranslationElement, Translations } from "@customTypes/Translations";
+import EventDataController from '@/mongodb/controllers/EventData';
+import GuildDataController from '@/mongodb/controllers/GuildData';
+import { IGuildData } from "@/mongodb/models/GuildData";
+import { IEventData } from "@/mongodb/models/EventData";
+import { TranslationElement, Translations } from "@/types/Translations";
 import en from '@languages/en.json';
 import es from '@languages/es.json';
-import config from '@config';
+import config from '@/config';
 
 function translateText(text: keyof Translations, guildDBLang: string = 'en'): TranslationElement<string> {
   const languages: { [key: string]: Translations } = { en, es };

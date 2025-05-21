@@ -1,9 +1,9 @@
 import { Client, ClientOptions, Collection } from "discord.js";
 import { Player } from "discord-player";
-import EventAttendanceData from "@mongodb/controllers/EventAttendanceData";
-import EventData from "@mongodb/controllers/EventData";
-import GuildData from "@mongodb/controllers/GuildData";
-import { createClientVars } from "@util/functions";
+import EventAttendanceData from "@/mongodb/controllers/EventAttendanceData";
+import EventData from "@/mongodb/controllers/EventData";
+import GuildData from "@/mongodb/controllers/GuildData";
+import { createClientVars } from "@/util/functions";
 
 interface BotruchoOptions extends ClientOptions {
   config?: any;

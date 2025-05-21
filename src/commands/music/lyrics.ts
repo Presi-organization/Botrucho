@@ -1,11 +1,11 @@
 import { CommandInteraction, EmbedBuilder, SlashCommandOptionsOnlyBuilder, SlashCommandStringOption } from "discord.js";
 import { SlashCommandBuilder } from "@discordjs/builders";
 import { GuildQueue, GuildQueueTimeline, LrcSearchResult, useQueue, useTimeline } from "discord-player";
-import Botrucho from "@mongodb/base/Botrucho";
-import { IGuildData } from "@mongodb/models/GuildData";
-import { Error, Success, Warning } from "@util/embedMessage";
-import { PlayerMetadata } from "@customTypes/PlayerMetadata";
-import { LyricsKeys, TranslationElement } from "@customTypes/Translations";
+import Botrucho from "@/mongodb/base/Botrucho";
+import { IGuildData } from "@/mongodb/models/GuildData";
+import { PlayerMetadata } from "@/types/PlayerMetadata";
+import { LyricsKeys, TranslationElement } from "@/types/Translations";
+import { Error, Success, Warning } from "@/util/embedMessage";
 
 export const name = 'lyrics';
 export const data: SlashCommandOptionsOnlyBuilder = new SlashCommandBuilder()

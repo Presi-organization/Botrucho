@@ -1,10 +1,10 @@
 import { GuildQueue, Track } from "discord-player";
-import Botrucho from "@mongodb/base/Botrucho";
-import { updateQueueMessage } from "@util/embedUtils";
-import { PlayerMetadata } from "@customTypes/PlayerMetadata";
-import { IGuildData } from "@mongodb/models/GuildData";
-import { PlayerKeys, TranslationElement } from "@customTypes/Translations";
-import { logger } from '@util/Logger';
+import Botrucho from "@/mongodb/base/Botrucho";
+import { IGuildData } from "@/mongodb/models/GuildData";
+import { PlayerMetadata } from "@/types/PlayerMetadata";
+import { PlayerKeys, TranslationElement } from "@/types/Translations";
+import { updateQueueMessage } from "@/util/embedUtils";
+import { logger } from '@/util/Logger';
 
 export async function execute(client: Botrucho, queue: GuildQueue<PlayerMetadata>, track: Track): Promise<void> {
   logger.log(`Started playing **${track.title}**!`);

@@ -1,8 +1,8 @@
 import mongoose from "mongoose";
-import Botrucho from "@mongodb/base/Botrucho";
-import config from "@config";
-import { Config } from "@customTypes/Config";
-import { logger } from '@util/Logger';
+import Botrucho from "@/mongodb/base/Botrucho";
+import { Config } from "@/types/Config";
+import { logger } from '@/util/Logger';
+import config from "@/config";
 
 /**
  * Create the client variables

@@ -1,11 +1,11 @@
 import { CommandInteraction, EmbedBuilder, SlashCommandOptionsOnlyBuilder } from "discord.js";
 import { SlashCommandBuilder } from "@discordjs/builders";
 import { GuildQueue, useQueue } from "discord-player";
-import { PlayerMetadata } from "@customTypes/PlayerMetadata";
-import Botrucho from "@mongodb/base/Botrucho";
-import { IGuildData } from "@mongodb/models/GuildData";
-import { Error, Success } from "@util/embedMessage";
-import { LeaveKeys, MusicKeys, TranslationElement } from "@customTypes/Translations";
+import Botrucho from "@/mongodb/base/Botrucho";
+import { IGuildData } from "@/mongodb/models/GuildData";
+import { PlayerMetadata } from "@/types/PlayerMetadata";
+import { LeaveKeys, MusicKeys, TranslationElement } from "@/types/Translations";
+import { Error, Success } from "@/util/embedMessage";
 
 export const name = 'leave';
 export const description = 'Makes the bot leaving your voice channel.';

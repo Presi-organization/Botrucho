@@ -1,9 +1,9 @@
 import { CommandInteraction, SlashCommandOptionsOnlyBuilder } from "discord.js";
 import { SlashCommandBuilder } from '@discordjs/builders';
-import { IGuildData } from "@mongodb/models/GuildData";
-import Botrucho from "@mongodb/base/Botrucho";
-import { Info, Success } from "@util/embedMessage";
-import { LanguageKeys, LanguagesKeys, TranslationElement } from "@customTypes/Translations";
+import { IGuildData } from "@/mongodb/models/GuildData";
+import Botrucho from "@/mongodb/base/Botrucho";
+import { LanguageKeys, LanguagesKeys, TranslationElement } from "@/types/Translations";
+import { Info, Success } from "@/util/embedMessage";
 
 export const name = 'lang';
 export const data: SlashCommandOptionsOnlyBuilder = new SlashCommandBuilder()
