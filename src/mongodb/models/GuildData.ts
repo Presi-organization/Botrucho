@@ -1,5 +1,5 @@
 import mongoose, { Document, Schema } from 'mongoose';
-import config from '@config';
+import config from '@/config';
 
 export interface IGuildData extends Document {
   serverID: string;

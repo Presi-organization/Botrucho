@@ -9,11 +9,11 @@ import {
   SlashCommandSubcommandsOnlyBuilder
 } from "discord.js";
 import { SlashCommandBuilder } from '@discordjs/builders';
-import { IGuildData } from "@mongodb/models/GuildData";
-import { Error, Success } from "@util/embedMessage";
-import { logger } from "@util/Logger";
-import { CropInfo, ImageCenter } from "@customTypes/ImageData";
-import { SiataKeys, TranslationElement } from "@customTypes/Translations";
+import { IGuildData } from "@/mongodb/models/GuildData";
+import { CropInfo, ImageCenter } from "@/types/ImageData";
+import { SiataKeys, TranslationElement } from "@/types/Translations";
+import { Error, Success } from "@/util/embedMessage";
+import { logger } from "@/util/Logger";
 
 export const name = 'siata';
 export const data: SlashCommandSubcommandsOnlyBuilder = new SlashCommandBuilder()

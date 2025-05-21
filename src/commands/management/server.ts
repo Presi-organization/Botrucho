@@ -1,8 +1,8 @@
 import { CommandInteraction, SlashCommandOptionsOnlyBuilder } from "discord.js";
 import { SlashCommandBuilder } from '@discordjs/builders';
-import { IGuildData } from "@mongodb/models/GuildData";
-import { Error, Success } from "@util/embedMessage";
-import { ServerInfoKeys, TranslationElement } from "@customTypes/Translations";
+import { IGuildData } from "@/mongodb/models/GuildData";
+import { Error, Success } from "@/util/embedMessage";
+import { ServerInfoKeys, TranslationElement } from "@/types/Translations";
 
 export const name = 'server';
 export const data: SlashCommandOptionsOnlyBuilder = new SlashCommandBuilder()

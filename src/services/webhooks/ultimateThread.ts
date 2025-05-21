@@ -1,21 +1,21 @@
 import {
-  WebhookClient,
-  BaseInteraction,
-  TextChannel,
   APIMessage,
+  BaseInteraction,
+  Collection,
   Message,
   PublicThreadChannel,
-  Collection,
+  TextChannel,
+  TextThreadChannel,
   User,
-  TextThreadChannel
+  WebhookClient
 } from 'discord.js';
 import { Snowflake, ThreadAutoArchiveDuration } from "discord-api-types/v10";
-import EventAttendanceData from "@mongodb/controllers/EventAttendanceData";
-import { EventAlreadyExistsError } from "@errors/EventAlreadyExistsError";
-import Botrucho from "@mongodb/base/Botrucho";
-import AttendanceReactionHandler from "@events/discord/reactionHandlers/AttendanceReactionHandler";
-import { IEventAttendance, IThread } from "@mongodb/models/EventAttendanceData";
-import { logger } from '@util/Logger';
+import { EventAlreadyExistsError } from "@/errors/EventAlreadyExistsError";
+import AttendanceReactionHandler from "@/events/discord/reactionHandlers/AttendanceReactionHandler";
+import EventAttendanceData from "@/mongodb/controllers/EventAttendanceData";
+import Botrucho from "@/mongodb/base/Botrucho";
+import { IEventAttendance, IThread } from "@/mongodb/models/EventAttendanceData";
+import { logger } from '@/util/Logger';
 
 /**
  * Retrieves the current Date + one day and + three days

@@ -1,12 +1,12 @@
 import { CommandInteraction, SlashCommandOptionsOnlyBuilder } from "discord.js";
 import { GuildQueue, Track, useQueue } from "discord-player";
 import { SlashCommandBuilder } from "@discordjs/builders";
-import { IGuildData } from "@mongodb/models/GuildData";
-import Botrucho from "@mongodb/base/Botrucho";
-import { updateQueueMessage } from "@util/embedUtils";
-import { PlayerMetadata } from "@customTypes/PlayerMetadata";
-import { Error, Success } from "@util/embedMessage";
-import { MusicKeys, PlayerKeys, ShuffleKeys, TranslationElement } from "@customTypes/Translations";
+import { IGuildData } from "@/mongodb/models/GuildData";
+import Botrucho from "@/mongodb/base/Botrucho";
+import { PlayerMetadata } from "@/types/PlayerMetadata";
+import { MusicKeys, PlayerKeys, ShuffleKeys, TranslationElement } from "@/types/Translations";
+import { Error, Success } from "@/util/embedMessage";
+import { updateQueueMessage } from "@/util/embedUtils";
 
 export const name = 'shuffle';
 export const description = 'Shuffles the current queue';

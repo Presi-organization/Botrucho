@@ -1,4 +1,4 @@
-import GuildDataModel, { IGuildData } from '@mongodb/models/GuildData';
+import GuildDataModel, { IGuildData } from '@/mongodb/models/GuildData';
 
 class GuildDataController {
   async showGuild(guildID: string): Promise<IGuildData | null> {

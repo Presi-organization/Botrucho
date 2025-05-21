@@ -1,7 +1,7 @@
 import { MessageReaction, User } from "discord.js";
-import Botrucho from "@mongodb/base/Botrucho";
-import AttendanceReactionHandler from "@events/discord/reactionHandlers/AttendanceReactionHandler";
-import EventHandler from "@events/discord/reactionHandlers/EventHandler";
+import AttendanceReactionHandler from "@/events/discord/reactionHandlers/AttendanceReactionHandler";
+import EventHandler from "@/events/discord/reactionHandlers/EventHandler";
+import Botrucho from "@/mongodb/base/Botrucho";
 
 export const execute = async (client: Botrucho, reaction: MessageReaction, user: User) => {
   if (reaction.message.partial) await reaction.message.fetch();

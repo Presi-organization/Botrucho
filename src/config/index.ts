@@ -1,5 +1,5 @@
 import { ActivityType } from "discord.js";
-import { Config } from "@customTypes/Config";
+import { Config } from "@/types/Config";
 
 const config: Config = {
   token: process.env.DISCORD_TOKEN as string,

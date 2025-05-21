@@ -1,9 +1,9 @@
 import { promises as fs, unlinkSync } from "node:fs";
 import { join } from "path";
 import { GuildQueue, Track } from "discord-player";
-import Botrucho from "@mongodb/base/Botrucho";
-import { PlayerMetadata } from "@customTypes/PlayerMetadata";
-import { logger } from '@util/Logger';
+import Botrucho from "@/mongodb/base/Botrucho";
+import { PlayerMetadata } from "@/types/PlayerMetadata";
+import { logger } from '@/util/Logger';
 
 export async function execute(_: Botrucho, queue: GuildQueue<PlayerMetadata>, track: Track): Promise<void> {
   if (queue.metadata.queueTitles.length === 0) {

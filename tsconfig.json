@@ -31,15 +31,7 @@
     "baseUrl": "./",                                     /* Specify the base directory to resolve non-relative module names. */
     "paths": {                                           /* Specify a set of entries that re-map imports to additional lookup locations. */
       "@languages/*":  ["languages/*"],
-      "@services/*": ["services/*"],
-      "@routes/*": ["src/routes/*"],
-      "@commands/*": ["src/commands/*"],
-      "@events/*": ["src/events/*"],
-      "@mongodb/*": ["src/mongodb/*"],
-      "@util/*": ["src/util/*"],
-      "@errors/*": ["src/errors/*"],
-      "@customTypes/*": ["src/types/*"],
-      "@config": ["src/config/index.ts"]
+      "@/*": ["src/*"],
     },
     // "rootDirs": [],                                   /* Allow multiple folders to be treated as one when resolving modules. */
     // "typeRoots": [],                                  /* Specify multiple folders that act like './node_modules/@types'. */
@@ -121,7 +113,7 @@
   },
   "include": [
     "src/**/*",
-    "services/**/*",
+    "src/services/**/*",
     "languages/**/*",
     "docker/**/*",
     "assets/**/*"

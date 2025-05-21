@@ -1,9 +1,9 @@
 import { ShardingManager } from "discord.js";
 import express, { Express } from 'express';
-import healthRoute from "@routes/health";
-import { logger } from "@util/Logger";
+import healthRoute from "@/routes/health";
+import { logger } from "@/util/Logger";
 
-import config from "@config";
+import config from "@/config";
 
 const validateEnv = () => {
   const requiredEnvVars = ['MONGO_URI', 'DISCORD_TOKEN', 'AISPEECH_TOKEN', 'CLIENT_ID', 'GUILD_ID', 'WEBHOOK_ID', 'WEBOOK_TOKEN', 'RIOT_TOKEN', 'SHARDS', 'NODE_ENV'];

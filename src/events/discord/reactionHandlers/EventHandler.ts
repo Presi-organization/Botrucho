@@ -1,8 +1,8 @@
 import { EmbedBuilder, MessageReaction, User } from "discord.js";
-import Botrucho from "@mongodb/base/Botrucho";
-import { IEventData } from "@mongodb/models/EventData";
-import { EventKeys, TranslationElement } from "@customTypes/Translations";
-import { logger } from '@util/Logger';
+import Botrucho from "@/mongodb/base/Botrucho";
+import { IEventData } from "@/mongodb/models/EventData";
+import { EventKeys, TranslationElement } from "@/types/Translations";
+import { logger } from '@/util/Logger';
 
 class EventHandler {
   private client: Botrucho;

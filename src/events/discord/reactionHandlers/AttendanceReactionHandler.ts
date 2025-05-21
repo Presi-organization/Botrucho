@@ -1,4 +1,7 @@
-import Botrucho from "@mongodb/base/Botrucho";
+import { EventNotFoundError } from "@/errors/EventNotFoundError";
+import { UserAlreadyRegisteredError } from "@/errors/UserAlreadyRegisteredError";
+import { EventExpiredError } from "@/errors/EventExpiredError";
+import Botrucho from "@/mongodb/base/Botrucho";
 import {
   Channel,
   ChannelType,
@@ -10,11 +13,8 @@ import {
   ThreadChannel,
   User
 } from "discord.js";
-import { IAttendee, IEventAttendance } from "@mongodb/models/EventAttendanceData";
-import { EventNotFoundError } from "@errors/EventNotFoundError";
-import { UserAlreadyRegisteredError } from "@errors/UserAlreadyRegisteredError";
-import { EventExpiredError } from "@errors/EventExpiredError";
-import { logger } from "@util/Logger";
+import { IAttendee, IEventAttendance } from "@/mongodb/models/EventAttendanceData";
+import { logger } from "@/util/Logger";
 
 class AttendanceReactionHandler {
   private client: Botrucho;

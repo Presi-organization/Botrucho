@@ -4,12 +4,10 @@ FROM node:22-slim AS build
 WORKDIR /botrucho
 
 COPY package*.json ./
-
 RUN npm install
 
 COPY . .
-
-RUN npm run build
+RUN npm run clean && npm run build
 
 # Production Stage
 FROM node:22-slim AS production
@@ -25,7 +23,7 @@ RUN curl -sfS https://dotenvx.sh/install.sh | sh
 
 COPY package*.json ./
 
-RUN npm ci --only=production
+RUN npm ci --omit=dev
 
 COPY --from=build /botrucho/dist ./
 

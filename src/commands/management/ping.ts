@@ -5,11 +5,11 @@ import {
   SlashCommandOptionsOnlyBuilder
 } from "discord.js";
 import { SlashCommandBuilder } from '@discordjs/builders';
-import Botrucho from "@mongodb/base/Botrucho";
-import { IGuildData } from "@mongodb/models/GuildData";
-import { Info } from "@util/embedMessage";
-import { PingKeys, TranslationElement } from "@customTypes/Translations";
-import { logger } from '@util/Logger';
+import Botrucho from "@/mongodb/base/Botrucho";
+import { IGuildData } from "@/mongodb/models/GuildData";
+import { Info } from "@/util/embedMessage";
+import { logger } from '@/util/Logger';
+import { PingKeys, TranslationElement } from "@/types/Translations";
 
 export const name = 'ping';
 export const data: SlashCommandOptionsOnlyBuilder = new SlashCommandBuilder()

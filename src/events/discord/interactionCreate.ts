@@ -1,8 +1,8 @@
 import { Guild, Interaction, InteractionCallbackResponse, Message } from 'discord.js';
-import Botrucho from "@mongodb/base/Botrucho";
-import { IGuildData } from "@mongodb/models/GuildData";
-import { EventKeys, MiscKeys, TranslationElement } from "@customTypes/Translations";
-import { logger } from '@util/Logger';
+import Botrucho from "@/mongodb/base/Botrucho";
+import { IGuildData } from "@/mongodb/models/GuildData";
+import { EventKeys, MiscKeys, TranslationElement } from "@/types/Translations";
+import { logger } from '@/util/Logger';
 
 module.exports = {
   async execute(client: Botrucho, interaction: Interaction): Promise<void> {

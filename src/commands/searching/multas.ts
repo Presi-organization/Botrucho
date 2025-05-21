@@ -1,8 +1,8 @@
 import { CommandInteraction, SlashCommandOptionsOnlyBuilder } from "discord.js";
 import { SlashCommandBuilder } from '@discordjs/builders';
-import { IGuildData } from "@mongodb/models/GuildData";
-import { Info } from "@util/embedMessage";
-import { FinesKeys, MiscKeys, TranslationElement } from "@customTypes/Translations";
+import { IGuildData } from "@/mongodb/models/GuildData";
+import { FinesKeys, MiscKeys, TranslationElement } from "@/types/Translations";
+import { Info } from "@/util/embedMessage";
 
 export const name = 'multas';
 export const data: SlashCommandOptionsOnlyBuilder = new SlashCommandBuilder()

@@ -1,6 +1,6 @@
 import { Message } from "discord.js";
-import Botrucho from "@mongodb/base/Botrucho";
-import { logger } from '@util/Logger';
+import Botrucho from "@/mongodb/base/Botrucho";
+import { logger } from '@/util/Logger';
 
 export async function execute(client: Botrucho, message: Message) {
   if (message.author.bot) return;

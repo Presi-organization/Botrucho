@@ -7,10 +7,10 @@ import {
 } from "discord.js";
 import { SlashCommandBuilder } from "@discordjs/builders";
 import { GuildQueueTimeline, useTimeline } from "discord-player";
-import Botrucho from "@mongodb/base/Botrucho";
-import { IGuildData } from "@mongodb/models/GuildData";
-import { Error, Success } from "@util/embedMessage";
-import { MusicKeys, TranslationElement, VolumeKeys } from "@customTypes/Translations";
+import Botrucho from "@/mongodb/base/Botrucho";
+import { IGuildData } from "@/mongodb/models/GuildData";
+import { MusicKeys, TranslationElement, VolumeKeys } from "@/types/Translations";
+import { Error, Success } from "@/util/embedMessage";
 
 export const name = 'volume';
 export const description = 'Changes the Volume';
