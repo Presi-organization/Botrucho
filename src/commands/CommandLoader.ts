@@ -3,13 +3,14 @@ import util from 'util';
 import { GuildQueueEvents } from 'discord-player';
 import { Routes } from 'discord-api-types/v10';
 import { REST } from '@discordjs/rest';
+import { commandRegistry } from '@/commands/registry';
 import { Botrucho } from '@/mongodb';
 import { logger } from '@/utils';
 
 import config from '@/config';
+import { ICommand } from '@/types';
 
 const readdir = util.promisify(fs.readdir);
-const stat = util.promisify(fs.stat);
 
 class CommandLoader {
   private readonly client: Botrucho;
@@ -19,22 +20,18 @@ class CommandLoader {
   }
 
   async loadCommands() {
-    const categories: string[] = (await Promise.all(
-      (await readdir(__dirname)).map(async (category) => {
-        const categoryPath = `${__dirname}/${category}`;
-        const stats = await stat(categoryPath);
-        return stats.isDirectory() ? category : null;
-      })
-    )).filter(Boolean) as string[];
-    logger.log(`[Commands] ${categories.length} Categories loaded.`, categories);
     const commands: unknown[] = [];
-    for (const category of categories) {
-      for (const command_file of (await readdir(`${__dirname}/${category}/`)).filter(e => 'js' === e.split('.').pop())) {
-        const command = (await import(`${__dirname}/${category}/${command_file}`));
-        this.client.commands.set(command.name, command);
-        commands.push(command.data.toJSON());
+
+    for (const CommandClass of commandRegistry) {
+      try {
+        const commandInstance = new CommandClass();
+        this.client.commands.set(commandInstance.name, commandInstance);
+        commands.push(commandInstance.data.toJSON());
+      } catch (error) {
+        logger.error(`[Commands] Failed to initialize command ${CommandClass.name}:`, error);
       }
     }
+    logger.debug(`[Commands] ${this.client.commands.size} commands loaded.`, this.client.commands.map((c: ICommand): string => c.name));
 
     const rest: REST = new REST({ version: '10' }).setToken(config.token);
 

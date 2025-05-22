@@ -19,6 +19,11 @@
     "NOT_PLAYING_DESC": "No estoy reproduciendo nada en este momento"
   },
   "_COMMANDS": "TRADUCCIONES DE COMANDOS",
+  "COIN": {
+    "COIN_FLIP": "🪙 Lanzamiento de moneda: ${result}",
+    "HEADS": "👑 Cara",
+    "TAILS": "🦅 Cruz"
+  },
   "DICE": {
     "ROLL": "Tirada de dados",
     "RESULT": "Has sacado un ${dice}",

@@ -19,6 +19,11 @@
     "NOT_PLAYING_DESC": "I am not playing anything right now"
   },
   "_COMMANDS": "COMMAND TRANSLATIONS",
+  "COIN": {
+    "COIN_FLIP": "🪙 Coin flip: ${result}",
+    "HEADS": "👑 Heads",
+    "TAILS": "🦅 Tails"
+  },
   "DICE": {
     "ROLL": "Dice roll",
     "RESULT": "You rolled a ${dice}",

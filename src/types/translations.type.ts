@@ -4,6 +4,7 @@ export interface TranslationsType {
   VC: TranslationElement<VCKeys>;
   MUSIC: TranslationElement<MusicKeys>;
   _COMMANDS: string;
+  COIN: TranslationElement<CoinKeys>;
   DICE: TranslationElement<DiceKeys>;
   AVATAR: TranslationElement<AvatarKeys>;
   EVENT: TranslationElement<EventKeys>;
@@ -34,6 +35,7 @@ export type LanguagesKeys = 'ES' | 'EN';
 export type MiscKeys = 'YES' | 'NO' | 'ERROR' | 'NOT_POSSIBLE';
 export type VCKeys = 'CONNECT_VC' | 'USER_NOT_IN';
 export type MusicKeys = 'NOT_PLAYING_TITLE' | 'NOT_PLAYING_DESC';
+export type CoinKeys = 'COIN_FLIP' | 'HEADS' | 'TAILS';
 export type DiceKeys = 'ROLL' | 'RESULT' | 'INITIAL_TITLE' | 'INITIAL_FOOTER' | 'RESULT_TITLE' | 'RESULT_FOOTER';
 export type AvatarKeys = 'USER' | 'SELF';
 export type EventKeys =

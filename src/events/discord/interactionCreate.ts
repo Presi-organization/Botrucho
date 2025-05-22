@@ -1,6 +1,6 @@
 import { Guild, Interaction, InteractionCallbackResponse, Message } from 'discord.js';
 import { Botrucho, IGuildData } from '@/mongodb';
-import { Command, EventKeys, MiscKeys, TranslationElement } from '@/types';
+import { ICommand, EventKeys, MiscKeys, TranslationElement } from '@/types';
 import { logger } from '@/utils';
 
 module.exports = {
@@ -8,7 +8,7 @@ module.exports = {
     if (!interaction.inCachedGuild()) return;
     const guildDB: IGuildData = await interaction.guild.fetchDB(client.guildData);
     if (interaction.isCommand()) {
-      const command: Command | undefined = client.commands.get(interaction.commandName);
+      const command: ICommand | undefined = client.commands.get(interaction.commandName);
       if (!command) return;
       try {
         await client.player.context.provide({ guild: interaction?.guild as Guild }, async () => await command.execute(interaction, guildDB));

@@ -1,8 +1,7 @@
 import { Client, ClientOptions, Collection, Interaction, Message } from 'discord.js';
 import { Player } from 'discord-player';
 import { AttendanceDataController, EventDataController, GuildDataController } from '@/mongodb';
-import { Command, ConfigType } from '@/types';
-import { createClientVars } from '@/utils';
+import { ICommand, ConfigType } from '@/types';
 
 import config from '@/config';
 
@@ -17,7 +16,7 @@ export class Botrucho extends Client {
   deleted_messages: Set<Interaction | Message>;
   player: Player;
   queue: Map<unknown, unknown>;
-  commands: Collection<string, Command>;
+  commands: Collection<string, ICommand>;
   guildData: GuildDataController;
   eventData: EventDataController;
   eventAttendanceData: AttendanceDataController;
@@ -33,7 +32,6 @@ export class Botrucho extends Client {
     this.devMode = config.devMode || false;
     this.deleted_messages = new Set();
     this.player = new Player(this);
-    createClientVars(this);
     this.queue = new Map();
     this.commands = new Collection();
     this.guildData = new GuildDataController();

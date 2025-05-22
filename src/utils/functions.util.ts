@@ -1,24 +1,7 @@
 import { Client as DiscordClient, GatewayIntentBits as Intents, Partials, } from 'discord.js';
 import mongoose from 'mongoose';
-import { Botrucho } from '@/mongodb';
 import { ConfigType } from '@/types';
 import { logger } from '@/utils';
-
-import config from '@/config';
-
-/**
- * Create the client variables
- * @param client The discord client instance
- */
-const createClientVars: (client: Botrucho) => void = (client: Botrucho): void => {
-  client.config = config;
-  client.color = config.color;
-  client.owners = ['429375441267195924', '219637158162464768'];
-  client.footer = config.footer.slice(0, 32);
-  client.defaultLanguage = config.defaultLanguage;
-  client.log = config.logAll;
-  client.devMode = config.devMode;
-};
 
 /**
  * Check the configuration
@@ -95,4 +78,4 @@ const checkConfig: (config: ConfigType) => Promise<boolean> = async (config: Con
   return error;
 };
 
-export { checkConfig, createClientVars };
+export { checkConfig };
