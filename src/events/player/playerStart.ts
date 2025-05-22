@@ -1,15 +1,15 @@
-import { GuildQueue, Track } from "discord-player";
-import Botrucho from "@/mongodb/base/Botrucho";
-import { IGuildData } from "@/mongodb/models/GuildData";
-import { PlayerMetadata } from "@/types/PlayerMetadata";
-import { PlayerKeys, TranslationElement } from "@/types/Translations";
-import { updateQueueMessage } from "@/util/embedUtils";
-import { logger } from '@/util/Logger';
+import { Guild } from 'discord.js';
+import { GuildQueue, Track } from 'discord-player';
+import { Botrucho, IGuildData } from '@/mongodb';
+import { PlayerKeys, PlayerType, TranslationElement } from '@/types';
+import { logger, updateQueueMessage } from '@/utils';
 
-export async function execute(client: Botrucho, queue: GuildQueue<PlayerMetadata>, track: Track): Promise<void> {
+export async function execute(client: Botrucho, queue: GuildQueue<PlayerType>, track: Track): Promise<void> {
   logger.log(`Started playing **${track.title}**!`);
-  const guildDB: IGuildData | null = await client.guildData.showGuild(queue.metadata.message.guild!.id);
+  const guild: Guild | null = queue.metadata.message.guild;
+  if (!guild) throw new Error('Guild is undefined in queue metadata message.');
+  const guildDB: IGuildData | null = await client.guildData.showGuild(guild.id);
   const langDB = guildDB?.lang || 'en';
-  const playerTranslate: TranslationElement<PlayerKeys> = queue.metadata.message.translate("PLAYER", langDB);
+  const playerTranslate: TranslationElement<PlayerKeys> = queue.metadata.message.translate('PLAYER', langDB);
   await updateQueueMessage(queue, track, playerTranslate);
 }

@@ -1,4 +1,4 @@
-export interface Translations {
+export interface TranslationsType {
   LANGUAGES: TranslationElement<LanguagesKeys>;
   MISC: TranslationElement<MiscKeys>;
   VC: TranslationElement<VCKeys>;
@@ -28,9 +28,7 @@ export interface Translations {
   PLAYER: TranslationElement<PlayerKeys>
 }
 
-export type TranslationElement<T extends string> = {
-  [key in T]: string;
-};
+export type TranslationElement<T extends string> = Record<T, string>;
 
 export type LanguagesKeys = 'ES' | 'EN';
 export type MiscKeys = 'YES' | 'NO' | 'ERROR' | 'NOT_POSSIBLE';

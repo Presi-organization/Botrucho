@@ -1,8 +1,8 @@
-import { Message } from "discord.js";
-import Botrucho from "@/mongodb/base/Botrucho";
+import { Message } from 'discord.js';
+import { Botrucho } from '@/mongodb';
 
-export async function execute(_: any, message: Message & { client: Botrucho }) {
-  const { client: { deleted_messages } } = message;
+export async function execute(client: Botrucho, message: Message) {
+  const { deleted_messages } = client;
   if (deleted_messages.has(message)) {
     deleted_messages.delete(message);
   }

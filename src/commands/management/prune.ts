@@ -3,13 +3,11 @@ import {
   MessageFlags,
   SlashCommandIntegerOption,
   SlashCommandOptionsOnlyBuilder
-} from "discord.js";
+} from 'discord.js';
 import { SlashCommandBuilder } from '@discordjs/builders';
-import { IGuildData } from "@/mongodb/models/GuildData";
-import Botrucho from "@/mongodb/base/Botrucho";
-import { MiscKeys, PruneKeys, TranslationElement } from "@/types/Translations";
-import { Error, Success } from "@/util/embedMessage";
-import { logger } from "@/util/Logger";
+import { Botrucho, IGuildData } from '@/mongodb';
+import { MiscKeys, PruneKeys, TranslationElement } from '@/types';
+import { Error, logger, Success } from '@/utils';
 
 export const name = 'prune';
 export const data: SlashCommandOptionsOnlyBuilder = new SlashCommandBuilder()
@@ -22,7 +20,7 @@ export async function execute(interaction: CommandInteraction & { client: Botruc
   if (!interaction.isChatInputCommand()) return;
 
   if (!interaction.channel || interaction.channel.isThread()) {
-    const { NOT_POSSIBLE }: TranslationElement<MiscKeys> = interaction.translate("MISC", guildDB.lang);
+    const { NOT_POSSIBLE }: TranslationElement<MiscKeys> = interaction.translate('MISC', guildDB.lang);
     await interaction.reply({ embeds: [Error({ description: NOT_POSSIBLE })] });
     return;
   } else {
@@ -30,7 +28,7 @@ export async function execute(interaction: CommandInteraction & { client: Botruc
       AMOUNT_ERR,
       ERR,
       SUCCESS
-    }: TranslationElement<PruneKeys> = interaction.translate("PRUNE", guildDB.lang);
+    }: TranslationElement<PruneKeys> = interaction.translate('PRUNE', guildDB.lang);
 
     const amount: number = interaction.options.getInteger('amount', true);
 
@@ -41,18 +39,20 @@ export async function execute(interaction: CommandInteraction & { client: Botruc
       });
     }
 
-    await interaction.channel!.bulkDelete(amount, true).catch(error => {
-      logger.error(error);
-      interaction.reply({
-        embeds: [Error({ description: ERR })],
+    if (interaction.channel) {
+      await interaction.channel.bulkDelete(amount, true).catch(error => {
+        logger.error(error);
+        interaction.reply({
+          embeds: [Error({ description: ERR })],
+          flags: MessageFlags.Ephemeral
+        });
+      });
+
+      await interaction.reply({
+        embeds: [Success({ description: SUCCESS.replace('${amount}', amount.toString()) })],
         flags: MessageFlags.Ephemeral
       });
-    });
-
-    await interaction.reply({
-      embeds: [Success({ description: SUCCESS.replace("${amount}", amount.toString()) })],
-      flags: MessageFlags.Ephemeral
-    });
+    }
+    interaction.client.deleted_messages.add(interaction);
   }
-  interaction.client.deleted_messages.add(interaction);
 }

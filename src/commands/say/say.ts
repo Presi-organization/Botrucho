@@ -1,27 +1,26 @@
 import { Readable } from 'node:stream';
 import { Buffer } from 'node:buffer';
-import { join } from "path";
+import { join } from 'path';
 import {
   CommandInteraction,
   MessageFlags,
   SlashCommandOptionsOnlyBuilder,
   SlashCommandStringOption,
   VoiceBasedChannel
-} from "discord.js";
-import { Player, QueueRepeatMode, useMainPlayer } from "discord-player";
-import { SlashCommandBuilder } from "@discordjs/builders";
+} from 'discord.js';
+import { Player, QueueRepeatMode, useMainPlayer } from 'discord-player';
+import { SlashCommandBuilder } from '@discordjs/builders';
 import {
   AudioConfig,
   ResultReason,
   SpeechConfig,
   SpeechSynthesisResult,
   SpeechSynthesizer
-} from "microsoft-cognitiveservices-speech-sdk";
+} from 'microsoft-cognitiveservices-speech-sdk';
 import { AudioResource, createAudioResource } from 'discord-voip';
-import { IGuildData } from "@/mongodb/models/GuildData";
-import { SayKeys, TranslationElement, VCKeys } from "@/types/Translations";
-import { Success, Warning } from "@/util/embedMessage";
-import { logger } from "@/util/Logger";
+import { Botrucho, IGuildData } from '@/mongodb';
+import { SayKeys, TranslationElement, VCKeys } from '@/types';
+import { logger, Success, Warning } from '@/utils';
 
 export const name = 'say';
 export const description = 'Plays a phrase';
@@ -32,12 +31,13 @@ export const data: SlashCommandOptionsOnlyBuilder = new SlashCommandBuilder()
   .setDescription('Plays a phrasae.')
   .addStringOption((option: SlashCommandStringOption) => option.setName('phrase').setDescription('The desired phrase').setRequired(true));
 
-export async function execute(interaction: CommandInteraction, guildDB: IGuildData) {
+export async function execute(interaction: CommandInteraction & { client: Botrucho }, guildDB: IGuildData) {
   if (!interaction.inCachedGuild()) return;
   if (!interaction.isChatInputCommand()) return;
 
-  const { SYNTHESIZING }: TranslationElement<SayKeys> = interaction.translate("SAY", guildDB.lang);
-  const { CONNECT_VC }: TranslationElement<VCKeys> = interaction.translate("VC", guildDB.lang);
+  const { client } = interaction;
+  const { SYNTHESIZING }: TranslationElement<SayKeys> = interaction.translate('SAY', guildDB.lang);
+  const { CONNECT_VC }: TranslationElement<VCKeys> = interaction.translate('VC', guildDB.lang);
 
   const channel: VoiceBasedChannel | null = interaction.member.voice.channel;
   const player: Player = useMainPlayer();
@@ -47,18 +47,18 @@ export async function execute(interaction: CommandInteraction, guildDB: IGuildDa
   const phrase: string = interaction.options.getString('phrase', true);
   if (!channel) return interaction.editReply({ embeds: [Warning({ description: CONNECT_VC })] });
 
-  const key: string = process.env.AISPEECH_TOKEN!;
-  const region = "eastus";
-  const audioFile: string = join(__dirname, "voice_speech.wav");
+  const key: string = client.config.integrations.aispeech;
+  const region = 'eastus';
+  const audioFile: string = join(__dirname, 'voice_speech.wav');
 
   const speechConfig: SpeechConfig = SpeechConfig.fromSubscription(key, region);
   const audioConfig: AudioConfig = AudioConfig.fromAudioFileOutput(audioFile);
 
-  speechConfig.speechSynthesisVoiceName = "es-CL-LorenzoNeural";
-  speechConfig.speechSynthesisVoiceName = "es-CR-JuanNeural";
-  speechConfig.speechSynthesisVoiceName = "es-MX-JorgeNeural";
+  speechConfig.speechSynthesisVoiceName = 'es-CL-LorenzoNeural';
+  speechConfig.speechSynthesisVoiceName = 'es-CR-JuanNeural';
+  speechConfig.speechSynthesisVoiceName = 'es-MX-JorgeNeural';
 
-  let synthesizer: SpeechSynthesizer = new SpeechSynthesizer(speechConfig, audioConfig);
+  const synthesizer: SpeechSynthesizer = new SpeechSynthesizer(speechConfig, audioConfig);
 
   synthesizer.speakTextAsync(phrase,
     async function (result: SpeechSynthesisResult) {
@@ -66,7 +66,7 @@ export async function execute(interaction: CommandInteraction, guildDB: IGuildDa
         const arrayBuffer: ArrayBuffer = result.audioData
         const nodeBuffer: Buffer<ArrayBufferLike> = Buffer.from(arrayBuffer);
         const nodeStream: Readable = Readable.from(nodeBuffer);
-        let resource: AudioResource<{ title: string } extends (null | undefined) ? null : {
+        const resource: AudioResource<{ title: string } extends (null | undefined) ? null : {
           title: string
         }> = createAudioResource(nodeStream, { metadata: { title: phrase } });
 
@@ -108,13 +108,13 @@ export async function execute(interaction: CommandInteraction, guildDB: IGuildDa
         });
 
       } else {
-        logger.error("Speech synthesis canceled, " + result.errorDetails +
-          "\nDid you set the speech resource key and region values?");
+        logger.error('Speech synthesis canceled, ' + result.errorDetails +
+          '\nDid you set the speech resource key and region values?');
       }
       synthesizer.close();
     },
     function (err) {
-      logger.trace("err - " + err);
+      logger.trace('err - ' + err);
       synthesizer.close();
     });
 }

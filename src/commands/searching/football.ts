@@ -3,9 +3,9 @@ import {
   EmbedBuilder,
   SlashCommandSubcommandGroupBuilder,
   SlashCommandSubcommandsOnlyBuilder
-} from "discord.js";
-import { SlashCommandBuilder } from "@discordjs/builders";
-import { getCompetitions } from "@/services/REST/footballAPI";
+} from 'discord.js';
+import { SlashCommandBuilder } from '@discordjs/builders';
+import { getCompetitions } from '@/services';
 import {
   competitionNames,
   Competitions,
@@ -15,18 +15,18 @@ import {
   Match,
   Result,
   subcommandToCompetition
-} from "@/types/Football";
-import { Error, Info } from "@/util/embedMessage";
+} from '@/types';
+import { Error, Info } from '@/utils';
 
 const competitions = [
-  { name: "champions", description: "Champions League" },
-  { name: "europaleague", description: "Europa League" },
-  { name: "premier", description: "Premier League" },
-  { name: "laliga", description: "La Liga" },
-  { name: "seriea", description: "Serie A" },
-  { name: "ligue1", description: "Ligue 1" },
-  { name: "bundesliga", description: "Bundesliga" },
-  { name: "fpc", description: "Fútbol Profesional Colombiano" }
+  { name: 'champions', description: 'Champions League' },
+  { name: 'europaleague', description: 'Europa League' },
+  { name: 'premier', description: 'Premier League' },
+  { name: 'laliga', description: 'La Liga' },
+  { name: 'seriea', description: 'Serie A' },
+  { name: 'ligue1', description: 'Ligue 1' },
+  { name: 'bundesliga', description: 'Bundesliga' },
+  { name: 'fpc', description: 'Fútbol Profesional Colombiano' }
 ];
 
 const createSubcommandGroup = (name: string, description: string): SlashCommandSubcommandGroupBuilder => {
@@ -45,10 +45,10 @@ const createSubcommandGroup = (name: string, description: string): SlashCommandS
 
 export const name = 'football';
 export const data: SlashCommandSubcommandsOnlyBuilder = new SlashCommandBuilder()
-  .setName("football")
-  .setDescription("Display matches.")
-  .addSubcommandGroup(createSubcommandGroup("matches", "Future matches"))
-  .addSubcommandGroup(createSubcommandGroup("results", "Results of matches"));
+  .setName('football')
+  .setDescription('Display matches.')
+  .addSubcommandGroup(createSubcommandGroup('matches', 'Future matches'))
+  .addSubcommandGroup(createSubcommandGroup('results', 'Results of matches'));
 
 export async function execute(interaction: CommandInteraction) {
   if (!interaction.isChatInputCommand()) return;
@@ -62,9 +62,9 @@ export async function execute(interaction: CommandInteraction) {
   try {
     const response: FootballResult = await getCompetitions(
       competition,
-      group === "matches" ? "SCHEDULED" : "FINISHED"
+      group === 'matches' ? 'SCHEDULED' : 'FINISHED'
     );
-    if (!response) return interaction.editReply({ embeds: [Error({ description: "No matches found" })] });
+    if (!response) return interaction.editReply({ embeds: [Error({ description: 'No matches found' })] });
 
     const embed: EmbedBuilder = new EmbedBuilder()
       .setTitle(`⚽ ${competitionNames[competition]}`)
@@ -89,7 +89,7 @@ export async function execute(interaction: CommandInteraction) {
         .setFields(fields);
     }
     return interaction.editReply({ embeds: [Info(embed.toJSON())] });
-  } catch (e) {
-    return interaction.editReply({ embeds: [Error({ description: "error" })] });
+  } catch {
+    return interaction.editReply({ embeds: [Error({ description: 'error' })] });
   }
 }

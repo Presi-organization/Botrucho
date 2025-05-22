@@ -1,6 +1,6 @@
-import { Message } from "discord.js";
-import Botrucho from "@/mongodb/base/Botrucho";
-import { logger } from '@/util/Logger';
+import { Message } from 'discord.js';
+import { Botrucho } from '@/mongodb';
+import { logger } from '@/utils';
 
 export async function execute(client: Botrucho, message: Message) {
   if (message.author.bot) return;
@@ -8,7 +8,7 @@ export async function execute(client: Botrucho, message: Message) {
   try {
     if (message.channel.isThread()) {
       const threadId: string = message.channel.id;
-      await client.eventAttendanceData.getEventAttendance({ "thread.threadId": threadId });
+      await client.eventAttendanceData.getEventAttendance({ 'thread.threadId': threadId });
       await message.delete();
       logger.log(`Deleted message from thread ${threadId}`);
     }

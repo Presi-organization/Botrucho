@@ -44,4 +44,4 @@ const eventAttendanceSchema = new Schema<IEventAttendance>({
 
 eventAttendanceSchema.index({ messageId: 1, 'thread.threadId': 1 }, { unique: true });
 
-export default mongoose.model<IEventAttendance>('EventAttendanceData', eventAttendanceSchema);
+export const EventAttendanceDataModel = mongoose.model<IEventAttendance>('EventAttendanceData', eventAttendanceSchema);

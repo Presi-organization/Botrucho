@@ -1,31 +1,28 @@
-import { EventNotFoundError } from "@/errors/EventNotFoundError";
-import { EventAlreadyExistsError } from "@/errors/EventAlreadyExistsError";
-import { EventExpiredError } from "@/errors/EventExpiredError";
-import { UserAlreadyRegisteredError } from "@/errors/UserAlreadyRegisteredError";
-import EventAttendanceData, { IAttendee, IEventAttendance, IThread } from "@/mongodb/models/EventAttendanceData";
+import { EventAlreadyExistsError, EventExpiredError, EventNotFoundError, UserAlreadyRegisteredError } from '@/errors';
+import { EventAttendanceDataModel, IAttendee, IEventAttendance, IThread } from '@/mongodb';
 
-class AttendanceDataController {
-  async getEventAttendance(filter: { messageId?: string; "thread.threadId"?: string }): Promise<IEventAttendance> {
-    const event: IEventAttendance | null = await EventAttendanceData.findOne(filter).sort({ eventDate: -1 });
+export class AttendanceDataController {
+  async getEventAttendance(filter: { messageId?: string; 'thread.threadId'?: string }): Promise<IEventAttendance> {
+    const event: IEventAttendance | null = await EventAttendanceDataModel.findOne(filter).sort({ eventDate: -1 });
     if (!event) throw new EventNotFoundError('Event not found');
     if (event.expirationDate <= new Date()) throw new EventExpiredError('Event expired');
     return event;
   }
 
   async getAttendees(messageId: string): Promise<IAttendee[]> {
-    const event: IEventAttendance | null = await EventAttendanceData.findOne({ messageId });
+    const event: IEventAttendance | null = await EventAttendanceDataModel.findOne({ messageId });
     if (!event) throw new EventNotFoundError('Event not found');
     if (event.expirationDate <= new Date()) throw new EventExpiredError('Event expired');
     return event.attendees;
   }
 
   async createEvent(messageId: string, thread: IThread, eventDate: Date, expirationDate: Date): Promise<IEventAttendance> {
-    const existingEvent: IEventAttendance | null = await EventAttendanceData.findOne({ eventDate });
+    const existingEvent: IEventAttendance | null = await EventAttendanceDataModel.findOne({ eventDate });
     if (existingEvent) {
       throw new EventAlreadyExistsError('An event already exists on this date');
     }
 
-    const event = new EventAttendanceData({
+    const event = new EventAttendanceDataModel({
       messageId,
       thread,
       eventDate,
@@ -36,7 +33,7 @@ class AttendanceDataController {
   }
 
   async registerUserForEvent(messageId: string, reactionEmoji: string, userId: string, username: string): Promise<string> {
-    const event: IEventAttendance | null = await EventAttendanceData.findOne({ messageId }).sort({ eventDate: -1 });
+    const event: IEventAttendance | null = await EventAttendanceDataModel.findOne({ messageId }).sort({ eventDate: -1 });
     if (!event) throw new EventNotFoundError('Event not found');
     if (event.expirationDate <= new Date()) throw new EventExpiredError('Event expired');
 
@@ -59,8 +56,6 @@ class AttendanceDataController {
   }
 
   async removeAttendance(messageId: string): Promise<void> {
-    await EventAttendanceData.deleteOne({ messageId });
+    await EventAttendanceDataModel.deleteOne({ messageId });
   }
 }
-
-export default AttendanceDataController;

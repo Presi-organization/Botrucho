@@ -1,17 +1,17 @@
-import { join } from "path";
+import { join } from 'path';
 import {
   AttachmentBuilder,
   CommandInteraction,
   EmbedBuilder,
   SlashCommandOptionsOnlyBuilder,
   SlashCommandStringOption
-} from "discord.js";
-import { Jimp, JimpMime } from "jimp";
+} from 'discord.js';
+import { Jimp, JimpMime } from 'jimp';
 import { SlashCommandBuilder } from '@discordjs/builders';
-import { IGuildData } from "@/mongodb/models/GuildData";
-import { getEntriesBySummoner } from "@/services/REST/riotAPI";
-import { MiscKeys, TftEloKeys, TranslationElement } from "@/types/Translations";
-import { Error, Info, Warning } from "@/util/embedMessage";
+import { IGuildData } from '@/mongodb';
+import { getEntriesBySummoner } from '@/services';
+import { MiscKeys, TftEloKeys, TranslationElement } from '@/types';
+import { Error, Info, Warning } from '@/utils';
 
 const transformQueueType = (queueType: string): string => {
   switch (queueType) {
@@ -44,7 +44,7 @@ export const data: SlashCommandOptionsOnlyBuilder = new SlashCommandBuilder()
 export async function execute(interaction: CommandInteraction, guildDB: IGuildData) {
   if (!interaction.isChatInputCommand()) return;
 
-  const { YES, NO }: TranslationElement<MiscKeys> = interaction.translate("MISC", guildDB.lang);
+  const { YES, NO }: TranslationElement<MiscKeys> = interaction.translate('MISC', guildDB.lang);
   const {
     ELO,
     SUMMONER_NOT_FOUND,
@@ -55,18 +55,18 @@ export async function execute(interaction: CommandInteraction, guildDB: IGuildDa
     STREAK,
     FRESH_BLOOD,
     INACTIVE
-  }: TranslationElement<TftEloKeys> = interaction.translate("TFT_ELO", guildDB.lang);
+  }: TranslationElement<TftEloKeys> = interaction.translate('TFT_ELO', guildDB.lang);
 
-  let username: string = interaction.options.getString('username')!;
+  const username: string = interaction.options.getString('username', true);
   await interaction.deferReply();
   let entries = [];
   try {
     entries = await getEntriesBySummoner(username);
-  } catch (error: any) {
+  } catch (error) {
     return interaction.editReply({
       embeds: [Error({
         title: 'ERROR',
-        description: SUMMONER_NOT_FOUND.replace("${error}", error)
+        description: SUMMONER_NOT_FOUND.replace('${error}', String(error))
       })]
     });
   }
@@ -134,6 +134,11 @@ export async function execute(interaction: CommandInteraction, guildDB: IGuildDa
         }
       })], files: [await getRankPic(entry.tier)]
     };
-    index === 0 ? await interaction.editReply(embed) : await interaction.followUp(embed);
+
+    if (index === 0) {
+      await interaction.editReply(embed);
+    } else {
+      await interaction.followUp(embed);
+    }
   }
 }

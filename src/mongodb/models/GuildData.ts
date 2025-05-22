@@ -1,11 +1,12 @@
 import mongoose, { Document, Schema } from 'mongoose';
+
 import config from '@/config';
 
 export interface IGuildData extends Document {
   serverID: string;
   lang?: string;
   defaultVolume?: number;
-  loopMode?: "OFF" | "AUTOPLAY" | "TRACK" | "QUEUE";
+  loopMode?: 'OFF' | 'AUTOPLAY' | 'TRACK' | 'QUEUE';
   color?: string;
   plugins?: {
     welcome?: {
@@ -61,7 +62,7 @@ const GuildDataSchema = new Schema<IGuildData>({
   serverID: { type: String, required: true },
   lang: { type: String, default: config.defaultLanguage.toLowerCase() },
   defaultVolume: { type: Number, default: 60 },
-  loopMode: { type: String, enum: ["OFF", "AUTOPLAY", "TRACK", "QUEUE"], default: "OFF" },
+  loopMode: { type: String, enum: ['OFF', 'AUTOPLAY', 'TRACK', 'QUEUE'], default: 'OFF' },
   color: { type: String, default: config.color },
   plugins: {
     type: Object,
@@ -119,4 +120,4 @@ const GuildDataSchema = new Schema<IGuildData>({
   },
 });
 
-export default mongoose.model<IGuildData>('GuildData', GuildDataSchema);
+export const GuildDataModel = mongoose.model<IGuildData>('GuildData', GuildDataSchema);

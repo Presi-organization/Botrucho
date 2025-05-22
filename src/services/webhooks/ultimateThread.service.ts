@@ -9,13 +9,11 @@ import {
   User,
   WebhookClient
 } from 'discord.js';
-import { Snowflake, ThreadAutoArchiveDuration } from "discord-api-types/v10";
-import { EventAlreadyExistsError } from "@/errors/EventAlreadyExistsError";
-import AttendanceReactionHandler from "@/events/discord/reactionHandlers/AttendanceReactionHandler";
-import EventAttendanceData from "@/mongodb/controllers/EventAttendanceData";
-import Botrucho from "@/mongodb/base/Botrucho";
-import { IEventAttendance, IThread } from "@/mongodb/models/EventAttendanceData";
-import { logger } from '@/util/Logger';
+import { Snowflake, ThreadAutoArchiveDuration } from 'discord-api-types/v10';
+import { EventAlreadyExistsError } from '@/errors';
+import { AttendanceReactionHandler } from '@/events/discord/reactionHandlers';
+import { AttendanceDataController, Botrucho, IEventAttendance, IThread } from '@/mongodb';
+import { logger } from '@/utils';
 
 /**
  * Retrieves the current Date + one day and + three days
@@ -105,7 +103,7 @@ const sendMessageWithWebhook: (webhook: WebhookClient) => Promise<APIMessage> = 
   });
 }
 
-const sendAMessageAndThread: (channel: TextChannel, webhook: WebhookClient, attendanceData: EventAttendanceData) => Promise<void> = async (channel: TextChannel, webhook: WebhookClient, attendanceData: EventAttendanceData): Promise<void> => {
+const sendAMessageAndThread: (channel: TextChannel, webhook: WebhookClient, attendanceData: AttendanceDataController) => Promise<void> = async (channel: TextChannel, webhook: WebhookClient, attendanceData: AttendanceDataController): Promise<void> => {
   try {
     const message: APIMessage = await sendMessageWithWebhook(webhook);
     const fetchedMessage: Message<true> = await channel.messages.fetch(message.id);

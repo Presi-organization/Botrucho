@@ -1,5 +1,5 @@
-import { join } from "path";
-import { HorizontalAlign, Jimp, JimpMime, VerticalAlign } from 'jimp';
+import { join } from 'path';
+import { HorizontalAlign, Jimp, JimpInstance, JimpMime, VerticalAlign } from 'jimp';
 import {
   AttachmentBuilder,
   CommandInteraction,
@@ -7,13 +7,11 @@ import {
   SlashCommandSubcommandBuilder,
   SlashCommandSubcommandGroupBuilder,
   SlashCommandSubcommandsOnlyBuilder
-} from "discord.js";
+} from 'discord.js';
 import { SlashCommandBuilder } from '@discordjs/builders';
-import { IGuildData } from "@/mongodb/models/GuildData";
-import { CropInfo, ImageCenter } from "@/types/ImageData";
-import { SiataKeys, TranslationElement } from "@/types/Translations";
-import { Error, Success } from "@/util/embedMessage";
-import { logger } from "@/util/Logger";
+import { IGuildData } from '@/mongodb';
+import { CropInfo, ImageCenter, SiataKeys, TranslationElement } from '@/types';
+import { Error, logger, Success } from '@/utils';
 
 export const name = 'siata';
 export const data: SlashCommandSubcommandsOnlyBuilder = new SlashCommandBuilder()
@@ -67,14 +65,13 @@ export const data: SlashCommandSubcommandsOnlyBuilder = new SlashCommandBuilder(
 export async function execute(interaction: CommandInteraction, guildDB: IGuildData) {
   if (!interaction.isChatInputCommand()) return;
 
-  const { ZOOM, ERR }: TranslationElement<SiataKeys> = interaction.translate("SIATA", guildDB.lang);
+  const { ZOOM, ERR }: TranslationElement<SiataKeys> = interaction.translate('SIATA', guildDB.lang);
 
   await interaction.deferReply();
 
   const group: string = interaction.options.getSubcommandGroup(true);
   const subcommand: string = interaction.options.getSubcommand();
   const circles: number = interaction.options.getNumber('circles') ?? 1;
-  const locations: boolean = interaction.options.getBoolean('locations') ?? false;
 
   try {
     const mapCenter: ImageCenter = { x: 1024, y: 540 };
@@ -92,17 +89,17 @@ export async function execute(interaction: CommandInteraction, guildDB: IGuildDa
       height: 200 + ((circles - 1) * 250)
     };
 
-    const folder: "smoothdark" | "googlestreets" = group === 'stadia' ? 'smoothdark' : 'googlestreets';
+    const folder: 'smoothdark' | 'googlestreets' = group === 'stadia' ? 'smoothdark' : 'googlestreets';
     const mapUri: string = join(process.cwd(), `/assets/siata/${folder}/${subcommand}/map${circles}x.png`);
 
     const [mapImage, radarImage, legend] = await Promise.all([
       Jimp.read(mapUri),
-      Jimp.read("https://siata.gov.co/kml/00_Radar/Ultimo_Barrido/AreaMetRadar_10_120_DBZH.png"),
+      Jimp.read('https://siata.gov.co/kml/00_Radar/Ultimo_Barrido/AreaMetRadar_10_120_DBZH.png'),
       Jimp.read(join(process.cwd(), '/assets/siata/radarLegend.png'))
     ]);
 
-    const mapCropped = await getCroppedImage(mapImage, mapInfo);
-    const radarCropped = await getCroppedImage(radarImage, radarInfo);
+    const mapCropped = await getCroppedImage(mapImage as JimpInstance, mapInfo);
+    const radarCropped = await getCroppedImage(radarImage as JimpInstance, radarInfo);
 
     const outputSize = 1080;
     mapCropped.resize({ w: outputSize, h: outputSize });
@@ -122,10 +119,10 @@ export async function execute(interaction: CommandInteraction, guildDB: IGuildDa
 
     return interaction.editReply({
       embeds: [Success({
-        title: "SIATA",
-        description: ZOOM.replace("${zoom}", circles.toString()),
+        title: 'SIATA',
+        description: ZOOM.replace('${zoom}', circles.toString()),
         image: {
-          url: `attachment://siata.png`
+          url: 'attachment://siata.png'
         }
       })], files: [attachment]
     });
@@ -135,7 +132,7 @@ export async function execute(interaction: CommandInteraction, guildDB: IGuildDa
   }
 }
 
-async function getCroppedImage(image: any, cropInfo: CropInfo) {
+async function getCroppedImage(image: JimpInstance, cropInfo: CropInfo) {
   const { x: centerX, y: centerY, width: cropWidth, height: cropHeight } = cropInfo;
 
   const startX: number = centerX - cropWidth / 2;

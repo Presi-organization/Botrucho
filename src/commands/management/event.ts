@@ -7,8 +7,8 @@ import {
   TextInputBuilder,
   TextInputStyle
 } from 'discord.js';
-import { IGuildData } from "@/mongodb/models/GuildData";
-import { EventKeys, TranslationElement } from "@/types/Translations";
+import { IGuildData } from '@/mongodb';
+import { EventKeys, TranslationElement } from '@/types';
 
 export const name = 'event';
 export const data: SlashCommandOptionsOnlyBuilder = new SlashCommandBuilder()
@@ -23,7 +23,7 @@ export async function execute(interaction: CommandInteraction, guildDB: IGuildDa
     TIME,
     DESCRIPTION,
     LOCATION
-  }: TranslationElement<EventKeys> = interaction.translate("EVENT", guildDB.lang);
+  }: TranslationElement<EventKeys> = interaction.translate('EVENT', guildDB.lang);
 
   const modal: ModalBuilder = new ModalBuilder()
     .setCustomId('event-modal')
@@ -47,7 +47,7 @@ export async function execute(interaction: CommandInteraction, guildDB: IGuildDa
   const eventTimeInput: TextInputBuilder = new TextInputBuilder()
     .setCustomId('eventTimeInput')
     .setLabel(TIME)
-    .setPlaceholder("18:00-20:00")
+    .setPlaceholder('18:00-20:00')
     .setMinLength(11)
     .setMaxLength(11)
     .setStyle(TextInputStyle.Short)

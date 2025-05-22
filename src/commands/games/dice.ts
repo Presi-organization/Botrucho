@@ -1,13 +1,8 @@
-import {
-  CommandInteraction,
-  EmbedBuilder,
-  InteractionCallbackResponse,
-  SlashCommandOptionsOnlyBuilder
-} from "discord.js";
-import { SlashCommandBuilder } from "@discordjs/builders";
-import { IGuildData } from "@/mongodb/models/GuildData";
-import { DiceKeys, TranslationElement } from "@/types/Translations";
-import { Info } from "@/util/embedMessage";
+import { CommandInteraction, EmbedBuilder, SlashCommandOptionsOnlyBuilder } from 'discord.js';
+import { SlashCommandBuilder } from '@discordjs/builders';
+import { IGuildData } from '@/mongodb';
+import { DiceKeys, TranslationElement } from '@/types';
+import { Info } from '@/utils';
 
 export const name = 'dado';
 export const data: SlashCommandOptionsOnlyBuilder = new SlashCommandBuilder()
@@ -22,7 +17,7 @@ export const execute = async (interaction: CommandInteraction, guildDB: IGuildDa
     RESULT_TITLE,
     RESULT,
     RESULT_FOOTER
-  }: TranslationElement<DiceKeys> = interaction.translate("DICE", guildDB.lang);
+  }: TranslationElement<DiceKeys> = interaction.translate('DICE', guildDB.lang);
 
   const dice: number = Math.floor(crypto.getRandomValues(new Uint32Array(1))[0] / (0xFFFFFFFF + 1) * 6) + 1;
   const initialEmbed: EmbedBuilder = Info({
@@ -32,11 +27,11 @@ export const execute = async (interaction: CommandInteraction, guildDB: IGuildDa
   });
 
   await interaction.reply({ embeds: [initialEmbed], withResponse: true })
-    .then(async (_: InteractionCallbackResponse) => {
+    .then(async () => {
       await new Promise(resolve => setTimeout(resolve, 2000));
       const resultEmbed: EmbedBuilder = Info({
         title: RESULT_TITLE,
-        description: RESULT.replace("${dice}", dice.toString()),
+        description: RESULT.replace('${dice}', dice.toString()),
         footer: { text: RESULT_FOOTER }
       });
       await interaction.editReply({ embeds: [resultEmbed] });

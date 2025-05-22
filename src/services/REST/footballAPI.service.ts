@@ -1,12 +1,14 @@
-import * as process from 'node:process';
-import { ApiMatch, Competitions, FootballResult, Matches, Results } from "@/types/Football";
+import { ApiCompetition, ApiMatch, Competitions, FootballResult, Matches, Results } from '@/types';
+import { logger } from '@/utils';
 
-const FOOTBALL_URI = "https://api.football-data.org/v4";
+import config from '@/config';
+
+const FOOTBALL_URI = 'https://api.football-data.org/v4';
 const headers = new Headers({
-  "X-Auth-Token": process.env.FOOTBALL_TOKEN as string,
+  'X-Auth-Token': config.apis.football,
 });
 
-const makeRequest = async <T>(endpoint: string, method: string, body?: any): Promise<T> => {
+const _makeRequest = async <T>(endpoint: string, method: string, body?: unknown): Promise<T> => {
   const request = new Request(`${endpoint}`, {
     method,
     headers: headers,
@@ -16,10 +18,10 @@ const makeRequest = async <T>(endpoint: string, method: string, body?: any): Pro
   if (!response.ok) {
     throw new Error(`Request failed with status ${response.status}`);
   }
-  return response.json();
+  return await response.json() as T;
 };
 
-function convertToGMTMinus5(utcDate: string): string {
+const _convertToGMTMinus5 = (utcDate: string): string => {
   const date = new Date(utcDate);
 
   let formattedDate = date.toLocaleString('es-CO', {
@@ -35,24 +37,9 @@ function convertToGMTMinus5(utcDate: string): string {
   formattedDate = formattedDate.replace(/\sde\s/g, '/').replace(',', '');
   formattedDate = formattedDate.replace(/\/(\w+)/, (_match, month) => `/${month.charAt(0).toUpperCase() + month.slice(1)}`);
   return formattedDate;
-}
+};
 
-export const getCompetitions = async (competition: Competitions, status: "SCHEDULED" | "FINISHED"): Promise<FootballResult> => {
-  try {
-    const url = `${FOOTBALL_URI}/competitions/${competition}/matches?status=${status}`;
-    const response: any = await makeRequest(url, "GET");
-
-    switch (status) {
-      case "SCHEDULED":
-        return matches(response.matches);
-      case "FINISHED":
-        return results(response.matches);
-    }
-  } catch (e) {
-  }
-}
-
-const matches = (matches: ApiMatch[]): Matches => {
+const _buildMatches = (matches: ApiMatch[]): Matches => {
   const nextStage: string = matches[0].stage;
   const nextRoundMatches: ApiMatch[] = matches.filter((match: ApiMatch) => match.stage === nextStage);
 
@@ -61,13 +48,13 @@ const matches = (matches: ApiMatch[]): Matches => {
     matches: nextRoundMatches.map((match: ApiMatch) => ({
       homeTeam: match.homeTeam.shortName,
       awayTeam: match.awayTeam.shortName,
-      localDate: convertToGMTMinus5(match.utcDate),
+      localDate: _convertToGMTMinus5(match.utcDate),
       stage: match.stage
     }))
   }
 }
 
-const results = (results: ApiMatch[]): Results => {
+const _buildResults = (results: ApiMatch[]): Results => {
   const previousMatch: ApiMatch = results.slice(-1)[0];
   const previousMatches: ApiMatch[] = results.filter(
     (match: ApiMatch) => match.matchday === previousMatch.matchday && match.stage === previousMatch.stage
@@ -80,7 +67,28 @@ const results = (results: ApiMatch[]): Results => {
       homeResult: match.score.fullTime.home,
       awayTeam: match.awayTeam.shortName,
       awayResult: match.score.fullTime.away,
-      localDate: convertToGMTMinus5(match.utcDate)
+      localDate: _convertToGMTMinus5(match.utcDate)
     }))
+  }
+}
+
+export const getCompetitions = async (competition: Competitions, status: 'SCHEDULED' | 'FINISHED'): Promise<FootballResult> => {
+  try {
+    const url = `${FOOTBALL_URI}/competitions/${competition}/matches?status=${status}`;
+    const response: ApiCompetition = await _makeRequest<ApiCompetition>(url, 'GET');
+
+    switch (status) {
+      case 'SCHEDULED':
+        return _buildMatches(response.matches);
+      case 'FINISHED':
+        return _buildResults(response.matches);
+    }
+  } catch (e: unknown) {
+    if (e instanceof Error) {
+      logger.error(`Error fetching competitions: ${e.message}`);
+    } else {
+      logger.error('Unknown error occurred while fetching competitions');
+    }
+    return undefined;
   }
 }
