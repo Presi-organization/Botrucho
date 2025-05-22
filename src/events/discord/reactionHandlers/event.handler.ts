@@ -1,10 +1,9 @@
-import { EmbedBuilder, MessageReaction, User } from "discord.js";
-import Botrucho from "@/mongodb/base/Botrucho";
-import { IEventData } from "@/mongodb/models/EventData";
-import { EventKeys, TranslationElement } from "@/types/Translations";
-import { logger } from '@/util/Logger';
+import { EmbedBuilder, Guild, MessageReaction, User } from 'discord.js';
+import { Botrucho, IEventData } from '@/mongodb';
+import { EventKeys, TranslationElement } from '@/types';
+import { logger } from '@/utils';
 
-class EventHandler {
+export class EventHandler {
   private client: Botrucho;
   private reaction: MessageReaction;
   private user: User;
@@ -17,7 +16,9 @@ class EventHandler {
 
   handleEventReaction = async () => {
     if (this.reaction.emoji.name === '👽') {
-      let eventInfo: IEventData | null = await this.reaction.message.guild!.fetchEventDB(this.client.eventData, this.reaction.message.id);
+      const guild: Guild | null = this.reaction.message.guild;
+      if (!guild) return;
+      const eventInfo: IEventData | null = await guild.fetchEventDB(this.client.eventData, this.reaction.message.id);
       if (eventInfo) {
         const userFind: string | undefined = eventInfo.userAssisting ? eventInfo.userAssisting.find((userID: string) => userID === this.user.id) : undefined;
         if (!userFind) {
@@ -27,19 +28,19 @@ class EventHandler {
             ASSISTANCE_CONFIRMED,
             INVITATION_LINK,
             EVENT_GENERATED
-          }: TranslationElement<EventKeys> = await this.reaction.message.guild!.translate("EVENT", this.client.guildData);
+          }: TranslationElement<EventKeys> = await guild.translate('EVENT', this.client.guildData);
 
           const exampleEmbed: EmbedBuilder = new EmbedBuilder()
             .setColor(this.client.config.color)
-            .setTitle(ASSISTANCE_CONFIRMED.replace("${eventName}", eventInfo.eventName))
+            .setTitle(ASSISTANCE_CONFIRMED.replace('${eventName}', eventInfo.eventName))
             .setURL(eventInfo.calendarLink)
-            .setDescription(INVITATION_LINK.replace("${calendarLink}", eventInfo.calendarLink))
+            .setDescription(INVITATION_LINK.replace('${calendarLink}', eventInfo.calendarLink))
             .setTimestamp()
             .setFooter({
-              text: EVENT_GENERATED.replace("${username}", this.client.user?.username!),
+              text: EVENT_GENERATED.replace('${username}', this.client.user?.username ?? 'Bot'),
               iconURL: this.client.user?.displayAvatarURL({
                 size: 512
-              })
+              }) ?? undefined
             });
 
           this.user.send({
@@ -58,5 +59,3 @@ class EventHandler {
     }
   }
 }
-
-export default EventHandler;

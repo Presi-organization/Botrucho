@@ -1,15 +1,13 @@
 import { BaseInteraction, Guild, Message } from 'discord.js';
-import EventDataController from '@/mongodb/controllers/EventData';
-import GuildDataController from '@/mongodb/controllers/GuildData';
-import { IGuildData } from "@/mongodb/models/GuildData";
-import { IEventData } from "@/mongodb/models/EventData";
-import { TranslationElement, Translations } from "@/types/Translations";
+import { EventDataController, GuildDataController, IEventData, IGuildData } from '@/mongodb';
+import { TranslationElement, TranslationsType } from '@/types';
 import en from '@languages/en.json';
 import es from '@languages/es.json';
+
 import config from '@/config';
 
-function translateText(text: keyof Translations, guildDBLang: string = 'en'): TranslationElement<string> {
-  const languages: { [key: string]: Translations } = { en, es };
+function translateText(text: keyof TranslationsType, guildDBLang = 'en'): TranslationElement<string> {
+  const languages: Record<string, TranslationsType> = { en, es };
 
   if (!text || !languages[guildDBLang] || !languages[guildDBLang][text]) {
     throw new Error(`Translate: Params error: Unknown text ID or missing text ${text}`);
@@ -33,30 +31,30 @@ declare module 'discord.js' {
 
     fetchEventDB(eventData: EventDataController, messageID: string, guildID?: string): Promise<IEventData | null>;
 
-    translate(text: keyof Translations, guildData: GuildDataController): Promise<TranslationElement<string>>;
+    translate(text: keyof TranslationsType, guildData: GuildDataController): Promise<TranslationElement<string>>;
   }
 
   interface BaseInteraction {
-    translate(text: keyof Translations, guildDBLang?: string): TranslationElement<string>;
+    translate(text: keyof TranslationsType, guildDBLang?: string): TranslationElement<string>;
   }
 
   interface Message {
-    translate(text: keyof Translations, guildDBLang?: string): TranslationElement<string>;
+    translate(text: keyof TranslationsType, guildDBLang?: string): TranslationElement<string>;
   }
 }
 
-Guild.prototype.addDB = async function (guildData: GuildDataController, guildID: string = ''): Promise<IGuildData> {
+Guild.prototype.addDB = async function (guildData: GuildDataController, guildID = ''): Promise<IGuildData> {
   if (!guildID || isNaN(parseInt(guildID))) {
     guildID = this.id;
   }
   return guildData.addGuild({
     serverID: guildID,
     lang: config.defaultLanguage,
-    color: "0x3A871F",
-  } as any);
+    color: '0x3A871F',
+  } as never);
 };
 
-Guild.prototype.fetchDB = async function (guildData: GuildDataController, guildID: string = ''): Promise<IGuildData> {
+Guild.prototype.fetchDB = async function (guildData: GuildDataController, guildID = ''): Promise<IGuildData> {
   if (!guildID || isNaN(parseInt(guildID))) {
     guildID = this.id;
   }
@@ -65,7 +63,7 @@ Guild.prototype.fetchDB = async function (guildData: GuildDataController, guildI
   return data;
 };
 
-Guild.prototype.addEventDB = async function (event: EventDataController, messageID: string, eventName: string, calendarLink: string, guildID: string = ''): Promise<IEventData> {
+Guild.prototype.addEventDB = async function (event: EventDataController, messageID: string, eventName: string, calendarLink: string, guildID = ''): Promise<IEventData> {
   if (!guildID || isNaN(parseInt(guildID))) {
     guildID = this.id;
   }
@@ -75,25 +73,25 @@ Guild.prototype.addEventDB = async function (event: EventDataController, message
     messageID: messageID,
     eventName: eventName,
     calendarLink: calendarLink
-  } as any);
+  } as never);
 };
 
-Guild.prototype.fetchEventDB = async function (eventData: EventDataController, messageID: string, guildID: string = ''): Promise<IEventData | null> {
+Guild.prototype.fetchEventDB = async function (eventData: EventDataController, messageID: string, guildID = ''): Promise<IEventData | null> {
   if (!guildID || isNaN(parseInt(guildID))) {
     guildID = this.id;
   }
   return eventData.showEvent(guildID, messageID);
 };
 
-BaseInteraction.prototype.translate = function (text: keyof Translations, guildDBLang: string = 'en'): TranslationElement<string> {
+BaseInteraction.prototype.translate = function (text: keyof TranslationsType, guildDBLang = 'en'): TranslationElement<string> {
   return translateText(text, guildDBLang);
 };
 
-Message.prototype.translate = function (text: keyof Translations, guildDBLang: string = 'en'): TranslationElement<string> {
+Message.prototype.translate = function (text: keyof TranslationsType, guildDBLang = 'en'): TranslationElement<string> {
   return translateText(text, guildDBLang);
 };
 
-Guild.prototype.translate = async function (text: keyof Translations, guildData: GuildDataController): Promise<TranslationElement<string>> {
+Guild.prototype.translate = async function (text: keyof TranslationsType, guildData: GuildDataController): Promise<TranslationElement<string>> {
   if (!text) {
     throw new Error('No text provided');
   }

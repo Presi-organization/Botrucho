@@ -1,11 +1,10 @@
 import { EmbedBuilder, MessageCreateOptions, MessageEditOptions } from 'discord.js';
 import { GuildQueue, Track } from 'discord-player';
-import { PlayerMetadata } from "@/types/PlayerMetadata";
-import { PlayerKeys, TranslationElement } from "@/types/Translations";
-import { Info } from '@/util/embedMessage';
+import { PlayerKeys, PlayerType, TranslationElement } from '@/types';
+import { Info } from '@/utils';
 
 const updateQueueMessage = async (
-  queue: GuildQueue<PlayerMetadata>,
+  queue: GuildQueue<PlayerType>,
   track: Track,
   {
     NOW_PLAYING,
@@ -24,12 +23,12 @@ const updateQueueMessage = async (
     .setThumbnail(track.thumbnail)
     .addFields(
       queue.metadata.queueTitles.slice(0, 20).map((title: string, index: number) => ({
-        name: SONG.replace("${index}", (index + 1).toString()),
+        name: SONG.replace('${index}', (index + 1).toString()),
         value: title
       }))
     )
     .setFooter({
-      text: REQUESTED_BY.replace("${username}", <string>track.requestedBy?.displayName),
+      text: REQUESTED_BY.replace('${username}', (track.requestedBy?.displayName as string)),
       iconURL: track.requestedBy?.displayAvatarURL()
     });
 
@@ -43,7 +42,10 @@ const updateQueueMessage = async (
   const replyOptions: MessageCreateOptions & MessageEditOptions = { embeds: [Info(embed.data)] };
 
   if (!queue.metadata.queueMessage) {
-    queue.metadata.queueMessage = await queue.metadata.channel!.send(replyOptions);
+    if (!queue.metadata.channel) {
+      throw new Error('Channel is undefined in queue metadata.');
+    }
+    queue.metadata.queueMessage = await queue.metadata.channel.send(replyOptions);
   } else {
     await queue.metadata.queueMessage.edit(replyOptions);
   }

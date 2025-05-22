@@ -4,18 +4,17 @@ import {
   MessageFlags,
   SlashCommandIntegerOption,
   SlashCommandOptionsOnlyBuilder
-} from "discord.js";
-import { SlashCommandBuilder } from "@discordjs/builders";
-import { GuildQueueTimeline, useTimeline } from "discord-player";
-import Botrucho from "@/mongodb/base/Botrucho";
-import { IGuildData } from "@/mongodb/models/GuildData";
-import { MusicKeys, TranslationElement, VolumeKeys } from "@/types/Translations";
-import { Error, Success } from "@/util/embedMessage";
+} from 'discord.js';
+import { SlashCommandBuilder } from '@discordjs/builders';
+import { GuildQueueTimeline, useTimeline } from 'discord-player';
+import { Botrucho, IGuildData } from '@/mongodb';
+import { MusicKeys, TranslationElement, VolumeKeys } from '@/types';
+import { Error, Success } from '@/utils';
 
 export const name = 'volume';
 export const description = 'Changes the Volume';
 export const permissions = false;
-export const aliases: string[] = ['sound', 'v', "vol"];
+export const aliases: string[] = ['sound', 'v', 'vol'];
 export const cat = 'music';
 export const exemple = '70';
 export const botpermissions: string[] = ['CONNECT', 'SPEAK'];
@@ -33,11 +32,11 @@ export async function execute(interaction: CommandInteraction & { client: Botruc
     CURRENT_VOLUME_DESC,
     VOLUME_CHANGED_TITLE,
     VOLUME_CHANGED_DESC
-  }: TranslationElement<VolumeKeys> = interaction.translate("VOLUME", guildDB.lang);
+  }: TranslationElement<VolumeKeys> = interaction.translate('VOLUME', guildDB.lang);
   const {
     NOT_PLAYING_TITLE,
     NOT_PLAYING_DESC
-  }: TranslationElement<MusicKeys> = interaction.translate("MUSIC", guildDB.lang)
+  }: TranslationElement<MusicKeys> = interaction.translate('MUSIC', guildDB.lang)
 
   const { client } = interaction;
 
@@ -66,7 +65,7 @@ export async function execute(interaction: CommandInteraction & { client: Botruc
 
     embed = Success({
       title: VOLUME_CHANGED_TITLE,
-      description: VOLUME_CHANGED_DESC.replace("${gain}", amount.toString()),
+      description: VOLUME_CHANGED_DESC.replace('${gain}', amount.toString()),
       author: {
         name: interaction.guild.name,
         icon_url: interaction.guild.iconURL() ?? undefined
@@ -75,7 +74,7 @@ export async function execute(interaction: CommandInteraction & { client: Botruc
   } else {
     embed = Success({
       title: CURRENT_VOLUME_TITLE,
-      description: CURRENT_VOLUME_DESC.replace("${gain}", timeline.volume.toString()),
+      description: CURRENT_VOLUME_DESC.replace('${gain}', timeline.volume.toString()),
       author: {
         name: interaction.guild.name,
         icon_url: interaction.guild.iconURL() ?? undefined

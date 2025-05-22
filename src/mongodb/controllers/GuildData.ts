@@ -1,6 +1,6 @@
-import GuildDataModel, { IGuildData } from '@/mongodb/models/GuildData';
+import { GuildDataModel, IGuildData } from '@/mongodb';
 
-class GuildDataController {
+export class GuildDataController {
   async showGuild(guildID: string): Promise<IGuildData | null> {
     return GuildDataModel.findOne({ serverID: guildID }).exec();
   }
@@ -26,5 +26,3 @@ class GuildDataController {
     ).exec();
   }
 }
-
-export default GuildDataController;

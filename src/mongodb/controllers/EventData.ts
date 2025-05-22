@@ -1,17 +1,17 @@
-import EventData, { IEventData } from '@/mongodb/models/EventData';
+import { EventDataModel, IEventData } from '@/mongodb';
 
-class EventDataController {
+export class EventDataController {
   async showEvent(serverID: string, messageID: string): Promise<IEventData | null> {
-    return EventData.findOne({ serverID, messageID }).exec();
+    return EventDataModel.findOne({ serverID, messageID }).exec();
   }
 
   async addEvent(body: IEventData): Promise<IEventData> {
-    const event = new EventData(body);
+    const event = new EventDataModel(body);
     return event.save();
   }
 
   async addAssistance(eventID: string, userID: string): Promise<void> {
-    const event = await EventData.findById(eventID).exec();
+    const event = await EventDataModel.findById(eventID).exec();
     if (event) {
       if (!event.userAssisting) {
         event.userAssisting = [];
@@ -21,5 +21,3 @@ class EventDataController {
     }
   }
 }
-
-export default EventDataController;

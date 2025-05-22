@@ -9,9 +9,9 @@ import {
   VoiceChannel
 } from 'discord.js';
 import { SlashCommandBuilder } from '@discordjs/builders';
-import { IGuildData } from "@/mongodb/models/GuildData";
-import { Success, Warning } from "@/util/embedMessage";
-import { MoveKeys, TranslationElement, VCKeys } from "@/types/Translations";
+import { IGuildData } from '@/mongodb';
+import { Success, Warning } from '@/utils';
+import { MoveKeys, TranslationElement, VCKeys } from '@/types';
 
 export const name = 'move';
 export const data: SlashCommandOptionsOnlyBuilder = new SlashCommandBuilder()
@@ -24,10 +24,10 @@ export async function execute(interaction: CommandInteraction, guildDB: IGuildDa
   if (!interaction.inCachedGuild()) return;
   if (!interaction.isChatInputCommand()) return;
 
-  const { USER_MOVED }: TranslationElement<MoveKeys> = interaction.translate("MOVE", guildDB.lang);
-  const { CONNECT_VC, USER_NOT_IN }: TranslationElement<VCKeys> = interaction.translate("VC", guildDB.lang);
+  const { USER_MOVED }: TranslationElement<MoveKeys> = interaction.translate('MOVE', guildDB.lang);
+  const { CONNECT_VC, USER_NOT_IN }: TranslationElement<VCKeys> = interaction.translate('VC', guildDB.lang);
 
-  const user: GuildMember = interaction.options.getMember('user')!;
+  const user: GuildMember = interaction.options.getMember('user') as GuildMember;
   const channel: VoiceChannel = interaction.options.getChannel('channel', true, [ChannelType.GuildVoice]);
 
   if (!(interaction.member.voice.channel)) {
@@ -45,8 +45,8 @@ export async function execute(interaction: CommandInteraction, guildDB: IGuildDa
 
   await user.voice.setChannel(channel);
   const user_moved = USER_MOVED
-    .replace("${username}", user.user.displayName)
-    .replace("${channel}", channel.name);
+    .replace('${username}', user.user.displayName)
+    .replace('${channel}', channel.name);
   return interaction.reply({
     embeds: [Success({ description: user_moved })],
     flags: MessageFlags.Ephemeral

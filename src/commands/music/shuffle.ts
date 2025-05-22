@@ -1,12 +1,9 @@
-import { CommandInteraction, SlashCommandOptionsOnlyBuilder } from "discord.js";
-import { GuildQueue, Track, useQueue } from "discord-player";
-import { SlashCommandBuilder } from "@discordjs/builders";
-import { IGuildData } from "@/mongodb/models/GuildData";
-import Botrucho from "@/mongodb/base/Botrucho";
-import { PlayerMetadata } from "@/types/PlayerMetadata";
-import { MusicKeys, PlayerKeys, ShuffleKeys, TranslationElement } from "@/types/Translations";
-import { Error, Success } from "@/util/embedMessage";
-import { updateQueueMessage } from "@/util/embedUtils";
+import { CommandInteraction, SlashCommandOptionsOnlyBuilder } from 'discord.js';
+import { GuildQueue, Track, useQueue } from 'discord-player';
+import { SlashCommandBuilder } from '@discordjs/builders';
+import { Botrucho, IGuildData } from '@/mongodb';
+import { MusicKeys, PlayerKeys, PlayerType, ShuffleKeys, TranslationElement } from '@/types';
+import { Error, Success, updateQueueMessage } from '@/utils';
 
 export const name = 'shuffle';
 export const description = 'Shuffles the current queue';
@@ -15,11 +12,13 @@ export const data: SlashCommandOptionsOnlyBuilder = new SlashCommandBuilder()
   .setDescription('Shuffles the current music queue.');
 
 export async function execute(interaction: CommandInteraction & { client: Botrucho }, guildDB: IGuildData) {
-  const { SHUFFLED }: TranslationElement<ShuffleKeys> = interaction.translate("SHUFFLE", guildDB.lang);
-  const { NOT_PLAYING_DESC }: TranslationElement<MusicKeys> = interaction.translate("MUSIC", guildDB.lang);
-  const playerTranslation: TranslationElement<PlayerKeys> = interaction.translate("PLAYER", guildDB.lang);
+  if (!interaction.isChatInputCommand()) return;
 
-  const queue: GuildQueue<PlayerMetadata> | null = useQueue();
+  const { SHUFFLED }: TranslationElement<ShuffleKeys> = interaction.translate('SHUFFLE', guildDB.lang);
+  const { NOT_PLAYING_DESC }: TranslationElement<MusicKeys> = interaction.translate('MUSIC', guildDB.lang);
+  const playerTranslation: TranslationElement<PlayerKeys> = interaction.translate('PLAYER', guildDB.lang);
+
+  const queue: GuildQueue<PlayerType> | null = useQueue();
   if (!queue || !queue.isPlaying()) {
     return interaction.reply({ embeds: [Error({ description: NOT_PLAYING_DESC })] });
   }

@@ -16,4 +16,4 @@ const eventDB = new Schema<IEventData>({
   userAssisting: { type: [String], required: false }
 });
 
-export default mongoose.model<IEventData>('EventData', eventDB);
+export const EventDataModel = mongoose.model<IEventData>('EventData', eventDB);

@@ -1,12 +1,12 @@
 export enum Competitions {
-  CHAMPIONS_LEAGUE = "CL",
-  EUROPA_LEAGUE = "EL",
-  PREMIER_LEAGUE = "PL",
-  LALIGA = "PD",
-  SERIE_A = "SA",
-  BUNDESLIGA = "BL1",
-  LIGUE_1 = "FL1",
-  FPC = "COL"
+  CHAMPIONS_LEAGUE = 'CL',
+  EUROPA_LEAGUE = 'EL',
+  PREMIER_LEAGUE = 'PL',
+  LALIGA = 'PD',
+  SERIE_A = 'SA',
+  BUNDESLIGA = 'BL1',
+  LIGUE_1 = 'FL1',
+  FPC = 'COL'
 }
 
 export const subcommandToCompetition: Record<string, Competitions> = {
@@ -21,14 +21,18 @@ export const subcommandToCompetition: Record<string, Competitions> = {
 };
 
 export const competitionNames: Record<Competitions, string> = {
-  [Competitions.CHAMPIONS_LEAGUE]: "Champions League",
-  [Competitions.EUROPA_LEAGUE]: "Europa League",
-  [Competitions.PREMIER_LEAGUE]: "Premier League",
-  [Competitions.LALIGA]: "La Liga",
-  [Competitions.SERIE_A]: "Serie A",
-  [Competitions.BUNDESLIGA]: "Bundesliga",
-  [Competitions.LIGUE_1]: "Ligue 1",
-  [Competitions.FPC]: "Fútbol Profesional Colombiano"
+  [Competitions.CHAMPIONS_LEAGUE]: 'Champions League',
+  [Competitions.EUROPA_LEAGUE]: 'Europa League',
+  [Competitions.PREMIER_LEAGUE]: 'Premier League',
+  [Competitions.LALIGA]: 'La Liga',
+  [Competitions.SERIE_A]: 'Serie A',
+  [Competitions.BUNDESLIGA]: 'Bundesliga',
+  [Competitions.LIGUE_1]: 'Ligue 1',
+  [Competitions.FPC]: 'Fútbol Profesional Colombiano'
+}
+
+export interface ApiCompetition extends Record<string, unknown> {
+  matches: ApiMatch[];
 }
 
 export interface ApiMatch {
@@ -80,9 +84,9 @@ export interface Result {
 export type FootballResult = Matches | Results | undefined;
 
 export const isMatches = (data: FootballResult): data is Matches => {
-  return !!data && "matches" in data;
+  return !!data && 'matches' in data;
 }
 
 export const isResults = (data: FootballResult): data is Results => {
-  return !!data && "results" in data;
+  return !!data && 'results' in data;
 }

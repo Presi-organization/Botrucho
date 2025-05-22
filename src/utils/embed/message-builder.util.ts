@@ -1,4 +1,4 @@
-import { Colors, EmbedBuilder } from "discord.js";
+import { Colors, EmbedBuilder } from 'discord.js';
 
 type EmbedInit = ConstructorParameters<typeof EmbedBuilder>[0];
 

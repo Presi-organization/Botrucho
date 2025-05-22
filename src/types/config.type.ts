@@ -1,4 +1,4 @@
-import { ActivityType, PresenceStatusData } from "discord.js";
+import { ActivityType, PresenceStatusData } from 'discord.js';
 
 interface Category {
   enabled: boolean;
@@ -23,13 +23,23 @@ interface Database {
   delay: number;
 }
 
+interface APIs {
+  football: string;
+  riot: string;
+}
+
+interface Integrations {
+  aispeech: string;
+}
+
 export interface ActivityPresence {
   status: PresenceStatusData | undefined,
   type: ActivityType,
   content: string
 }
 
-export interface Config {
+export interface ConfigType {
+  discord_client: string;
   token: string;
   owners: string[];
   footer: string;
@@ -41,11 +51,11 @@ export interface Config {
   logAll: boolean;
   checkConfig: null;
   shards: number;
-  categories: {
-    [key: string]: Category;
-  };
+  categories: Record<string, Category>;
   links: Links;
   database: Database;
   isProduction: boolean;
-  frisbeeHook: Hook
+  frisbeeHook: Hook;
+  apis: APIs,
+  integrations: Integrations
 }

@@ -1,7 +1,8 @@
-import cron from "node-cron";
-import mongoose from "mongoose";
+import cron from 'node-cron';
+import mongoose from 'mongoose';
 import {
   ClientOptions,
+  CommandInteraction,
   GatewayIntentBits as Intents,
   GuildMember,
   Message,
@@ -9,16 +10,16 @@ import {
   Role,
   TextChannel,
   WebhookClient
-} from "discord.js";
-import { GuildQueue } from "discord-player";
+} from 'discord.js';
+import { GuildQueue } from 'discord-player';
 import { DefaultExtractors } from '@discord-player/extractor';
-import { YoutubeiExtractor } from "discord-player-youtubei";
-import Botrucho from "@/mongodb/base/Botrucho";
-import CommandLoader from "@/commands/CommandLoader";
-import { deleteNonBotMessages, handleReactions, sendAMessageAndThread } from "@/services/webhooks/ultimateThread";
-import { ActivityPresence } from "@/types/Config";
-import { logger } from '@/util/Logger';
-import '@/util/extenders';
+import { YoutubeiExtractor } from 'discord-player-youtubei';
+import { Botrucho } from '@/mongodb';
+import CommandLoader from '@/commands/CommandLoader';
+import { deleteNonBotMessages, handleReactions, sendAMessageAndThread } from '@/services';
+import { ActivityPresence } from '@/types';
+import { logger } from '@/utils';
+import '@/utils/extenders.util';
 
 const client: Botrucho = new Botrucho({
   intents: [
@@ -38,11 +39,12 @@ const client: Botrucho = new Botrucho({
 
 if (!client.config.isProduction) {
   client.player.on('debug', (message: string): void => logger.log(`[Player] ${message}`));
-  client.player.events.on('debug', (queue: GuildQueue<any>, message: string): void =>
+  client.player.events.on('debug', (queue: GuildQueue, message: string): void =>
     logger.log(`[${queue.guild.name}: ${queue.guild.id}] ${message}`)
   );
 } else {
-  console.warn = () => {
+  // eslint-disable-next-line no-console
+  console.warn = () => {/**/
   };
 }
 
@@ -90,8 +92,15 @@ const setupCronJobs: () => void = (): void => {
   cron.schedule('*/10 * * * * *', async (): Promise<void> => {
     for (const interaction of client.deleted_messages) {
       try {
-        client.deleted_messages.delete(interaction) && await interaction.deleteReply();
-      } catch {
+        if (client.deleted_messages.delete(interaction)) {
+          if (interaction instanceof Message) {
+            await interaction.delete();
+          } else if (interaction instanceof CommandInteraction) {
+            await interaction.deleteReply();
+          }
+        }
+      } catch (error: unknown) {
+        logger.error('Error deleting interaction reply:', error);
       }
     }
   });
@@ -140,8 +149,8 @@ const setupClientEvents: () => void = (): void => {
     logger.log('Disconnect!');
   });
 
-  client.on('guildMemberSpeaking', async (member: any, speaking: any): Promise<void> => {
-    logger.log(member.displayName || member.user.username, 'is talking?', speaking);
+  client.on('guildMemberSpeaking', async (member: GuildMember, speaking: boolean): Promise<void> => {
+    logger.debug(member.displayName || member.user.username, 'is talking?', speaking);
   });
 
   client.on('error', (e: Error): void => logger.error(e));
@@ -157,6 +166,6 @@ const startBot: () => Promise<void> = async (): Promise<void> => {
   });
 };
 
-startBot().catch((e: any): void => {
+startBot().catch((e: Error): void => {
   logger.error('Failed to start the bot:', e);
 });

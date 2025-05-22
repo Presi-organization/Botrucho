@@ -4,13 +4,12 @@ import {
   SlashCommandOptionsOnlyBuilder,
   SlashCommandStringOption,
   VoiceBasedChannel
-} from "discord.js";
-import { Player, QueueRepeatMode, SearchResult, useMainPlayer } from "discord-player";
-import { SlashCommandBuilder } from "@discordjs/builders";
-import { IGuildData } from "@/mongodb/models/GuildData";
-import { PlayKeys, TranslationElement, VCKeys } from "@/types/Translations";
-import { Error, Success, Warning } from "@/util/embedMessage";
-import { logger } from '@/util/Logger';
+} from 'discord.js';
+import { Player, QueueRepeatMode, SearchResult, useMainPlayer } from 'discord-player';
+import { SlashCommandBuilder } from '@discordjs/builders';
+import { IGuildData } from '@/mongodb';
+import { PlayKeys, TranslationElement, VCKeys } from '@/types';
+import { Error, logger, Success, Warning } from '@/utils';
 
 export const name = 'play';
 export const description = 'Plays a music in your voice channel.';
@@ -30,14 +29,14 @@ export async function execute(interaction: CommandInteraction, guildDB: IGuildDa
     NO_RESULTS_DESC,
     ADDED_2_QUEUE_TITLE,
     ADDED_2_QUEUE_DESC
-  }: TranslationElement<PlayKeys> = interaction.translate("PLAY", guildDB.lang);
-  const { CONNECT_VC }: TranslationElement<VCKeys> = interaction.translate("VC", guildDB.lang);
+  }: TranslationElement<PlayKeys> = interaction.translate('PLAY', guildDB.lang);
+  const { CONNECT_VC }: TranslationElement<VCKeys> = interaction.translate('VC', guildDB.lang);
 
   const player: Player = useMainPlayer();
-  const channel: VoiceBasedChannel = interaction.member.voice.channel!;
+  const channel: VoiceBasedChannel | null = interaction.member.voice?.channel ?? null;
   const name: string = interaction.options.getString('song', true);
 
-  if (!interaction.member.voice?.channel) return interaction.reply({ embeds: [Warning({ description: CONNECT_VC })] });
+  if (!channel) return interaction.reply({ embeds: [Warning({ description: CONNECT_VC })] });
 
   await interaction.deferReply({ flags: MessageFlags.Ephemeral });
 
@@ -46,7 +45,7 @@ export async function execute(interaction: CommandInteraction, guildDB: IGuildDa
   if (!searchResult.hasTracks()) {
     const embed = {
       title: NO_RESULTS_TITLE,
-      description: NO_RESULTS_DESC.replace("${songName}", name),
+      description: NO_RESULTS_DESC.replace('${songName}', name),
       author: {
         name: interaction.guild.name,
         icon_url: interaction.guild.iconURL() ?? undefined
@@ -57,8 +56,8 @@ export async function execute(interaction: CommandInteraction, guildDB: IGuildDa
   }
 
   const description = ADDED_2_QUEUE_DESC
-    .replace("${songName}", `${searchResult.tracks[0].title} - ${searchResult.tracks[0].author}`)
-    .replace("${songUrl}", searchResult.tracks[0].url);
+    .replace('${songName}', `${searchResult.tracks[0].title} - ${searchResult.tracks[0].author}`)
+    .replace('${songUrl}', searchResult.tracks[0].url);
 
   const embed = {
     title: ADDED_2_QUEUE_TITLE,

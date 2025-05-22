@@ -1,12 +1,12 @@
-import { ShardingManager } from "discord.js";
+import { ShardingManager } from 'discord.js';
 import express, { Express } from 'express';
-import healthRoute from "@/routes/health";
-import { logger } from "@/util/Logger";
+import healthRoute from '@/routes/health';
+import { logger } from '@/utils';
 
-import config from "@/config";
+import config from '@/config';
 
 const validateEnv = () => {
-  const requiredEnvVars = ['MONGO_URI', 'DISCORD_TOKEN', 'AISPEECH_TOKEN', 'CLIENT_ID', 'GUILD_ID', 'WEBHOOK_ID', 'WEBOOK_TOKEN', 'RIOT_TOKEN', 'SHARDS', 'NODE_ENV'];
+  const requiredEnvVars: string[] = ['MONGO_URI', 'DISCORD_TOKEN', 'AISPEECH_TOKEN', 'CLIENT_ID', 'GUILD_ID', 'WEBHOOK_ID', 'WEBOOK_TOKEN', 'RIOT_TOKEN', 'SHARDS', 'NODE_ENV'];
   requiredEnvVars.forEach((envVar) => {
     if (!process.env[envVar]) {
       logger.error(`Missing required environment variable: ${envVar}`);
@@ -23,12 +23,12 @@ const port = process.env.PORT || 3000;
 const manager = new ShardingManager(`${__dirname}/bot.js`, {
   token: config.token,
   shardArgs: process.argv,
-  totalShards: config.shards ?? "auto",
+  totalShards: config.shards ?? 'auto',
 });
 
-app.use("/", healthRoute);
+app.use('/', healthRoute);
 
-logger.log("[Shards] Starting spawn...");
+logger.log('[Shards] Starting spawn...');
 
 manager.spawn({ timeout: -1 }).then((): void => {
   app.listen(port, (): void => {

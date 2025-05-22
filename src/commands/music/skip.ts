@@ -1,11 +1,9 @@
-import { CommandInteraction, EmbedBuilder, SlashCommandOptionsOnlyBuilder } from "discord.js";
-import { SlashCommandBuilder } from "@discordjs/builders";
-import { GuildQueue, useQueue } from "discord-player";
-import Botrucho from "@/mongodb/base/Botrucho";
-import { IGuildData } from "@/mongodb/models/GuildData";
-import { PlayerMetadata } from "@/types/PlayerMetadata";
-import { MusicKeys, SkipKeys, TranslationElement } from "@/types/Translations";
-import { Error, Success } from "@/util/embedMessage";
+import { CommandInteraction, EmbedBuilder, SlashCommandOptionsOnlyBuilder } from 'discord.js';
+import { SlashCommandBuilder } from '@discordjs/builders';
+import { GuildQueue, useQueue } from 'discord-player';
+import { Botrucho, IGuildData } from '@/mongodb';
+import { MusicKeys, PlayerType, SkipKeys, TranslationElement } from '@/types';
+import { Error, Success } from '@/utils';
 
 export const name = 'skip';
 export const description = 'Skip to the next track.';
@@ -17,16 +15,18 @@ export const data: SlashCommandOptionsOnlyBuilder = new SlashCommandBuilder()
 
 export async function execute(interaction: CommandInteraction & { client: Botrucho }, guildDB: IGuildData) {
   if (!interaction.inCachedGuild()) return;
+  if (!interaction.isChatInputCommand()) return;
 
-  const { SKIPPED_TITLE, SKIPPED_DESC }: TranslationElement<SkipKeys> = interaction.translate("SKIP", guildDB.lang)
+  const { client } = interaction;
+  const { SKIPPED_TITLE, SKIPPED_DESC }: TranslationElement<SkipKeys> = interaction.translate('SKIP', guildDB.lang)
   const {
     NOT_PLAYING_TITLE,
     NOT_PLAYING_DESC
-  }: TranslationElement<MusicKeys> = interaction.translate("MUSIC", guildDB.lang)
+  }: TranslationElement<MusicKeys> = interaction.translate('MUSIC', guildDB.lang)
 
   await interaction.deferReply();
 
-  const queue: GuildQueue<PlayerMetadata> | null = useQueue(interaction.guildId);
+  const queue: GuildQueue<PlayerType> | null = useQueue(interaction.guildId);
 
   if (!queue?.isPlaying()) {
     const embed: EmbedBuilder = Error({
@@ -52,6 +52,6 @@ export async function execute(interaction: CommandInteraction & { client: Botruc
     }
   });
 
-  interaction.client.deleted_messages.add(interaction);
+  client.deleted_messages.add(interaction);
   return interaction.editReply({ embeds: [embed] });
 }
