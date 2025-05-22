@@ -12,6 +12,6 @@ export default tseslint.config(
       'quotes': ['error', 'single'],
       'no-console': 'warn',
     },
-    ignores: ['dist/**', 'node_modules/**', 'src/utils/logger.util.ts'],
+    ignores: ['dist/**/*', 'node_modules/**', 'src/utils/logger/logger.util.ts'],
   }
 )

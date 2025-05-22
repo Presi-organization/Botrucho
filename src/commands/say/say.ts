@@ -106,6 +106,7 @@ export async function execute(interaction: CommandInteraction & { client: Botruc
             description: SYNTHESIZING,
           })],
         });
+        client.deleted_messages.add(interaction);
 
       } else {
         logger.error('Speech synthesis canceled, ' + result.errorDetails +

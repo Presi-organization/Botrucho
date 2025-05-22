@@ -113,9 +113,7 @@
   },
   "include": [
     "src/**/*",
-    "src/services/**/*",
     "languages/**/*",
-    "docker/**/*",
     "assets/**/*"
   ],
   "exclude": ["node_modules", "dist"]
