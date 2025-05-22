@@ -9,7 +9,7 @@ import {
   VoiceChannel
 } from 'discord.js';
 import { SlashCommandBuilder } from '@discordjs/builders';
-import { IGuildData } from '@/mongodb';
+import { Botrucho, IGuildData } from '@/mongodb';
 import { Success, Warning } from '@/utils';
 import { MoveKeys, TranslationElement, VCKeys } from '@/types';
 
@@ -20,10 +20,11 @@ export const data: SlashCommandOptionsOnlyBuilder = new SlashCommandBuilder()
   .addUserOption((option: SlashCommandUserOption) => option.setName('user').setDescription('The member to move').setRequired(true))
   .addChannelOption((option: SlashCommandChannelOption) => option.setName('channel').setDescription('The channel to move').addChannelTypes(ChannelType.GuildVoice).setRequired(true));
 
-export async function execute(interaction: CommandInteraction, guildDB: IGuildData) {
+export async function execute(interaction: CommandInteraction & { client: Botrucho }, guildDB: IGuildData) {
   if (!interaction.inCachedGuild()) return;
   if (!interaction.isChatInputCommand()) return;
 
+  const { client } = interaction;
   const { USER_MOVED }: TranslationElement<MoveKeys> = interaction.translate('MOVE', guildDB.lang);
   const { CONNECT_VC, USER_NOT_IN }: TranslationElement<VCKeys> = interaction.translate('VC', guildDB.lang);
 
@@ -31,13 +32,13 @@ export async function execute(interaction: CommandInteraction, guildDB: IGuildDa
   const channel: VoiceChannel = interaction.options.getChannel('channel', true, [ChannelType.GuildVoice]);
 
   if (!(interaction.member.voice.channel)) {
-    return await interaction.reply({
+    await interaction.reply({
       embeds: [Warning({ description: CONNECT_VC })],
       flags: MessageFlags.Ephemeral
     });
   }
   if (!(user.voice.channelId)) {
-    return await interaction.reply({
+    await interaction.reply({
       embeds: [Warning({ description: USER_NOT_IN })],
       flags: MessageFlags.Ephemeral
     });
@@ -47,8 +48,10 @@ export async function execute(interaction: CommandInteraction, guildDB: IGuildDa
   const user_moved = USER_MOVED
     .replace('${username}', user.user.displayName)
     .replace('${channel}', channel.name);
-  return interaction.reply({
+  await interaction.reply({
     embeds: [Success({ description: user_moved })],
     flags: MessageFlags.Ephemeral
   });
+
+  client.deleted_messages.add(interaction);
 }
