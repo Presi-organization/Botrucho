@@ -1,9 +1,5 @@
 import fs from 'fs/promises';
-import fsCallback from 'fs';
 import path from 'path';
-import { createCanvas, loadImage } from 'canvas';
-// @ts-expect-error: GIFEncoder is not a module
-import GIFEncoder from 'gif-encoder-2';
 import {
   AttachmentBuilder,
   CommandInteraction,
@@ -13,8 +9,16 @@ import {
 } from 'discord.js';
 import { SlashCommandBuilder } from '@discordjs/builders';
 import { IGuildData } from '@/mongodb';
-import { CropInfo, ICommand, ImageCenter, SiataKeys, TranslationElement } from '@/types';
-import { drawCroppedImage, Error, invertCanvasImage, logger, Success } from '@/utils';
+import {
+  CropInfo,
+  ICommand,
+  ImageCenter,
+  RenderParams,
+  RenderParamsWithGif,
+  SiataKeys,
+  TranslationElement
+} from '@/types';
+import { Error, logger, runRenderWorker, Success } from '@/utils';
 
 const radarLayers = [
   { name: 'locations', description: 'Addresses shown on map' },
@@ -29,11 +33,6 @@ const LEGEND_SCALE = 0.17;
 
 function getFolder(group: string): 'smoothdark' | 'googlestreets' {
   return group === 'stadia' ? 'smoothdark' : 'googlestreets';
-}
-
-function createCanvasContext() {
-  const canvas = createCanvas(OUTPUT_SIZE, OUTPUT_SIZE);
-  return canvas.getContext('2d');
 }
 
 export default class SiataCommand extends ICommand {
@@ -53,140 +52,113 @@ export default class SiataCommand extends ICommand {
 
     const group = interaction.options.getSubcommandGroup(true);
     const subcommand = interaction.options.getSubcommand();
-    if (subcommand === 'timelapse') return this.createRadarTimelapse(interaction, guildDB, group);
-
     const circles: number = interaction.options.getNumber('circles') ?? 1;
+    const { mapCrop, radarCrop, folder } = this._getCropSettings(circles, group);
+
     try {
-      const mapCropSize = [650, 720][circles - 1];
-      const radarCropSize = 200 + (circles - 1) * 250;
-
-      const mapCrop: CropInfo = { ...MAP_CENTER, width: mapCropSize, height: mapCropSize };
-      const radarCrop: CropInfo = { ...RADAR_CENTER, width: radarCropSize, height: radarCropSize };
-
-      const folder = getFolder(group);
-      const mapPath = path.join(process.cwd(), `/assets/siata/${folder}/${subcommand}/map${circles}x.png`);
-      const radarPath = path.join(process.cwd(), '/assets/siata/radar.png');
-      const legendPath = path.join(process.cwd(), '/assets/siata/radarLegend.png');
-
-      const [mapImg, radarImg, legendImg] = await Promise.all([
-        loadImage(mapPath),
-        loadImage(radarPath),
-        loadImage(legendPath)
-      ]);
-
-      const ctx = createCanvasContext();
-
-      drawCroppedImage(ctx, mapImg, mapCrop, { x: 0, y: 0, width: OUTPUT_SIZE, height: OUTPUT_SIZE });
-
-      ctx.globalAlpha = 0.5;
-      const radar = group === 'stadia' ? await invertCanvasImage(radarImg) : radarImg;
-      drawCroppedImage(ctx, radar, radarCrop, { x: 0, y: 0, width: OUTPUT_SIZE, height: OUTPUT_SIZE });
-      ctx.globalAlpha = 1.0;
-
-      const legendW = legendImg.width * LEGEND_SCALE;
-      const legendH = legendImg.height * LEGEND_SCALE;
-      const legendX = OUTPUT_SIZE - legendW - 10;
-      const legendY = OUTPUT_SIZE - legendH - 10;
-
-      const legend = group === 'stadia' ? await invertCanvasImage(legendImg) : legendImg;
-      ctx.drawImage(legend, legendX, legendY, legendW, legendH);
-
-      const buffer = ctx.canvas.toBuffer('image/png');
-      const attachment = new AttachmentBuilder(buffer, { name: 'siata.png' });
-
-      await interaction.editReply({
-        embeds: [
-          Success({
-            title: 'SIATA',
-            description: ZOOM.replace('${zoom}', circles.toString()),
-            image: { url: 'attachment://siata.png' }
-          })
-        ],
-        files: [attachment]
-      });
+      if (subcommand === 'timelapse') await this._handleTimelapse(interaction, group, folder, mapCrop, radarCrop, circles);
+      else await this._handleStaticImage(interaction, group, folder, subcommand, mapCrop, radarCrop, circles, ZOOM);
     } catch (error) {
       logger.error('Error processing images:', error);
       await interaction.editReply({ embeds: [Error({ description: ERR })] });
     }
   }
 
-  async createRadarTimelapse(interaction: CommandInteraction, guildDB: IGuildData, group: string): Promise<void> {
-    if (!interaction.isChatInputCommand()) return;
-    const { ERR }: TranslationElement<SiataKeys> = interaction.translate('SIATA', guildDB.lang);
-
-    const circles: number = interaction.options.getNumber('circles') ?? 1;
-    try {
-      const radarDir = path.join(process.cwd(), '/assets/siata/radar_history/');
-      const radarImages = (await fs.readdir(radarDir))
-        .filter(f => f.startsWith('radar_') && f.endsWith('.png'))
-        .sort((a, b) => parseInt(a.split('_')[1]) - parseInt(b.split('_')[1]))
-        .map(f => path.join(radarDir, f));
-
-      if (radarImages.length < 2) {
-        await interaction.editReply({ embeds: [Error({ description: 'Not enough radar images collected yet for a timelapse.' })] });
-        return;
-      }
-
-      const mapCropSize = [650, 720][circles - 1];
-      const radarCropSize = 200 + (circles - 1) * 250;
-
-      const mapCrop: CropInfo = { ...MAP_CENTER, width: mapCropSize, height: mapCropSize };
-      const radarCrop: CropInfo = { ...RADAR_CENTER, width: radarCropSize, height: radarCropSize };
-
-      const folder = getFolder(group);
-      const mapPath = path.join(process.cwd(), `/assets/siata/${folder}/clean/map${circles}x.png`);
-      const mapImg = await loadImage(mapPath);
-
-      const ctx = createCanvasContext();
-
-      const encoder = new GIFEncoder(OUTPUT_SIZE, OUTPUT_SIZE);
-      const gifPath = path.join(process.cwd(), '/assets/siata/radar_timelapse.gif');
-      encoder.createReadStream().pipe(fsCallback.createWriteStream(gifPath));
-
-      encoder.start();
-      encoder.setRepeat(0);
-      encoder.setDelay(500);
-      encoder.setQuality(10);
-
-      for (let i = 0; i < radarImages.length; i++) {
-        const radarRaw = await loadImage(radarImages[i]);
-        const radarImg = group === 'stadia' ? await invertCanvasImage(radarRaw) : radarRaw;
-
-        ctx.clearRect(0, 0, OUTPUT_SIZE, OUTPUT_SIZE);
-        drawCroppedImage(ctx, mapImg, mapCrop, { x: 0, y: 0, width: OUTPUT_SIZE, height: OUTPUT_SIZE });
-
-        ctx.globalAlpha = 0.5;
-        drawCroppedImage(ctx, radarImg, radarCrop, { x: 0, y: 0, width: OUTPUT_SIZE, height: OUTPUT_SIZE });
-
-        const progressHeight = 10;
-        ctx.fillStyle = '#00ffcc';
-        ctx.fillRect(
-          0,
-          OUTPUT_SIZE - progressHeight,
-          (OUTPUT_SIZE * (i + 1)) / radarImages.length,
-          progressHeight
-        );
-        ctx.globalAlpha = 1.0;
-        encoder.addFrame(ctx);
-      }
-
-      encoder.finish();
-
-      await new Promise<void>(res => setTimeout(res, 500));
-
-      const attachment = new AttachmentBuilder(gifPath, { name: 'radar_timelapse.gif' });
-      await interaction.editReply({
-        embeds: [Success({
-          title: 'SIATA Radar Timelapse',
-          description: `Showing ${radarImages.length} radar images`,
-          image: { url: 'attachment://radar_timelapse.gif' }
-        })],
-        files: [attachment]
-      });
-    } catch (error) {
-      logger.error('Error creating radar timelapse:', error);
-      await interaction.editReply({ embeds: [Error({ description: ERR })] });
+  private async _handleTimelapse(interaction: CommandInteraction, group: string, folder: string, mapCrop: CropInfo, radarCrop: CropInfo, circles: number): Promise<void> {
+    const radarImages = await this._getSortedRadarImages();
+    if (radarImages.length < 2) {
+      await interaction.editReply({ embeds: [Error({ description: 'Not enough radar images collected yet for a timelapse.' })] });
+      return;
     }
+
+    const mapPath = this._resolveAssetPath('siata', folder, 'clean', `map${circles}x.png`);
+    const gifPath = this._resolveAssetPath('siata', 'radar_timelapse.gif');
+
+    const workerParams: RenderParamsWithGif = {
+      radarImages,
+      mapPath,
+      mapCrop,
+      radarCrop,
+      outputSize: OUTPUT_SIZE,
+      gifPath,
+      invertRadar: group === 'stadia',
+      showProgress: true
+    };
+
+    await runRenderWorker(workerParams);
+
+    const attachment = new AttachmentBuilder(gifPath, { name: 'radar_timelapse.gif' });
+    await this._replyWithSuccess(
+      interaction,
+      'SIATA Radar Timelapse',
+      `Showing ${radarImages.length} radar images`,
+      attachment,
+      'radar_timelapse.gif'
+    );
+  }
+
+  private async _handleStaticImage(interaction: CommandInteraction, group: string, folder: string, subcommand: string, mapCrop: CropInfo, radarCrop: CropInfo, circles: number, zoomText: string) {
+    const mapPath = this._resolveAssetPath('siata', folder, subcommand, `map${circles}x.png`);
+    const radarPath = this._resolveAssetPath('siata', 'radar.png');
+    const legendPath = this._resolveAssetPath('siata', 'radarLegend.png');
+
+    const workerParams: RenderParams = {
+      mapPath,
+      radarPath,
+      legendPath,
+      mapCrop,
+      radarCrop,
+      outputSize: OUTPUT_SIZE,
+      invertRadarLegend: group === 'stadia',
+      legendScale: LEGEND_SCALE
+    };
+
+    const buffer = await runRenderWorker(workerParams);
+    const attachment = new AttachmentBuilder(buffer, { name: 'siata.png' });
+    await this._replyWithSuccess(
+      interaction,
+      'SIATA',
+      zoomText.replace('${zoom}', circles.toString()),
+      attachment,
+      'siata.png'
+    );
+  }
+
+  private async _getSortedRadarImages(): Promise<string[]> {
+    const radarDir = this._resolveAssetPath('siata', 'radar_history');
+    const files = await fs.readdir(radarDir);
+    return files
+      .filter(f => f.startsWith('radar_') && f.endsWith('.png'))
+      .sort((a, b) => parseInt(a.split('_')[1]) - parseInt(b.split('_')[1]))
+      .map(f => path.join(radarDir, f));
+  }
+
+  private _getCropSettings(circles: number, group: string) {
+    const mapCropSize = [650, 720][circles - 1];
+    const radarCropSize = 200 + (circles - 1) * 250;
+
+    return {
+      mapCrop: { ...MAP_CENTER, width: mapCropSize, height: mapCropSize },
+      radarCrop: { ...RADAR_CENTER, width: radarCropSize, height: radarCropSize },
+      folder: getFolder(group),
+    };
+  }
+
+  private _resolveAssetPath(...segments: string[]): string {
+    return path.join(process.cwd(), 'assets', ...segments);
+  }
+
+  private async _replyWithSuccess(
+    interaction: CommandInteraction,
+    title: string,
+    description: string,
+    attachment: AttachmentBuilder,
+    filename: string
+  ) {
+    await interaction.editReply({
+      embeds: [Success({ title, description, image: { url: `attachment://${filename}` } })],
+      files: [attachment]
+    });
   }
 
   private _createSubcommandGroup(name: string, description: string): SlashCommandSubcommandGroupBuilder {

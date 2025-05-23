@@ -106,7 +106,7 @@ const setupCronJobs: () => void = (): void => {
     }
   });
 
-  cron.schedule('*/1 * * * *', async (): Promise<void> => {
+  cron.schedule('*/3 * * * *', async (): Promise<void> => {
     try {
       // Run the radar check in a separate process to prevent blocking
       const { spawn } = (await import('child_process'));
