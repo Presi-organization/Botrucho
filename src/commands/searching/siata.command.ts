@@ -22,6 +22,20 @@ const radarLayers = [
   { name: 'timelapse', description: 'Generate a timelapse of radar images' }
 ];
 
+const OUTPUT_SIZE = 1080;
+const MAP_CENTER: ImageCenter = { x: 1024, y: 540 };
+const RADAR_CENTER: ImageCenter = { x: 480, y: 503 };
+const LEGEND_SCALE = 0.17;
+
+function getFolder(group: string): 'smoothdark' | 'googlestreets' {
+  return group === 'stadia' ? 'smoothdark' : 'googlestreets';
+}
+
+function createCanvasContext() {
+  const canvas = createCanvas(OUTPUT_SIZE, OUTPUT_SIZE);
+  return canvas.getContext('2d');
+}
+
 export default class SiataCommand extends ICommand {
   name = 'siata';
   description = 'Display siata image.';
@@ -43,16 +57,13 @@ export default class SiataCommand extends ICommand {
 
     const circles: number = interaction.options.getNumber('circles') ?? 1;
     try {
-      const outputSize = 1080;
       const mapCropSize = [650, 720][circles - 1];
       const radarCropSize = 200 + (circles - 1) * 250;
 
-      const mapCenter: ImageCenter = { x: 1024, y: 540 };
-      const radarCenter: ImageCenter = { x: 480, y: 503 };
-      const mapCrop: CropInfo = { ...mapCenter, width: mapCropSize, height: mapCropSize };
-      const radarCrop: CropInfo = { ...radarCenter, width: radarCropSize, height: radarCropSize };
+      const mapCrop: CropInfo = { ...MAP_CENTER, width: mapCropSize, height: mapCropSize };
+      const radarCrop: CropInfo = { ...RADAR_CENTER, width: radarCropSize, height: radarCropSize };
 
-      const folder: 'smoothdark' | 'googlestreets' = group === 'stadia' ? 'smoothdark' : 'googlestreets';
+      const folder = getFolder(group);
       const mapPath = path.join(process.cwd(), `/assets/siata/${folder}/${subcommand}/map${circles}x.png`);
       const radarPath = path.join(process.cwd(), '/assets/siata/radar.png');
       const legendPath = path.join(process.cwd(), '/assets/siata/radarLegend.png');
@@ -63,29 +74,24 @@ export default class SiataCommand extends ICommand {
         loadImage(legendPath)
       ]);
 
-      const canvas = createCanvas(outputSize, outputSize);
-      const ctx = canvas.getContext('2d');
+      const ctx = createCanvasContext();
 
-      // Map
-      drawCroppedImage(ctx, mapImg, mapCrop, { x: 0, y: 0, width: outputSize, height: outputSize });
+      drawCroppedImage(ctx, mapImg, mapCrop, { x: 0, y: 0, width: OUTPUT_SIZE, height: OUTPUT_SIZE });
 
-      // Radar
       ctx.globalAlpha = 0.5;
       const radar = group === 'stadia' ? await invertCanvasImage(radarImg) : radarImg;
-      drawCroppedImage(ctx, radar, radarCrop, { x: 0, y: 0, width: outputSize, height: outputSize });
+      drawCroppedImage(ctx, radar, radarCrop, { x: 0, y: 0, width: OUTPUT_SIZE, height: OUTPUT_SIZE });
       ctx.globalAlpha = 1.0;
 
-      // Legend
-      const legendScale = 0.17;
-      const legendW = legendImg.width * legendScale;
-      const legendH = legendImg.height * legendScale;
-      const legendX = outputSize - legendW - 10;
-      const legendY = outputSize - legendH - 10;
+      const legendW = legendImg.width * LEGEND_SCALE;
+      const legendH = legendImg.height * LEGEND_SCALE;
+      const legendX = OUTPUT_SIZE - legendW - 10;
+      const legendY = OUTPUT_SIZE - legendH - 10;
 
       const legend = group === 'stadia' ? await invertCanvasImage(legendImg) : legendImg;
       ctx.drawImage(legend, legendX, legendY, legendW, legendH);
 
-      const buffer = canvas.toBuffer('image/png');
+      const buffer = ctx.canvas.toBuffer('image/png');
       const attachment = new AttachmentBuilder(buffer, { name: 'siata.png' });
 
       await interaction.editReply({
@@ -121,18 +127,19 @@ export default class SiataCommand extends ICommand {
         return;
       }
 
-      const outputSize = 1080;
-      const mapCrop: CropInfo = { x: 1024, y: 540, width: 650, height: 650 };
-      const radarCrop: CropInfo = { x: 480, y: 503, width: 200, height: 200 };
+      const mapCropSize = [650, 720][circles - 1];
+      const radarCropSize = 200 + (circles - 1) * 250;
 
-      const folder: 'smoothdark' | 'googlestreets' = group === 'stadia' ? 'smoothdark' : 'googlestreets';
+      const mapCrop: CropInfo = { ...MAP_CENTER, width: mapCropSize, height: mapCropSize };
+      const radarCrop: CropInfo = { ...RADAR_CENTER, width: radarCropSize, height: radarCropSize };
+
+      const folder = getFolder(group);
       const mapPath = path.join(process.cwd(), `/assets/siata/${folder}/clean/map${circles}x.png`);
       const mapImg = await loadImage(mapPath);
 
-      const canvas = createCanvas(outputSize, outputSize);
-      const ctx = canvas.getContext('2d');
+      const ctx = createCanvasContext();
 
-      const encoder = new GIFEncoder(outputSize, outputSize);
+      const encoder = new GIFEncoder(OUTPUT_SIZE, OUTPUT_SIZE);
       const gifPath = path.join(process.cwd(), '/assets/siata/radar_timelapse.gif');
       encoder.createReadStream().pipe(fsCallback.createWriteStream(gifPath));
 
@@ -145,18 +152,18 @@ export default class SiataCommand extends ICommand {
         const radarRaw = await loadImage(radarImages[i]);
         const radarImg = group === 'stadia' ? await invertCanvasImage(radarRaw) : radarRaw;
 
-        ctx.clearRect(0, 0, outputSize, outputSize);
-        drawCroppedImage(ctx, mapImg, mapCrop, { x: 0, y: 0, width: outputSize, height: outputSize });
+        ctx.clearRect(0, 0, OUTPUT_SIZE, OUTPUT_SIZE);
+        drawCroppedImage(ctx, mapImg, mapCrop, { x: 0, y: 0, width: OUTPUT_SIZE, height: OUTPUT_SIZE });
 
         ctx.globalAlpha = 0.5;
-        drawCroppedImage(ctx, radarImg, radarCrop, { x: 0, y: 0, width: outputSize, height: outputSize });
+        drawCroppedImage(ctx, radarImg, radarCrop, { x: 0, y: 0, width: OUTPUT_SIZE, height: OUTPUT_SIZE });
 
         const progressHeight = 10;
         ctx.fillStyle = '#00ffcc';
         ctx.fillRect(
           0,
-          outputSize - progressHeight,
-          (outputSize * (i + 1)) / radarImages.length, // proportional width
+          OUTPUT_SIZE - progressHeight,
+          (OUTPUT_SIZE * (i + 1)) / radarImages.length,
           progressHeight
         );
         ctx.globalAlpha = 1.0;

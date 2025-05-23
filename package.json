@@ -5,7 +5,7 @@
   "main": "src/sharder.ts",
   "scripts": {
     "clean": "rm -rf dist",
-    "copy-env": "npx cpx \".env\" dist/",
+    "copy-env": "npx cpx \".env.*\" dist/ && rm -f dist/.env.keys",
     "copy-assets": "npx cpx \"assets/**/*\" dist/assets && npx cpx \"languages/**/*\" dist/languages",
     "build": "swc src -d dist --copy-files && npm run copy-assets && npm run copy-env",
     "start": "npm run build && node dist/src/sharder.js",

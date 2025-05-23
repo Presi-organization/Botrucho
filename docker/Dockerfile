@@ -29,4 +29,4 @@ COPY --from=build /botrucho/dist ./
 
 EXPOSE 3000
 
-CMD ["npx", "dotenvx", "run", "--", "node", "src/sharder.js"]
+CMD ["npx", "dotenvx", "run", "-f", ".env.production", "--", "node", "src/sharder.js"]
