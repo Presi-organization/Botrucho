@@ -6,9 +6,9 @@ variable "dotenv" {
 
 variable "ssh_private_key_path" {
   description = "path where is the private key"
-  default = "botrucho"
-  type = string
-  sensitive = true
+  default     = "botrucho"
+  type        = string
+  sensitive   = true
 }
 
 variable "ssh_user" {
@@ -26,4 +26,10 @@ variable "ssh_host" {
 variable "ssh_port" {
   type    = string
   default = "22"
+}
+
+variable "docker_token" {
+  type = string
+  default = "null"
+  sensitive = true
 }

@@ -20,8 +20,8 @@ provider "docker" {
   host = local.docker_host
 
   registry_auth {
-    address = "registry-1.docker.io"
+    address  = "registry-1.docker.io"
     username = "presi11"
-    password = "" # token of dockerhub
+    password = "${var.docker_token}" # token of dockerhub
   }
 }

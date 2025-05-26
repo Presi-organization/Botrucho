@@ -1,14 +1,13 @@
 resource "random_pet" "tag" {
   length = 1
-  
 }
 
 
 resource "docker_image" "botrucho" {
   name = "registry-1.docker.io/presi11/botrucho:${random_pet.tag.id}"
   build {
-    context    = "${path.module}/.."      
-    dockerfile = "docker/Dockerfile" 
+    context    = "${path.module}/.."
+    dockerfile = "docker/Dockerfile"
   }
 }
 
