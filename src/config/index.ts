@@ -8,7 +8,7 @@ const config: ConfigType = {
   owners: ['429375441267195924', '219637158162464768'],
   footer: 'Botrucho',
   presence: [
-    { status: 'dnd', type: ActivityType.Competing, content: 'nada importante' },
+    { status: 'dnd', type: ActivityType.Competing, content: 'nada importante por ahora' },
     { status: 'dnd', type: ActivityType.Watching, content: 'el techo (del server)' },
     { status: 'dnd', type: ActivityType.Listening, content: 'los lloros de los @BOTS' },
     { status: 'dnd', type: ActivityType.Custom, content: 'Planeando un ataque inminente' }
