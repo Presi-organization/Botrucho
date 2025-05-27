@@ -12,7 +12,7 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
-      
+
       - name: Echo secrets
         run: |
           echo $SSH_PRIVATE_KEY >> terraform/github_actions
@@ -35,8 +35,10 @@ jobs:
         env:
           TF_VAR_ssh_user: ${{ secrets.SSH_USER }}
           TF_VAR_ssh_host: ${{ secrets.SSH_HOST }}
-          TF_VAR_ssh_private_key: ${{ secrets.SSH_PRIVATE_KEY }}
+          TF_VAR_ssh_private_key_path: ${{ secrets.SSH_PRIVATE_KEY_PATH }}
           TF_VAR_ssh_port: ${{ secrets.SSH_PORT }}
           TF_VAR_dotenv: ${{ secrets.DOTENV_KEY }}
+          TF_VAR_docker_token: ${{ secrets.DOCKER_TOKEN }}
+
         run: terraform apply -auto-approve
         working-directory: terraform
