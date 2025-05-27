@@ -19,8 +19,15 @@ jobs:
           cat terraform/github_actions
         shell: bash
         env:
-          # Feel free to rename this variable, but make sure to update it everywhere. You should paste your entire file in your secrets
           SSH_PRIVATE_KEY : ${{secrets.SSH_PRIVATE_KEY}}
+          
+      - name: LS
+        run: |
+          ls -a
+          cd terraform
+          ls -a 
+          cat github_actions
+        shell: bash
 
       - name: Install Terraform
         uses: hashicorp/setup-terraform@v2
