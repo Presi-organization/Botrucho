@@ -11,8 +11,9 @@ resource "null_resource" "deploy_botrucho" {
 
   provisioner "remote-exec" {
     inline = [
-      "sudo docker pull ${docker_registry_image.push_image.name}",
-      "sudo docker run -e DOTENV_KEY=${var.dotenv} --name botrucho -p 3000:3000 -d --restart unless-stopped --init ${docker_registry_image.push_image.name}"
+      "docker pull ${docker_registry_image.push_image.name}",
+      "if docker ps -a --filter \"name=botrucho\" --format '{{.Names}}' | grep -q \"^botrucho$\"; then docker rm -f botrucho; fi",
+      "docker run -e DOTENV_PRIVATE_KEY_PRODUCTION=${var.dotenv} --name botrucho -p 3000:3000 -d --restart unless-stopped --init ${docker_registry_image.push_image.name}"
     ]
   }
 }
@@ -25,11 +26,11 @@ resource "null_resource" "destroy_command" {
     ssh_port             = var.ssh_port
     ssh_user             = var.ssh_user
     ssh_host             = var.ssh_host
-    docker_name = docker_registry_image.push_image.name
+    docker_name          = docker_registry_image.push_image.name
   }
 
   provisioner "local-exec" {
     when    = destroy
-    command = "ssh -i ${self.triggers.ssh_private_key_path} -p ${self.triggers.ssh_port} ${self.triggers.ssh_user}@${self.triggers.ssh_host} -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o IdentitiesOnly=yes 'sudo docker rm -f botrucho && sudo docker rmi ${self.triggers.docker_name}'"
+    command = "ssh -i ${self.triggers.ssh_private_key_path} -p ${self.triggers.ssh_port} ${self.triggers.ssh_user}@${self.triggers.ssh_host} -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o IdentitiesOnly=yes 'docker rm -f botrucho && docker rmi ${self.triggers.docker_name}'"
   }
 }

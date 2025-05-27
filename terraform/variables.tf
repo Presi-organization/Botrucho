@@ -29,7 +29,7 @@ variable "ssh_port" {
 }
 
 variable "docker_token" {
-  type = string
-  default = "null"
+  type      = string
+  default   = "null"
   sensitive = true
 }

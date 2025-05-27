@@ -22,6 +22,6 @@ provider "docker" {
   registry_auth {
     address  = "registry-1.docker.io"
     username = "presi11"
-    password = "${var.docker_token}" # token of dockerhub
+    password = var.docker_token # token of dockerhub
   }
 }
