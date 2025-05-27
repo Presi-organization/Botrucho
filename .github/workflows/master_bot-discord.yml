@@ -13,14 +13,11 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Echo secrets
+      - name: Create private key from secret
         run: |
-          echo $SSH_PRIVATE_KEY >> terraform/github_actions
-          cat terraform/github_actions
-        shell: bash
-        env:
-          SSH_PRIVATE_KEY : ${{secrets.SSH_PRIVATE_KEY}}
-          
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > terraform/github_actions
+          chmod 600 terraform/github_actions
+
       - name: LS
         run: |
           ls -a
