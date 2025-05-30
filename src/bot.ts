@@ -57,7 +57,11 @@ const loadExtractors: () => Promise<void> = async (): Promise<void> => {
   ];
   const extractors = DefaultExtractors.filter(extractor => !extractorsToExclude.includes(extractor.name));
   await client.player.extractors.loadMulti(extractors);
-  await client.player.extractors.register(YoutubeiExtractor, {})
+  await client.player.extractors.register(YoutubeiExtractor, {
+    streamOptions: { useClient: 'WEB_EMBEDDED', },
+    overrideDownloadOptions: { client: 'WEB_EMBEDDED', },
+    generateWithPoToken: true,
+  })
 };
 
 const connectToDatabase: () => Promise<void> = async (): Promise<void> => {
