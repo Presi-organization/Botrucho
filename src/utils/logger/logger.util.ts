@@ -29,7 +29,8 @@ const getCaller = (): string => {
   if (stack && stack.length > 3) {
     const callerLine: string = stack[4];
     logger.debug(`Caller line: ${callerLine}`);
-    const match: RegExpMatchArray | null = callerLine.match(/\/src\/(?:.*\/)?(\w+)(?:\.\w+)*\.js/);
+    const match: RegExpMatchArray | null = callerLine.match(/src\/(?:.*\/)?([^/.]+)(?:\.\w+)*\.js$/);
+    logger.debug(`Caller match: ${match}`);
     return match ? match[1] : 'Unknown';
   }
   return 'Unknown';
@@ -52,7 +53,17 @@ export const logger = {
   },
 
   error(...messages: unknown[]): void {
-    console.log(formatLog(Tint.red('ERROR'), Tint.red(stringifyMessages(messages))));
+    if (messages.length > 0 && messages[0] instanceof Error) {
+      const err = messages[0] as Error;
+      console.log(formatLog(Tint.red('ERROR'), Tint.red(err.message)));
+      console.error(err);
+
+      if (messages.length > 1) {
+        console.log(formatLog(Tint.red('ERROR'), Tint.red(stringifyMessages(messages.slice(1)))));
+      }
+    } else {
+      console.log(formatLog(Tint.red('ERROR'), Tint.red(stringifyMessages(messages))));
+    }
   },
 
   debug(...messages: unknown[]): void {
