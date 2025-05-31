@@ -1,3 +1,4 @@
+import 'source-map-support/register';
 import { ShardingManager } from 'discord.js';
 import express, { Express } from 'express';
 import healthRoute from '@/routes/health';
