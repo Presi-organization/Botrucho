@@ -28,6 +28,7 @@ const getCaller = (): string => {
   const stack: string[] | undefined = new Error().stack?.split('\n');
   if (stack && stack.length > 3) {
     const callerLine: string = stack[4];
+    logger.debug(`Caller line: ${callerLine}`);
     const match: RegExpMatchArray | null = callerLine.match(/\/src\/(?:.*\/)?(\w+)(?:\.\w+)*\.js/);
     return match ? match[1] : 'Unknown';
   }

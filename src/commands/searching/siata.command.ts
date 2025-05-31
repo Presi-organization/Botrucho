@@ -60,7 +60,6 @@ export default class SiataCommand extends ICommand {
       else await this._handleStaticImage(interaction, group, folder, subcommand, mapCrop, radarCrop, circles, ZOOM);
     } catch (error) {
       logger.error('Error processing images:', error);
-      console.error('Error processing images:', error);
       await interaction.editReply({ embeds: [Error({ description: ERR })] });
     }
   }
