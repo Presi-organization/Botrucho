@@ -61,17 +61,17 @@ export async function checkAndSaveRadarImage(): Promise<void> {
     // Check if we already have this version
     const existingFiles = await fs.promises.readdir(RADAR_DIR);
     if (existingFiles.includes(filename)) {
-      logger.warn('Radar image already saved, skipping download');
+      logger.debug('Radar image already saved, skipping download');
       return;
     }
 
     // Download the image
     await downloadFile(RADAR_URL, filePath);
-    logger.log(`Saved new radar image: ${filename}`);
+    logger.debug(`Saved new radar image: ${filename}`);
 
     // Copy the latest image to LATEST_DIR
     await fs.promises.copyFile(filePath, latestFilePath);
-    logger.log('Updated latest radar image');
+    logger.debug('Updated latest radar image');
 
     // Maintain max 10 files (delete oldest if needed)
     if (existingFiles.length >= MAX_IMAGES) {
@@ -88,7 +88,7 @@ export async function checkAndSaveRadarImage(): Promise<void> {
         const oldestFile = oldestFiles.shift();
         if (oldestFile) {
           await fs.promises.unlink(path.join(RADAR_DIR, oldestFile.name));
-          logger.log(`Deleted old radar image: ${oldestFile.name}`);
+          logger.debug(`Deleted old radar image: ${oldestFile.name}`);
         }
       }
     }
