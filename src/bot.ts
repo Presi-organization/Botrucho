@@ -120,7 +120,7 @@ const setupCronJobs: () => void = (): void => {
           .catch(console.error);
       `], {
         detached: true,
-        stdio: 'ignore'
+        stdio: 'inherit'
       });
 
       // Detach the process so it runs independently

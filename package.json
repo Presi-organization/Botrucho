@@ -7,7 +7,7 @@
     "clean": "rm -rf dist",
     "copy-env": "npx cpx \".env.*\" dist/ && rm -f dist/.env.keys",
     "copy-assets": "npx cpx \"assets/**/*\" dist/assets && npx cpx \"languages/**/*\" dist/languages",
-    "build": "swc src -d dist --copy-files && npm run copy-assets && npm run copy-env",
+    "build": "swc src -d dist -s -D && npm run copy-assets && npm run copy-env",
     "start": "npm run build && node dist/src/sharder.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -30,15 +30,15 @@
     "jimp": "^1.6.0",
     "microsoft-cognitiveservices-speech-sdk": "^1.44.0",
     "mongoose": "^8.15.1",
-    "node-cron": "^4.0.7"
+    "node-cron": "^4.1.0"
   },
   "devDependencies": {
-    "@eslint/js": "^9.27.0",
+    "@eslint/js": "^9.28.0",
     "@swc/cli": "^0.7.7",
     "@swc/core": "^1.11.29",
     "@types/express": "^5.0.2",
     "@types/node-cron": "^3.0.11",
-    "eslint": "^9.27.0",
+    "eslint": "^9.28.0",
     "typescript": "^5.8.2",
     "typescript-eslint": "^8.33.0"
   }

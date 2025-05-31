@@ -61,7 +61,7 @@ export async function checkAndSaveRadarImage(): Promise<void> {
     // Check if we already have this version
     const existingFiles = await fs.promises.readdir(RADAR_DIR);
     if (existingFiles.includes(filename)) {
-      logger.debug('Radar image already saved, skipping download');
+      logger.warn('Radar image already saved, skipping download');
       return;
     }
 

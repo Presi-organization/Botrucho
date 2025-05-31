@@ -29,7 +29,6 @@ import { drawCroppedImage, invertCanvasImage } from '@/utils';
     ctx.globalAlpha = 0.5;
     const radarImg = invertRadarLegend ? await invertCanvasImage(radarImgRaw) : radarImgRaw;
     drawCroppedImage(ctx, radarImg, radarCrop, { x: 0, y: 0, width: outputSize, height: outputSize });
-    ctx.globalAlpha = 1.0;
 
     // Legend
     const legendImg = invertRadarLegend ? await invertCanvasImage(legendImgRaw) : legendImgRaw;
@@ -38,6 +37,7 @@ import { drawCroppedImage, invertCanvasImage } from '@/utils';
     const legendX = outputSize - legendW - 10;
     const legendY = outputSize - legendH - 10;
     ctx.drawImage(legendImg, legendX, legendY, legendW, legendH);
+    ctx.globalAlpha = 1.0;
 
     const buffer = ctx.canvas.toBuffer('image/png');
     parentPort?.postMessage({ success: true, buffer });
