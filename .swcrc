@@ -20,5 +20,5 @@
     "lazy": true
   },
   "minify": true,
-  "sourceMaps": true
+  "sourceMaps": true,
 }

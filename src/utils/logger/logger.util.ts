@@ -51,17 +51,7 @@ export const logger = {
   },
 
   error(...messages: unknown[]): void {
-    if (messages.length > 0 && messages[0] instanceof Error) {
-      const err = messages[0] as Error;
-      console.log(formatLog(Tint.red('ERROR'), Tint.red(err.message)));
-      console.error(err);
-
-      if (messages.length > 1) {
-        console.log(formatLog(Tint.red('ERROR'), Tint.red(stringifyMessages(messages.slice(1)))));
-      }
-    } else {
-      console.log(formatLog(Tint.red('ERROR'), Tint.red(stringifyMessages(messages))));
-    }
+    console.log(formatLog(Tint.red('ERROR'), Tint.red(stringifyMessages(messages))));
   },
 
   debug(...messages: unknown[]): void {
