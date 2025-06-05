@@ -3,7 +3,7 @@ name: Trigger Portainer via Tailscale
 on:
   push:
     branches:
-      - main
+      - master
 
 jobs:
   deploy:
