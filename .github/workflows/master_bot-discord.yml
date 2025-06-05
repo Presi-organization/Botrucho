@@ -3,7 +3,7 @@ name: Build and deploy container app via Terraform
 on:
   push:
     branches:
-      - master
+      - master-
   workflow_dispatch:
 
 jobs:
