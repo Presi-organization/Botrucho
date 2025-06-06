@@ -1,4 +1,3 @@
-import path from 'path';
 import cron from 'node-cron';
 import mongoose from 'mongoose';
 import {
@@ -21,6 +20,7 @@ import { deleteNonBotMessages, handleReactions, sendAMessageAndThread } from '@/
 import { ActivityPresence } from '@/types';
 import { logger } from '@/utils';
 import '@/utils/extenders.util';
+import { workerRadarProcess } from '@/workers/radar.process';
 
 const client: Botrucho = new Botrucho({
   intents: [
@@ -110,23 +110,7 @@ const setupCronJobs: () => void = (): void => {
   });
 
   cron.schedule('*/3 * * * *', async (): Promise<void> => {
-    try {
-      // Run the radar check in a separate process to prevent blocking
-      const { spawn } = (await import('child_process'));
-      const radarProcess = spawn('node', ['-e', `
-        require('${path.join(process.cwd(), 'src/services/siata-radar.service.js')}')
-          .checkAndSaveRadarImage()
-          .catch(console.error);
-      `], {
-        detached: true,
-        stdio: 'inherit'
-      });
-
-      // Detach the process so it runs independently
-      radarProcess.unref();
-    } catch (error) {
-      logger.error('Error spawning radar image process:', error);
-    }
+    await workerRadarProcess();
   });
 };
 
@@ -163,6 +147,7 @@ const setupClientEvents: () => void = (): void => {
     setInterval(pickPresence, 5000);
     logger.log('Ready!');
     setupCronJobs();
+    await workerRadarProcess();
   });
 
   client.once('reconnecting', (): void => {
