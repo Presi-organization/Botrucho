@@ -7,7 +7,7 @@ import {
 } from 'discord.js';
 import { Player, QueueRepeatMode, SearchResult, useMainPlayer } from 'discord-player';
 import { SlashCommandBuilder } from '@discordjs/builders';
-import { IGuildData } from '@/mongodb';
+import { Botrucho, IGuildData } from '@/mongodb';
 import { ICommand, PlayKeys, TranslationElement, VCKeys } from '@/types';
 import { Error, logger, Success, Warning } from '@/utils';
 
@@ -21,9 +21,11 @@ export default class PlayCommand extends ICommand {
     .setDescription('Plays a music in your voice channel.')
     .addStringOption((option: SlashCommandStringOption) => option.setName('song').setDescription('The name of the song.').setRequired(true));
 
-  async execute(interaction: CommandInteraction, guildDB: IGuildData): Promise<void> {
+  async execute(interaction: CommandInteraction & { client: Botrucho }, guildDB: IGuildData): Promise<void> {
     if (!interaction.inCachedGuild()) return;
     if (!interaction.isChatInputCommand()) return;
+
+    const { client } = interaction;
 
     const {
       NO_RESULTS_TITLE,
@@ -39,6 +41,7 @@ export default class PlayCommand extends ICommand {
 
     if (!channel) {
       await interaction.reply({ embeds: [Warning({ description: CONNECT_VC })] });
+      client.deleted_messages.add(interaction);
       return;
     }
 
@@ -57,12 +60,23 @@ export default class PlayCommand extends ICommand {
       };
 
       await interaction.editReply({ embeds: [Error(embed)] });
+      client.deleted_messages.add(interaction);
       return;
     }
 
-    const description = ADDED_2_QUEUE_DESC
-      .replace('${songName}', `${searchResult.tracks[0].title} - ${searchResult.tracks[0].author}`)
-      .replace('${songUrl}', searchResult.tracks[0].url);
+    const getDescription = (): string => {
+      if (searchResult.hasPlaylist()) {
+        return ADDED_2_QUEUE_DESC
+          .replace('${songName}', `${searchResult.playlist?.title}`)
+          .replace('${songUrl}', searchResult.playlist?.url || '') + ` [${searchResult.playlist?.tracks.length}]`;
+      }
+      const track = searchResult.tracks[0];
+      return ADDED_2_QUEUE_DESC
+        .replace('${songName}', `${track.title} - ${track.author}`)
+        .replace('${songUrl}', track.url);
+    };
+
+    const description = getDescription();
 
     const embed = {
       title: ADDED_2_QUEUE_TITLE,
@@ -70,9 +84,7 @@ export default class PlayCommand extends ICommand {
     };
 
     await interaction.editReply({ embeds: [Success(embed)] });
-    setTimeout(() => {
-      interaction.deleteReply();
-    }, 5000);
+    client.deleted_messages.add(interaction);
 
     try {
       await player.play(channel, searchResult, {
