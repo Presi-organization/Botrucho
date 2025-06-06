@@ -1,3 +1,4 @@
+import 'source-map-support/register';
 import cron from 'node-cron';
 import mongoose from 'mongoose';
 import {
