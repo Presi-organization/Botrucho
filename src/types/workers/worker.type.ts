@@ -1,4 +1,4 @@
-import { CropInfo } from '@/types/image-data.type';
+import { CropInfo } from '@/types';
 
 export interface RenderParams {
   mapPath: string;
