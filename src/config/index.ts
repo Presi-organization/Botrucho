@@ -11,7 +11,9 @@ const config: ConfigType = {
     { status: 'dnd', type: ActivityType.Competing, content: 'nada importante por ahora' },
     { status: 'dnd', type: ActivityType.Watching, content: 'el techo (del server)' },
     { status: 'dnd', type: ActivityType.Listening, content: 'los lloros de los @BOTS' },
-    { status: 'dnd', type: ActivityType.Custom, content: 'Planeando un ataque inminente' }
+    { status: 'dnd', type: ActivityType.Custom, content: 'Planeando un ataque inminente' },
+    { status: 'dnd', type: ActivityType.Listening, content: 'Pasarex is god' },
+    { status: 'dnd', type: ActivityType.Custom, content: 'Pepinillos, alitas y pasarex' }
   ],
   color: 0xF5B719,
   defaultLanguage: 'en',
