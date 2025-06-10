@@ -44,7 +44,7 @@ ENV TZ=America/Bogota
 WORKDIR /usr/src/botrucho
 
 # Instala dotenvx
-RUN curl -sfS https://dotenvx.sh/install.sh | sh 
+RUN curl -sfS https://dotenvx.sh/install.sh | sh
 
 COPY package*.json ./
 RUN npm ci --omit=dev

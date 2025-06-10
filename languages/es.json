@@ -20,7 +20,7 @@
   },
   "_COMMANDS": "TRADUCCIONES DE COMANDOS",
   "COIN": {
-    "COIN_FLIP": "🪙 Lanzamiento de moneda: ${result}",
+    "COIN_FLIP": "🪙 Resultado: ${result}",
     "HEADS": "👑 Cara",
     "TAILS": "🦅 Cruz"
   },
