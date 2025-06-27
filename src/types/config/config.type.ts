@@ -42,6 +42,7 @@ export interface ConfigType {
   discord_client: string;
   token: string;
   owners: string[];
+  instanceId: string;
   footer: string;
   presence: ActivityPresence[];
   color: number;

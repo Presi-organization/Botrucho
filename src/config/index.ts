@@ -1,4 +1,5 @@
 import { ActivityType } from 'discord.js';
+import { randomUUID } from 'crypto';
 import { ConfigType } from '@/types';
 import * as process from 'node:process';
 
@@ -6,6 +7,7 @@ const config: ConfigType = {
   discord_client: process.env.CLIENT_ID as string,
   token: process.env.DISCORD_TOKEN as string,
   owners: ['429375441267195924', '219637158162464768'],
+  instanceId: process.env.INSTANCE_ID || randomUUID(),
   footer: 'Botrucho',
   presence: [
     { status: 'dnd', type: ActivityType.Competing, content: 'nada importante por ahora' },

@@ -50,6 +50,29 @@ if (!client.config.isProduction) {
   };
 }
 
+const connectToDatabase: () => Promise<void> = async (): Promise<void> => {
+  try {
+    await mongoose.connect(client.config.database.MongoURL);
+    logger.log('Connected to MongoDB Atlas');
+  } catch (error) {
+    logger.error('Failed to connect to MongoDB Atlas', error);
+    process.exit(1);
+  }
+};
+
+const ensureSingleInstance = async (): Promise<void> => {
+  const { botInstance } = client;
+  const instanceId: string = client.config.instanceId;
+  const isRunning: boolean = await botInstance.isAnotherInstanceRunning(instanceId);
+  if (isRunning) {
+    logger.error('Bot instance is already running on another instance. Exiting...');
+    process.exit(1);
+  }
+  setInterval(async () => {
+    await botInstance.updateHeartbeat(instanceId);
+  }, 10 * 1000);
+}
+
 const loadExtractors: () => Promise<void> = async (): Promise<void> => {
   const extractorsToExclude = [
     'SoundCloudExtractor',
@@ -62,16 +85,6 @@ const loadExtractors: () => Promise<void> = async (): Promise<void> => {
     streamOptions: { useClient: 'WEB_EMBEDDED', },
     generateWithPoToken: true,
   })
-};
-
-const connectToDatabase: () => Promise<void> = async (): Promise<void> => {
-  try {
-    await mongoose.connect(client.config.database.MongoURL);
-    logger.log('Connected to MongoDB Atlas');
-  } catch (error) {
-    logger.error('Failed to connect to MongoDB Atlas', error);
-    process.exit(1);
-  }
 };
 
 const loadCommands: () => Promise<void> = async (): Promise<void> => {
@@ -167,13 +180,19 @@ const setupClientEvents: () => void = (): void => {
 };
 
 const startBot: () => Promise<void> = async (): Promise<void> => {
-  await loadExtractors();
-  await connectToDatabase();
-  await loadCommands();
-  setupClientEvents();
-  client.login(client.config.token).catch(e => {
-    logger.log('[Discord login]: Please provide a valid discord bot token\n' + e);
-  });
+  try {
+    await connectToDatabase();
+    await ensureSingleInstance();
+    await loadExtractors();
+    await loadCommands();
+    setupClientEvents();
+    client.login(client.config.token).catch(e => {
+      logger.log('[Discord login]: Please provide a valid discord bot token\n' + e);
+    });
+  } catch (e) {
+    logger.error('Failed to start the bot:', e);
+    process.exit(1);
+  }
 };
 
 startBot().catch((e: Error): void => {

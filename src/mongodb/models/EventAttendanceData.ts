@@ -30,7 +30,7 @@ const eventAttendanceSchema = new Schema<IEventAttendance>({
   expirationDate: {
     type: Date,
     required: true,
-    expires: 0
+    expires: 30 * 24 * 60 * 60
   },
   attendees: [{
     userId: { type: String, required: true },
