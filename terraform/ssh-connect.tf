@@ -13,7 +13,7 @@ resource "null_resource" "deploy_botrucho" {
     inline = [
       "docker pull ${docker_registry_image.push_image.name}",
       "if docker ps -a --filter \"name=botrucho\" --format '{{.Names}}' | grep -q \"^botrucho$\"; then docker rm -f botrucho; fi",
-      "docker run -e DOTENV_PRIVATE_KEY_PRODUCTION=${var.dotenv} --name botrucho -p 3000:3000 -d --restart unless-stopped --init ${docker_registry_image.push_image.name}"
+      "docker run -e DOTENV_PRIVATE_KEY_PRODUCTION=${var.dotenv} --name botrucho -p 3000:3000 -d --restart on-failure:5 --init ${docker_registry_image.push_image.name}"
     ]
   }
 }

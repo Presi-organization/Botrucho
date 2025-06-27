@@ -30,7 +30,14 @@ app.use('/', healthRoute);
 
 logger.log('[Shards] Starting spawn...');
 
-manager.spawn({ timeout: -1 }).then((): void => {
+manager.spawn({ timeout: -1 }).then((shards) => {
+  shards.forEach((shard) => {
+    shard.on('death', () => {
+      logger.error(`Stopping Shard ${shard.id} due to shard process exit.`);
+      process.exit(1);
+    });
+  });
+
   app.listen(port, (): void => {
     logger.log(`[Express] Bot app listening on port ${port}`)
   });

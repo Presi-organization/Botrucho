@@ -22,6 +22,7 @@ import { ActivityPresence } from '@/types';
 import { logger } from '@/utils';
 import '@/utils/extenders.util';
 import { workerRadarProcess } from '@/workers/radar.process';
+import * as process from 'node:process';
 
 const client: Botrucho = new Botrucho({
   intents: [
@@ -66,6 +67,7 @@ const ensureSingleInstance = async (): Promise<void> => {
   const isRunning: boolean = await botInstance.isAnotherInstanceRunning(instanceId);
   if (isRunning) {
     logger.error('Bot instance is already running on another instance. Exiting...');
+    await mongoose.connection.close();
     process.exit(1);
   }
   setInterval(async () => {
@@ -191,7 +193,7 @@ const startBot: () => Promise<void> = async (): Promise<void> => {
     });
   } catch (e) {
     logger.error('Failed to start the bot:', e);
-    process.exit(1);
+    process.exit(0);
   }
 };
 

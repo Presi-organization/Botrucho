@@ -8,7 +8,7 @@
     "copy-env": "npx cpx \".env.*\" dist/ && rm -f dist/.env.keys",
     "copy-assets": "npx cpx \"assets/**/*\" dist/assets && npx cpx \"languages/**/*\" dist/languages",
     "build": "swc src -d dist -s -D && npm run copy-assets && npm run copy-env",
-    "start": "npm run build && node dist/src/sharder.js",
+    "start": "npm run build && dotenvx run -f .env.development -- node dist/src/sharder.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
