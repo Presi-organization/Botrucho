@@ -37,7 +37,7 @@ jobs:
 
     - name: Call Portainer webhook
       run: |
-        curl -X POST http://100.92.18.76:9000/api/webhooks/372fd5f2-e602-4928-890f-cf7422b59e8c
+        curl -X POST http://100.92.18.76:9000/api/webhooks/536639cb-d9bd-4fe9-8c5a-94e4a62267fa
 
     - name: Cleanup Tailscale
       if: always()
