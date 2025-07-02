@@ -39,6 +39,7 @@ export class AttendanceReactionHandler {
 
   handleAttendanceReaction = async (reaction: MessageReaction, user: User) => {
     try {
+      const now = new Date();
       const guildMember = await reaction.message.guild?.members.fetch(user.id);
       if (!guildMember) {
         logger.error('Could not fetch guild member');
@@ -58,6 +59,10 @@ export class AttendanceReactionHandler {
       const attendance: IEventAttendance = await this.client.eventAttendanceData.getEventAttendance({ messageId: reaction.message.id });
       const thread: ThreadChannel<boolean> | null = await this.fetchThreadById(attendance.thread.threadId, reaction.message.channel.id);
       if (thread && attendance.thread.countMessageId) {
+        if (msg.includes('->') && now.getHours() >= 21) {
+          await thread.send({ content: `<@&540708709945311243> <@${user.id}> cambio de asistencia a las ${now.getHours()}:${now.getMinutes()}` });
+          return;
+        }
         const message: Message<true> = thread.messages.cache.get(attendance.thread.countMessageId) ||
           await thread.messages.fetch(attendance.thread.countMessageId);
         const reactionCounts: Partial<Record<string, IAttendee[]>> = Object.groupBy(attendance.attendees, ({ reaction }) => reaction[reaction.length - 1]);
@@ -71,7 +76,7 @@ export class AttendanceReactionHandler {
           content: `**${reactionString}**`
         });
 
-        const attendeeMatch = attendance.attendees.find((attendee: IAttendee) => attendee.userId === user.id);
+        const attendeeMatch: IAttendee | undefined = attendance.attendees.find((attendee: IAttendee) => attendee.userId === user.id);
         if (!attendeeMatch) {
           logger.error('Attendee not found after registration');
           return;
