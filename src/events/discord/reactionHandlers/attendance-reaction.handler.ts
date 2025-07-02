@@ -59,7 +59,7 @@ export class AttendanceReactionHandler {
       const attendance: IEventAttendance = await this.client.eventAttendanceData.getEventAttendance({ messageId: reaction.message.id });
       const thread: ThreadChannel<boolean> | null = await this.fetchThreadById(attendance.thread.threadId, reaction.message.channel.id);
       if (thread && attendance.thread.countMessageId) {
-        if (msg.includes('->') && now.getHours() >= 21) {
+        if (msg.includes('->') && now.getHours() >= 21 && now.getDay() === 5) {
           await thread.send({ content: `<@&540708709945311243> <@${user.id}> cambio de asistencia a las ${now.getHours()}:${now.getMinutes()}` });
           return;
         }
