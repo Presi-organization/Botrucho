@@ -5,4 +5,5 @@ export { default as MoveCommand } from './move.command';
 export { default as PingCommand } from './ping.command';
 export { default as PruneCommand } from './prune.command';
 export { default as ServerCommand } from './server.command';
+export { default as UltimateCommand } from './ultimate.command';
 export { default as UserInfoCommand } from './user-info.command';

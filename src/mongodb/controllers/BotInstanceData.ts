@@ -12,7 +12,7 @@ export class BotInstanceDataController {
   async updateHeartbeat(instanceId: string): Promise<void> {
     await BotInstanceDataModel.findOneAndUpdate(
       { instanceId },
-      { lastHeartbeat: new Date() },
+      { lastHeartbeat: new Date(), uptime: Math.floor(process.uptime()) },
       { upsert: true }
     );
   }

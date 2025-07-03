@@ -7,6 +7,7 @@ import {
   PingCommand,
   PruneCommand,
   ServerCommand,
+  UltimateCommand,
   UserInfoCommand
 } from '@/commands/management';
 import { LeaveCommand, LyricsCommand, PlayCommand, ShuffleCommand, SkipCommand, VolumeCommand } from '@/commands/music';
@@ -34,6 +35,7 @@ export const commandRegistry: (new () => ICommand)[] = [
   SiataCommand,
   ShuffleCommand,
   SkipCommand,
+  UltimateCommand,
   UserInfoCommand,
   VolumeCommand,
 ];
