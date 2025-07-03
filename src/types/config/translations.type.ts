@@ -13,6 +13,7 @@ export interface TranslationsType {
   PING: TranslationElement<PingKeys>;
   PRUNE: TranslationElement<PruneKeys>;
   SERVER_INFO: TranslationElement<ServerInfoKeys>;
+  ULTIMATE: TranslationElement<UltimateKeys>;
   USER_INFO: TranslationElement<UserInfoKeys>;
   LEAVE: TranslationElement<LeaveKeys>;
   LYRICS: TranslationElement<LyricsKeys>;
@@ -55,6 +56,7 @@ export type MoveKeys = 'USER_MOVED';
 export type PingKeys = 'PINGING' | 'PONG';
 export type PruneKeys = 'AMOUNT_ERR' | 'ERR' | 'SUCCESS';
 export type ServerInfoKeys = 'TITLE' | 'ONLY_SERVER' | 'a' | 'b' | 'c' | 'd' | 'e' | 'f';
+export type UltimateKeys = 'ERROR';
 export type UserInfoKeys = 'USERNAME' | 'ID';
 export type LeaveKeys = 'DISCONNECTED' | 'SUCCESS';
 export type LyricsKeys = 'NO_QUEUE' | 'NOT_FOUND' | 'SYNCED_LYRICS';

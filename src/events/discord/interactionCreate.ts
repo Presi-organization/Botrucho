@@ -1,7 +1,7 @@
-import { Guild, Interaction, InteractionCallbackResponse, Message } from 'discord.js';
+import { EmbedBuilder, Guild, Interaction, InteractionCallbackResponse, Message } from 'discord.js';
 import { Botrucho, IGuildData } from '@/mongodb';
 import { ICommand, EventKeys, MiscKeys, TranslationElement } from '@/types';
-import { logger } from '@/utils';
+import { Error, logger } from '@/utils';
 
 module.exports = {
   async execute(client: Botrucho, interaction: Interaction): Promise<void> {
@@ -15,9 +15,8 @@ module.exports = {
       } catch (error) {
         logger.error(error);
         const { ERROR }: TranslationElement<MiscKeys> = interaction.translate('MISC', guildDB.lang);
-        await interaction.editReply({
-          content: ERROR
-        });
+        const embedError: EmbedBuilder = Error({ title: ERROR, description: error.message });
+        await interaction.editReply({ embeds: [embedError] });
       }
     }
     if (interaction.isModalSubmit()) {

@@ -39,7 +39,12 @@ export default class UltimateCommand extends ICommand {
         .setDescription('List all upcoming ultimate frisbee events.'));
 
   async execute(interaction: CommandInteraction & { client: Botrucho }, guildDB: IGuildData): Promise<void> {
-    throw new Error('Method not implemented.');
+    if (!interaction.isChatInputCommand()) return;
+
+    const { ERROR } = interaction.translate('ULTIMATE', guildDB.lang);
+
+    await interaction.deferReply();
+    throw new Error(ERROR);
     /*
     if (!interaction.isChatInputCommand()) return;
 
@@ -62,9 +67,7 @@ export default class UltimateCommand extends ICommand {
 
   //TODO: **ultimate create** will create a new ultimate frisbee event -> Store it in the database channel, cronjob, message, reactions, etc.
   // This will use a modal to collect information about the event, such as name, date, time, description, and location.
-  private async createEvent(interaction: CommandInteraction & {
-    client: Botrucho
-  }, guildDB: IGuildData): Promise<void> {
+  private async createEvent(interaction: CommandInteraction & { client: Botrucho }, guildDB: IGuildData): Promise<void> {
     const { MODAL } = interaction.translate('ULTIMATE', guildDB.lang);
 
     const modal: ModalBuilder = new ModalBuilder()

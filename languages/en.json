@@ -75,6 +75,9 @@
     "e": "Banner: ${count}",
     "f": "Others: ${count}"
   },
+  "ULTIMATE": {
+    "ERROR": "This command has not been implemented yet."
+  },
   "USER_INFO": {
     "USERNAME": "Username: ${name}",
     "ID": "ID: ${id}"
