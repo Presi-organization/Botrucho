@@ -59,12 +59,7 @@ export class AttendanceReactionHandler {
       const attendance: IEventAttendance = await this.client.eventAttendanceData.getEventAttendance({ messageId: reaction.message.id });
       const thread: ThreadChannel<boolean> | null = await this.fetchThreadById(attendance.thread.threadId, reaction.message.channel.id);
       if (thread && attendance.thread.countMessageId) {
-        if (msg.includes('->') && now.getHours() >= 21 && now.getDay() === 4) {
-          await thread.send({ content: `<@&540708709945311243> <@${user.id}> cambio de asistencia a las ${now.getHours()}:${now.getMinutes()}` });
-          return;
-        }
-        const message: Message<true> = thread.messages.cache.get(attendance.thread.countMessageId) ||
-          await thread.messages.fetch(attendance.thread.countMessageId);
+        const message: Message<true> = thread.messages.cache.get(attendance.thread.countMessageId) || await thread.messages.fetch(attendance.thread.countMessageId);
         const reactionCounts: Partial<Record<string, IAttendee[]>> = Object.groupBy(attendance.attendees, ({ reaction }) => reaction[reaction.length - 1]);
         const counter: Record<string, number> = Object.fromEntries(
           Object.entries(reactionCounts).map(([reaction, attendees]) => [reaction, attendees?.length ?? 0])
@@ -85,6 +80,9 @@ export class AttendanceReactionHandler {
         if (attendeeThread) {
           const threadMessage: Message<true> = thread.messages.cache.get(attendeeThread) || await thread.messages.fetch(attendeeThread);
           await threadMessage.edit(msg);
+          if (msg.includes('->') && now.getHours() >= 21 && now.getDay() === 5) {
+            await thread.send({ content: `<@&540708709945311243> <@${user.id}> cambió por (${emojiMarkdown}) a las ${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}` });
+          }
         } else {
           const usrThread: Message<true> = await thread.send(msg);
           attendeeMatch.threadMessageId = usrThread.id;
