@@ -95,7 +95,7 @@ const loadCommands: () => Promise<void> = async (): Promise<void> => {
 };
 
 const setupCronJobs: () => void = (): void => {
-  cron.schedule('00 19 * * 4', async (): Promise<void> => {
+  cron.schedule('58 22 * * 4', async (): Promise<void> => {
     const webhook = new WebhookClient(client.config.frisbeeHook);
 
     const channel = await client.channels.fetch('1231030584680251432') as TextChannel | null;
