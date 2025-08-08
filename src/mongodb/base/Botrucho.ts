@@ -1,6 +1,12 @@
 import { Client, ClientOptions, Collection, Interaction, Message } from 'discord.js';
 import { Player } from 'discord-player';
-import { AttendanceDataController, BotInstanceDataController, EventDataController, GuildDataController } from '@/mongodb';
+import {
+  AttendanceDataController,
+  BotInstanceDataController,
+  CronDataController,
+  EventDataController,
+  GuildDataController
+} from '@/mongodb';
 import { ConfigType, ICommand } from '@/types';
 
 import config from '@/config';
@@ -21,6 +27,7 @@ export class Botrucho extends Client {
   eventData: EventDataController;
   eventAttendanceData: AttendanceDataController;
   botInstance: BotInstanceDataController;
+  cronData: CronDataController;
 
   constructor(options: ClientOptions) {
     super(options);
@@ -39,6 +46,7 @@ export class Botrucho extends Client {
     this.eventData = new EventDataController();
     this.eventAttendanceData = new AttendanceDataController();
     this.botInstance = new BotInstanceDataController();
+    this.cronData = new CronDataController();
   }
 }
 

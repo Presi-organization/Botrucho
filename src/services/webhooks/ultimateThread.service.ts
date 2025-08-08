@@ -2,8 +2,10 @@ import {
   APIMessage,
   BaseInteraction,
   Collection,
+  GuildMember,
   Message,
   PublicThreadChannel,
+  Role,
   TextChannel,
   TextThreadChannel,
   User,
@@ -94,6 +96,26 @@ const deleteNonBotMessages = async (client: Botrucho, channel: TextChannel, thre
 };
 
 /**
+ * Clean unread attendance messages
+ * @arg {Botrucho} client The Botrucho client
+ * @return {Promise<void>} A promise that resolves when the operation is complete
+ */
+const cleanUnreadAttendance = async (client: Botrucho): Promise<void> => {
+  try {
+    const { messageId, thread: { threadId } } = await client.eventAttendanceData.getEventAttendance({});
+    const channel = await client.channels.fetch('1231030584680251432') as TextChannel | null;
+    if (channel?.isTextBased()) {
+      const message: Message<true> = await channel.messages.fetch(messageId);
+
+      await handleReactions(client, message);
+      await deleteNonBotMessages(client, channel, threadId);
+    }
+  } catch (e) {
+    logger.error('Error during client ready event:', e);
+  }
+}
+
+/**
  * Send a message with an existing webhook
  * @arg {WebhookClient} webhook The Webhook client
  */
@@ -142,4 +164,16 @@ const sendAMessageAndThread: (channel: TextChannel, webhook: WebhookClient, atte
   }
 }
 
-export { sendAMessageAndThread, createWebhook, editWebhook, handleReactions, deleteNonBotMessages }
+const initializeFrisbeeEventCron = async (client: Botrucho) => {
+  const webhook = new WebhookClient(client.config.frisbeeHook);
+
+  const channel = await client.channels.fetch('1231030584680251432') as TextChannel | null;
+  if (channel?.isTextBased()) {
+    const users: string[] | undefined = channel.guild.roles.cache.find((role: Role) => role.id === '540708709945311243')?.members
+      .reduce((acc: string[], m: GuildMember) => !m.user.bot ? [...acc, m.user.displayName] : acc, []);
+    logger.log(users);
+    return sendAMessageAndThread(channel, webhook, client.eventAttendanceData);
+  }
+}
+
+export { cleanUnreadAttendance, initializeFrisbeeEventCron, createWebhook, editWebhook }

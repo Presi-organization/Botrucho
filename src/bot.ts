@@ -8,16 +8,13 @@ import {
   GuildMember,
   Message,
   Partials,
-  Role,
-  TextChannel,
-  WebhookClient
 } from 'discord.js';
 import { GuildQueue } from 'discord-player';
 import { DefaultExtractors } from '@discord-player/extractor';
 import { YoutubeiExtractor } from 'discord-player-youtubei';
-import { Botrucho } from '@/mongodb';
+import { Botrucho, ICronData } from '@/mongodb';
 import CommandLoader from '@/commands/CommandLoader';
-import { deleteNonBotMessages, handleReactions, sendAMessageAndThread } from '@/services';
+import { cleanUnreadAttendance, initializeFrisbeeEventCron } from '@/services';
 import { ActivityPresence } from '@/types';
 import { logger } from '@/utils';
 import '@/utils/extenders.util';
@@ -94,60 +91,44 @@ const loadCommands: () => Promise<void> = async (): Promise<void> => {
   await commandLoader.loadCommands();
 };
 
-const setupCronJobs: () => void = (): void => {
-  cron.schedule('00 19 * * 4', async (): Promise<void> => {
-    const webhook = new WebhookClient(client.config.frisbeeHook);
+const setupCronJobs: () => Promise<void> = async (): Promise<void> => {
+  const cronJobs: ICronData[] = await client.cronData.getAllCrones();
 
-    const channel = await client.channels.fetch('1231030584680251432') as TextChannel | null;
-    if (channel?.isTextBased()) {
-      const users = channel.guild.roles.cache.find((role: Role) => role.id === '540708709945311243')?.members
-        .reduce((acc: string[], m: GuildMember) => !m.user.bot ? [...acc, m.user.displayName] : acc, []);
-      logger.log(users);
-      return sendAMessageAndThread(channel, webhook, client.eventAttendanceData);
-    }
-  }, {
-    timezone: 'America/Bogota'
-  });
-
-  cron.schedule('*/10 * * * * *', async (): Promise<void> => {
-    for (const interaction of client.deleted_messages) {
-      try {
-        if (client.deleted_messages.delete(interaction)) {
-          if (interaction instanceof Message) {
-            await interaction.delete();
-          } else if (interaction instanceof CommandInteraction) {
-            await interaction.deleteReply();
+  cronJobs.forEach((job: ICronData) => {
+    cron.schedule(job.cronExpression, async () => {
+      await client.cronData.createOrUpdateCron({ ...job, lastRun: new Date() });
+      switch (job.cronName) {
+        case 'ultimateFrisbee':
+          await initializeFrisbeeEventCron(client);
+          break;
+        case 'workerRadarProcess':
+          await workerRadarProcess();
+          break;
+        case 'deleteNonBotMessages':
+          for (const interaction of client.deleted_messages) {
+            try {
+              if (client.deleted_messages.delete(interaction)) {
+                if (interaction instanceof Message) {
+                  await interaction.delete();
+                } else if (interaction instanceof CommandInteraction) {
+                  await interaction.deleteReply();
+                }
+              }
+            } catch (error: unknown) {
+              logger.error('Error deleting interaction reply:', error);
+            }
           }
-        }
-      } catch (error: unknown) {
-        logger.error('Error deleting interaction reply:', error);
+          break;
+        default:
+          logger.warn(`Unknown cron job: ${job.cronName}`);
       }
-    }
-  });
-
-  cron.schedule('*/3 * * * *', async (): Promise<void> => {
-    await workerRadarProcess();
+    }, { timezone: 'America/Bogota' })
   });
 };
 
-const cleanUnreadAttendance = async (): Promise<void> => {
-  try {
-    const { messageId, thread: { threadId } } = await client.eventAttendanceData.getEventAttendance({});
-    const channel = await client.channels.fetch('1231030584680251432') as TextChannel | null;
-    if (channel?.isTextBased()) {
-      const message: Message<true> = await channel.messages.fetch(messageId);
-
-      await handleReactions(client, message);
-      await deleteNonBotMessages(client, channel, threadId);
-    }
-  } catch (e) {
-    logger.error('Error during client ready event:', e);
-  }
-}
-
 const setupClientEvents: () => void = (): void => {
   client.once('ready', async () => {
-    cleanUnreadAttendance().catch(error => logger.error('Error cleaning unread attendance:', error));
+    cleanUnreadAttendance(client).catch(error => logger.error('Error cleaning unread attendance:', error));
     const statusArray: ActivityPresence[] = client.config.presence;
     const pickPresence = async (): Promise<void> => {
       const option: number = Math.floor(Math.random() * statusArray.length);
@@ -162,7 +143,7 @@ const setupClientEvents: () => void = (): void => {
     };
     setInterval(pickPresence, 5000);
     logger.log('Ready!');
-    setupCronJobs();
+    await setupCronJobs();
     await workerRadarProcess();
   });
 

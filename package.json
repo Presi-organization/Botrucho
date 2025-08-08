@@ -1,6 +1,6 @@
 {
   "name": "botrucho",
-  "version": "1.5.1",
+  "version": "1.6.0",
   "description": "",
   "main": "src/sharder.ts",
   "scripts": {
@@ -39,7 +39,7 @@
     "@swc/core": "^1.13.3",
     "@types/express": "^5.0.3",
     "@types/node-cron": "^3.0.11",
-    "eslint": "^9.32.0",
+    "eslint": "^9.33.0",
     "typescript": "^5.9.2",
     "typescript-eslint": "^8.39.0"
   }
