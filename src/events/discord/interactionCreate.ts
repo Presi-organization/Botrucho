@@ -1,6 +1,6 @@
 import { EmbedBuilder, Guild, Interaction, InteractionCallbackResponse, Message } from 'discord.js';
 import { Botrucho, IGuildData } from '@/mongodb';
-import { ICommand, EventKeys, MiscKeys, TranslationElement } from '@/types';
+import { EventKeys, ICommand, MiscKeys, TranslationElement } from '@/types';
 import { Error, logger } from '@/utils';
 
 module.exports = {
@@ -12,10 +12,11 @@ module.exports = {
       if (!command) return;
       try {
         await client.player.context.provide({ guild: interaction?.guild as Guild }, async () => await command.execute(interaction, guildDB));
-      } catch (error) {
+      } catch (error: unknown) {
         logger.error(error);
         const { ERROR }: TranslationElement<MiscKeys> = interaction.translate('MISC', guildDB.lang);
-        const embedError: EmbedBuilder = Error({ title: ERROR, description: error.message });
+        const description: string = error instanceof globalThis.Error ? error.message : String(error ?? 'Unknown error');
+        const embedError: EmbedBuilder = Error({ title: ERROR, description });
         await interaction.editReply({ embeds: [embedError] });
       }
     }

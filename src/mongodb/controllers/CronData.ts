@@ -1,5 +1,4 @@
 import { CronDataModel, ICronData } from '@/mongodb/models/CronData';
-import { logger } from '@/utils';
 
 export class CronDataController {
   async getAllCrones(): Promise<ICronData[]> {
@@ -14,7 +13,6 @@ export class CronDataController {
   }
 
   async createOrUpdateCron(cronData: ICronData): Promise<ICronData> {
-    logger.debug(cronData);
     const {
       cronId,
       cronName,

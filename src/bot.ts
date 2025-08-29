@@ -1,4 +1,3 @@
-import 'source-map-support/register';
 import cron from 'node-cron';
 import mongoose from 'mongoose';
 import {
@@ -127,7 +126,7 @@ const setupCronJobs: () => Promise<void> = async (): Promise<void> => {
 };
 
 const setupClientEvents: () => void = (): void => {
-  client.once('ready', async () => {
+  client.once('clientReady', async () => {
     cleanUnreadAttendance(client).catch(error => logger.error('Error cleaning unread attendance:', error));
     const statusArray: ActivityPresence[] = client.config.presence;
     const pickPresence = async (): Promise<void> => {
@@ -145,6 +144,17 @@ const setupClientEvents: () => void = (): void => {
     logger.log('Ready!');
     await setupCronJobs();
     await workerRadarProcess();
+
+    /**
+     * * Example code to delete all messages in a channel
+     *
+     *     const channel = await client.channels.fetch('xxxx') as TextChannel | null;
+     *     if (channel) {
+     *       const messages = await channel.messages.fetch({ limit: 100 });
+     *       await Promise.all(Array.from(messages.values()).map(message => message.delete()));
+     *     }
+     */
+
   });
 
   client.once('reconnecting', (): void => {

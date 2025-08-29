@@ -76,6 +76,7 @@
     "f": "Otros: ${count}"
   },
   "ULTIMATE": {
+    "MODAL_TITLE": "Comando no implementado",
     "ERROR": "Este comando aún no ha sido implementado."
   },
   "USER_INFO": {

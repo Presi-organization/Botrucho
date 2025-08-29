@@ -1,11 +1,21 @@
-import { Botrucho, IGuildData } from '@/mongodb';
+import { Botrucho, ICronData, IGuildData } from '@/mongodb';
 import { ICommand } from '@/types';
 import {
   ActionRowBuilder,
+  ButtonBuilder,
+  ButtonStyle,
   CommandInteraction,
+  ComponentType,
+  InteractionCallbackResponse,
+  InteractionCollector,
+  MappedInteractionTypes,
+  MessageFlags,
   ModalBuilder,
+  ModalSubmitInteraction,
   SlashCommandBuilder,
   SlashCommandSubcommandsOnlyBuilder,
+  StringSelectMenuBuilder,
+  StringSelectMenuOptionBuilder,
   TextInputBuilder,
   TextInputStyle
 } from 'discord.js';
@@ -41,74 +51,191 @@ export default class UltimateCommand extends ICommand {
   async execute(interaction: CommandInteraction & { client: Botrucho }, guildDB: IGuildData): Promise<void> {
     if (!interaction.isChatInputCommand()) return;
 
-    const { ERROR } = interaction.translate('ULTIMATE', guildDB.lang);
+    await interaction.reply({ content: 'This command is under construction.', flags: MessageFlags.Ephemeral });
+    return;
 
-    await interaction.deferReply();
-    throw new Error(ERROR);
-    /*
-    if (!interaction.isChatInputCommand()) return;
+    const cronJob: ICronData | null = await interaction.client.cronData.getCronById('8ff357d5-4463-488f-90f4-7ec016457b8e');
+    if (!cronJob) {
+      await interaction.reply({ content: 'Cron job not found.', flags: MessageFlags.Ephemeral });
+      return;
+    }
 
     const subcommand: string = interaction.options.getSubcommand();
     switch (subcommand) {
-      case 'create':
-        return this.createEvent(interaction, guildDB);
       case 'edit':
-        return this.editEvent(interaction, guildDB);
-      case 'destroy':
-        return this.destroyEvent(interaction, guildDB);
+        return this.editEvent(interaction, guildDB, cronJob);
       case 'list':
         return this.listEvents(interaction, guildDB);
       default:
-        await interaction.reply({ content: 'Unknown subcommand', ephemeral: true });
+        await interaction.reply({ content: 'Unknown subcommand', flags: MessageFlags.Ephemeral });
     }
-     */
   }
 
-
-  //TODO: **ultimate create** will create a new ultimate frisbee event -> Store it in the database channel, cronjob, message, reactions, etc.
-  // This will use a modal to collect information about the event, such as name, date, time, description, and location.
-  private async createEvent(interaction: CommandInteraction & { client: Botrucho }, guildDB: IGuildData): Promise<void> {
+  private async editEvent(interaction: CommandInteraction & {
+    client: Botrucho
+  }, guildDB: IGuildData, cronJob: ICronData): Promise<void> {
     const { MODAL } = interaction.translate('ULTIMATE', guildDB.lang);
 
-    const modal: ModalBuilder = new ModalBuilder()
-      .setCustomId('event-modal')
-      .setTitle(MODAL);
+    const select: StringSelectMenuBuilder = new StringSelectMenuBuilder()
+      .setCustomId('ultimate-edit-select')
+      .setPlaceholder('Select an option to edit')
+      .addOptions(
+        new StringSelectMenuOptionBuilder()
+          .setLabel('Title')
+          .setDescription('The title of the event.')
+          .setValue('title'),
+        new StringSelectMenuOptionBuilder()
+          .setLabel('Cron Expression')
+          .setDescription('The cron expression for the event.')
+          .setValue('regexpcron'),
+        new StringSelectMenuOptionBuilder()
+          .setLabel('Emojis')
+          .setDescription('The emojis for the event.')
+          .setValue('emojis'),
+      );
 
-    const eventNameInput: TextInputBuilder = new TextInputBuilder()
-      .setCustomId('eventNameInput')
-      .setLabel('Event Name')
-      .setStyle(TextInputStyle.Short)
-      .setRequired(true);
+    const row: ActionRowBuilder<StringSelectMenuBuilder> = new ActionRowBuilder<StringSelectMenuBuilder>()
+      .addComponents(select);
 
-    const eventCronInput: TextInputBuilder = new TextInputBuilder()
-      .setCustomId('eventCronInput')
-      .setLabel('Event Cron Expression')
-      .setStyle(TextInputStyle.Short)
-      .setRequired(true)
-      .setPlaceholder('0 0 * * *'); // Default cron expression for daily events
+    const response: InteractionCallbackResponse = await interaction.reply({
+      content: 'Choose an option to edit the ultimate frisbee event:',
+      components: [row],
+      flags: MessageFlags.Ephemeral,
+      withResponse: true,
+    });
 
-    const firstActionRow: ActionRowBuilder<TextInputBuilder> = new ActionRowBuilder<TextInputBuilder>().addComponents(eventNameInput);
-    const secondActionRow: ActionRowBuilder<TextInputBuilder> = new ActionRowBuilder<TextInputBuilder>().addComponents(eventCronInput);
+    try {
+      const collector: InteractionCollector<MappedInteractionTypes[ComponentType.StringSelect]> | undefined = response.resource?.message?.createMessageComponentCollector({
+        componentType: ComponentType.StringSelect,
+        time: 3_600_000 // 1 hour
+      });
 
-    modal.addComponents(firstActionRow, secondActionRow);
+      collector?.on('collect', async i => {
+        switch (i.values[0]) {
+          case 'title': {
+            const titleModal: ModalBuilder = new ModalBuilder()
+              .setCustomId('edit-title-modal')
+              .setTitle('Edit Event Title')
+              .addComponents(
+                new ActionRowBuilder<TextInputBuilder>().addComponents(
+                  new TextInputBuilder()
+                    .setCustomId('editTitleInput')
+                    .setLabel('New Title')
+                    .setStyle(TextInputStyle.Short)
+                    .setRequired(true)
+                )
+              );
 
-    await interaction.showModal(modal);
-  }
+            await i.showModal(titleModal);
+            break;
+          }
 
-  //TODO: **ultimate edit** will edit an existing ultimate frisbee event -> Update any field in the database related to the event.
-  // This will use options.
-  private editEvent(interaction: CommandInteraction & { client: Botrucho }, guildDB: IGuildData): Promise<void> {
+          case 'regexpcron': {
+            const buildCronModal: () => ModalBuilder = (): ModalBuilder =>
+              new ModalBuilder()
+                .setCustomId('edit-cron-modal')
+                .setTitle('Edit Cron Expression')
+                .addComponents(
+                  new ActionRowBuilder<TextInputBuilder>().addComponents(
+                    new TextInputBuilder()
+                      .setCustomId('editCronInput')
+                      .setLabel('New Cron Expression')
+                      .setStyle(TextInputStyle.Short)
+                      .setRequired(true)
+                      .setPlaceholder('0 0 * * *')
+                  )
+                );
 
-  }
+            let valid = false;
+            while (!valid) {
+              const cronModal: ModalBuilder = buildCronModal();
+              await i.showModal(cronModal);
 
-  //TODO: **ultimate destroy** will destroy an ultimate frisbee event -> Remove an event from the database.
-  // This will use options to select the event to destroy.
-  private destroyEvent(interaction: CommandInteraction & { client: Botrucho }, guildDB: IGuildData): Promise<void> {
+              try {
+                const modal_collected: ModalSubmitInteraction = await interaction.awaitModalSubmit({
+                  filter: (m: ModalSubmitInteraction): boolean => m.customId === 'edit-cron-modal',
+                  time: 60_000 // 5 minutes
+                });
+                const cronRegex = /^(\*|([0-5]?\d)) (\*|([01]?\d|2[0-3])) (\*|([1-9]|[12]\d|3[01])) (\*|(0?[1-9]|1[0-2])) (\*|[0-6])$/;
+                const newCron: string = modal_collected.fields.getTextInputValue('editCronInput');
+                if (cronRegex.test(newCron)) {
+                  valid = true;
 
+                  // Persist here (example — replace with your repo/service call)
+                  await interaction.client.cronData.createOrUpdateCron({
+                    ...cronJob,
+                    cronExpression: newCron, isActive: true
+                  });
+
+                  await modal_collected.reply({
+                    content: `Cron expression updated to: \`${newCron}\``,
+                    flags: MessageFlags.Ephemeral
+                  });
+                } else {
+                  const retryButton: ButtonBuilder = new ButtonBuilder()
+                    .setCustomId('retry-cron-modal')
+                    .setLabel('Try Again')
+                    .setStyle(ButtonStyle.Primary);
+
+                  const row: ActionRowBuilder<ButtonBuilder> = new ActionRowBuilder<ButtonBuilder>().addComponents(retryButton);
+
+                  const invalidResponse = await modal_collected.reply({
+                    content: 'Invalid cron expression. Please use the format: `* * * * *`',
+                    components: [row],
+                    flags: MessageFlags.Ephemeral,
+                    withResponse: true
+                  });
+
+                  const retryCollector: InteractionCollector<MappedInteractionTypes[ComponentType.Button]> | undefined = invalidResponse.resource?.message?.createMessageComponentCollector({
+                    componentType: ComponentType.Button,
+                    time: 60_000
+                  });
+                  await new Promise<void>((resolve) => {
+                    retryCollector?.once('collect', async (btnI) => {
+                      await btnI.deferUpdate();
+                      resolve();
+                    });
+                    retryCollector?.once('end', () => resolve());
+                  });
+                }
+              } catch (error) {
+                valid = true;
+                await i.followUp({
+                  content: 'Modal submission timed out. The modal has been closed',
+                  flags: MessageFlags.Ephemeral
+                });
+                break;
+              }
+            }
+            break;
+          }
+
+          case 'emojis':
+            // Handle emojis editing here
+            await i.reply({ content: 'Emojis editing is not implemented yet.', ephemeral: true });
+            break;
+
+          default:
+            await i.reply({ content: 'Unknown selection.', ephemeral: true });
+
+        }
+      });
+      collector?.once('end', async () => {
+        try {
+          await interaction.deleteReply();
+        } catch {
+          try {
+            await interaction.editReply({ content: 'Session ended.', components: [] });
+          } catch {/**/
+          }
+        }
+      });
+    } catch {
+      await interaction.editReply({ content: 'Confirmation not received within 1 minute, cancelling', components: [] });
+    }
   }
 
   //TODO: **ultimate list** will list all upcoming ultimate frisbee events -> Fetch all events from the database and display them in a message.
-  private listEvents(interaction: CommandInteraction & { client: Botrucho }, guildDB: IGuildData): Promise<void> {
-
+  private listEvents(interaction: CommandInteraction & { client: Botrucho }, guildDB: IGuildData): Promise<void> {/**/
   }
 }

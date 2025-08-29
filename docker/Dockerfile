@@ -40,6 +40,7 @@ RUN apk add --no-cache ffmpeg curl
 
 ENV FFMPEG_PATH=/usr/bin/ffmpeg
 ENV TZ=America/Bogota
+ENV NODE_OPTIONS="--enable-source-maps"
 
 WORKDIR /usr/src/botrucho
 
