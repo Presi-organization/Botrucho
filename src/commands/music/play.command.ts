@@ -1,14 +1,8 @@
-import {
-  CommandInteraction,
-  MessageFlags,
-  SlashCommandOptionsOnlyBuilder,
-  SlashCommandStringOption,
-  VoiceBasedChannel
-} from 'discord.js';
+import { MessageFlags, SlashCommandOptionsOnlyBuilder, SlashCommandStringOption, VoiceBasedChannel } from 'discord.js';
 import { Player, QueueRepeatMode, SearchResult, useMainPlayer } from 'discord-player';
 import { SlashCommandBuilder } from '@discordjs/builders';
-import { Botrucho, IGuildData } from '@/mongodb';
-import { ICommand, PlayKeys, TranslationElement, VCKeys } from '@/types';
+import { IGuildData } from '@/mongodb';
+import { ICommand, CommandInteractionWithClient, PlayKeys, TranslationElement, VCKeys } from '@/types';
 import { Error, logger, Success, Warning } from '@/utils';
 
 export default class PlayCommand extends ICommand {
@@ -21,7 +15,7 @@ export default class PlayCommand extends ICommand {
     .setDescription('Plays a music in your voice channel.')
     .addStringOption((option: SlashCommandStringOption) => option.setName('song').setDescription('The name of the song.').setRequired(true));
 
-  async execute(interaction: CommandInteraction & { client: Botrucho }, guildDB: IGuildData): Promise<void> {
+  async execute(interaction: CommandInteractionWithClient, guildDB: IGuildData): Promise<void> {
     if (!interaction.inCachedGuild()) return;
     if (!interaction.isChatInputCommand()) return;
 

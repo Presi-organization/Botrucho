@@ -1,14 +1,8 @@
-import {
-  CommandInteraction,
-  EmbedBuilder,
-  MessageFlags,
-  SlashCommandIntegerOption,
-  SlashCommandOptionsOnlyBuilder
-} from 'discord.js';
+import { EmbedBuilder, MessageFlags, SlashCommandIntegerOption, SlashCommandOptionsOnlyBuilder } from 'discord.js';
 import { SlashCommandBuilder } from '@discordjs/builders';
 import { GuildQueueTimeline, useTimeline } from 'discord-player';
-import { Botrucho, IGuildData } from '@/mongodb';
-import { ICommand, MusicKeys, TranslationElement, VolumeKeys } from '@/types';
+import { IGuildData } from '@/mongodb';
+import { ICommand, CommandInteractionWithClient, MusicKeys, TranslationElement, VolumeKeys } from '@/types';
 import { Error, Success } from '@/utils';
 
 export default class VolumeCommand extends ICommand {
@@ -24,7 +18,7 @@ export default class VolumeCommand extends ICommand {
     .setDescription('Changes the Volume')
     .addIntegerOption((option: SlashCommandIntegerOption) => option.setName('gain').setDescription('The new volume you want me to set to [1-200]').setRequired(false));
 
-  async execute(interaction: CommandInteraction & { client: Botrucho }, guildDB: IGuildData): Promise<void> {
+  async execute(interaction: CommandInteractionWithClient, guildDB: IGuildData): Promise<void> {
     if (!interaction.inCachedGuild()) return;
     if (!interaction.isChatInputCommand()) return;
 

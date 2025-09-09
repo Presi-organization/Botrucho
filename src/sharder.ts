@@ -1,5 +1,6 @@
-import { ShardingManager } from 'discord.js';
+import { Shard, ShardingManager } from 'discord.js';
 import express, { Express } from 'express';
+import mongoose from 'mongoose';
 import healthRoute from '@/routes/health';
 import { logger } from '@/utils';
 
@@ -31,11 +32,23 @@ app.use('/', healthRoute);
 logger.log('[Shards] Starting spawn...');
 
 manager.spawn({ timeout: -1 }).then((shards) => {
-  shards.forEach((shard) => {
-    shard.on('death', () => {
+  shards.forEach((shard: Shard) => {
+    shard.on('death', async () => {
       logger.error(`Stopping Shard ${shard.id} due to shard process exit.`);
+      if (mongoose && mongoose.connection && mongoose.connection.readyState !== 0) {
+        logger.log('Closing mongoose connection...');
+        await mongoose.connection.close();
+      }
       process.exit(1);
     });
+    shard.on('disconnect', async () => {
+      logger.error(`Stopping Shard ${shard.id} due to shard disconnect.`);
+      if (mongoose && mongoose.connection && mongoose.connection.readyState !== 0) {
+        logger.log('Closing mongoose connection...');
+        await mongoose.connection.close();
+      }
+      process.exit(1);
+    })
   });
 
   app.listen(port, (): void => {

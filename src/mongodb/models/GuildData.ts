@@ -8,6 +8,7 @@ export interface IGuildData extends Document {
   defaultVolume?: number;
   loopMode?: 'OFF' | 'AUTOPLAY' | 'TRACK' | 'QUEUE';
   color?: string;
+  disabledCommands: string[];
   plugins?: {
     welcome?: {
       status: boolean;
@@ -64,6 +65,7 @@ const GuildDataSchema = new Schema<IGuildData>({
   defaultVolume: { type: Number, default: 60 },
   loopMode: { type: String, enum: ['OFF', 'AUTOPLAY', 'TRACK', 'QUEUE'], default: 'OFF' },
   color: { type: String, default: config.color },
+  disabledCommands: { type: [String], default: [] },
   plugins: {
     type: Object,
     default: {

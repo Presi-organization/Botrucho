@@ -1,12 +1,7 @@
-import {
-  CommandInteraction,
-  MessageFlags,
-  SlashCommandIntegerOption,
-  SlashCommandOptionsOnlyBuilder
-} from 'discord.js';
+import { MessageFlags, SlashCommandIntegerOption, SlashCommandOptionsOnlyBuilder } from 'discord.js';
 import { SlashCommandBuilder } from '@discordjs/builders';
-import { Botrucho, IGuildData } from '@/mongodb';
-import { ICommand, MiscKeys, PruneKeys, TranslationElement } from '@/types';
+import { IGuildData } from '@/mongodb';
+import { ICommand, CommandInteractionWithClient, MiscKeys, PruneKeys, TranslationElement } from '@/types';
 import { Error, logger, Success } from '@/utils';
 
 export default class PruneCommand extends ICommand {
@@ -17,7 +12,7 @@ export default class PruneCommand extends ICommand {
     .setDescription('Prune up to 99 messages.')
     .addIntegerOption((option: SlashCommandIntegerOption) => option.setName('amount').setDescription('Number of messages to prune').setRequired(true));
 
-  async execute(interaction: CommandInteraction & { client: Botrucho }, guildDB: IGuildData): Promise<void> {
+  async execute(interaction: CommandInteractionWithClient, guildDB: IGuildData): Promise<void> {
     if (!interaction.inCachedGuild()) return;
     if (!interaction.isChatInputCommand()) return;
 

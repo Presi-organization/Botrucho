@@ -7,13 +7,14 @@ export interface TranslationsType {
   COIN: TranslationElement<CoinKeys>;
   DICE: TranslationElement<DiceKeys>;
   AVATAR: TranslationElement<AvatarKeys>;
+  CRONS: TranslationElement<CronsKeys>;
   EVENT: TranslationElement<EventKeys>;
   LANGUAGE: TranslationElement<LanguageKeys>
   MOVE: TranslationElement<MoveKeys>;
   PING: TranslationElement<PingKeys>;
   PRUNE: TranslationElement<PruneKeys>;
   SERVER_INFO: TranslationElement<ServerInfoKeys>;
-  ULTIMATE: TranslationElement<UltimateKeys>;
+  TOGGLE_COMMAND: TranslationElement<ToggleCommandKeys>;
   USER_INFO: TranslationElement<UserInfoKeys>;
   LEAVE: TranslationElement<LeaveKeys>;
   LYRICS: TranslationElement<LyricsKeys>;
@@ -33,12 +34,22 @@ export interface TranslationsType {
 export type TranslationElement<T extends string> = Record<T, string>;
 
 export type LanguagesKeys = 'ES' | 'EN';
-export type MiscKeys = 'YES' | 'NO' | 'ERROR' | 'NOT_POSSIBLE';
+export type MiscKeys = 'YES' | 'NO' | 'ERROR' | 'NOT_POSSIBLE' | 'COMMAND_ENABLED' | 'COMMAND_DISABLED';
 export type VCKeys = 'CONNECT_VC' | 'USER_NOT_IN';
 export type MusicKeys = 'NOT_PLAYING_TITLE' | 'NOT_PLAYING_DESC';
 export type CoinKeys = 'COIN_FLIP' | 'HEADS' | 'TAILS';
 export type DiceKeys = 'ROLL' | 'RESULT' | 'INITIAL_TITLE' | 'INITIAL_FOOTER' | 'RESULT_TITLE' | 'RESULT_FOOTER';
 export type AvatarKeys = 'USER' | 'SELF';
+export type CronsKeys =
+  'CRON_JOBS'
+  | 'NOT_FOUND'
+  | 'DESTROYED'
+  | 'SELECT_PLACEHOLDER'
+  | 'ACTION_EDIT'
+  | 'ACTION_DESTROY'
+  | 'ACTION_ADD_METADATA_FIELD'
+  | 'LAST_RUN'
+  | 'NEVER';
 export type EventKeys =
   'MODAL_TITLE'
   | 'NAME'
@@ -56,7 +67,7 @@ export type MoveKeys = 'USER_MOVED';
 export type PingKeys = 'PINGING' | 'PONG';
 export type PruneKeys = 'AMOUNT_ERR' | 'ERR' | 'SUCCESS';
 export type ServerInfoKeys = 'TITLE' | 'ONLY_SERVER' | 'a' | 'b' | 'c' | 'd' | 'e' | 'f';
-export type UltimateKeys = 'ERROR';
+export type ToggleCommandKeys = 'ENABLED' | 'DISABLED' | 'NOT_FOUND' | 'NOT_ALLOWED';
 export type UserInfoKeys = 'USERNAME' | 'ID';
 export type LeaveKeys = 'DISCONNECTED' | 'SUCCESS';
 export type LyricsKeys = 'NO_QUEUE' | 'NOT_FOUND' | 'SYNCED_LYRICS';

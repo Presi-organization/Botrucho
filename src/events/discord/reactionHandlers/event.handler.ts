@@ -1,9 +1,10 @@
 import { EmbedBuilder, Guild, MessageReaction, User } from 'discord.js';
+import { ReactionHandlerInterface } from '@/events/discord/reactionHandlers';
 import { Botrucho, IEventData } from '@/mongodb';
 import { EventKeys, TranslationElement } from '@/types';
 import { logger } from '@/utils';
 
-export class EventHandler {
+export class EventHandler implements ReactionHandlerInterface {
   private client: Botrucho;
   private reaction: MessageReaction;
   private user: User;
@@ -14,7 +15,7 @@ export class EventHandler {
     this.user = user;
   }
 
-  handleEventReaction = async () => {
+  handle = async () => {
     if (this.reaction.emoji.name === '👽') {
       const guild: Guild | null = this.reaction.message.guild;
       if (!guild) return;

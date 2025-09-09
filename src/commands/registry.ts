@@ -1,13 +1,14 @@
 import { CoinCommand, DiceCommand } from '@/commands/games';
 import {
   AvatarCommand,
+  CronsCommand,
   EventCommand,
   LangCommand,
   MoveCommand,
   PingCommand,
   PruneCommand,
   ServerCommand,
-  UltimateCommand,
+  ToggleCommandCommand,
   UserInfoCommand
 } from '@/commands/management';
 import { LeaveCommand, LyricsCommand, PlayCommand, ShuffleCommand, SkipCommand, VolumeCommand } from '@/commands/music';
@@ -17,6 +18,7 @@ import { ICommand } from '@/types';
 
 export const commandRegistry: (new () => ICommand)[] = [
   AvatarCommand,
+  CronsCommand,
   CoinCommand,
   DiceCommand,
   EventCommand,
@@ -27,6 +29,7 @@ export const commandRegistry: (new () => ICommand)[] = [
   MoveCommand,
   MultasCommand,
   TFTEloCommand,
+  ToggleCommandCommand,
   PingCommand,
   PlayCommand,
   PruneCommand,
@@ -35,7 +38,6 @@ export const commandRegistry: (new () => ICommand)[] = [
   SiataCommand,
   ShuffleCommand,
   SkipCommand,
-  UltimateCommand,
   UserInfoCommand,
   VolumeCommand,
 ];

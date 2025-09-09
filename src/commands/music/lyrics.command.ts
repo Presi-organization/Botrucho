@@ -1,8 +1,8 @@
-import { CommandInteraction, EmbedBuilder, SlashCommandOptionsOnlyBuilder, SlashCommandStringOption } from 'discord.js';
+import { EmbedBuilder, SlashCommandOptionsOnlyBuilder, SlashCommandStringOption } from 'discord.js';
 import { SlashCommandBuilder } from '@discordjs/builders';
 import { GuildQueue, GuildQueueTimeline, LrcSearchResult, useQueue, useTimeline } from 'discord-player';
-import { Botrucho, IGuildData } from '@/mongodb';
-import { ICommand, LyricsKeys, PlayerType, TranslationElement } from '@/types';
+import { IGuildData } from '@/mongodb';
+import { ICommand, CommandInteractionWithClient, LyricsKeys, PlayerType, TranslationElement } from '@/types';
 import { Error, Success, Warning } from '@/utils';
 
 export default class LyricsCommand extends ICommand {
@@ -16,7 +16,7 @@ export default class LyricsCommand extends ICommand {
       .setDescription('Enter the song name to get the lyrics.')
     );
 
-  async execute(interaction: CommandInteraction & { client: Botrucho }, guildDB: IGuildData): Promise<void> {
+  async execute(interaction: CommandInteractionWithClient, guildDB: IGuildData): Promise<void> {
     if (!interaction.inCachedGuild()) return;
     if (!interaction.isChatInputCommand()) return;
 

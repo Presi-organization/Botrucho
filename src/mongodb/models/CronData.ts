@@ -7,6 +7,7 @@ export interface ICronData {
   cronExpression: string;
   lastRun?: Date | null;
   isActive?: boolean;
+  metadata?: Record<string, unknown>;
 }
 
 const CronDataSchema = new Schema<ICronData>({
@@ -14,7 +15,8 @@ const CronDataSchema = new Schema<ICronData>({
   cronName: { type: String, required: true },
   cronExpression: { type: String, required: true },
   lastRun: { type: Date, default: null },
-  isActive: { type: Boolean, default: true }
+  isActive: { type: Boolean, default: true },
+  metadata: { type: Object, default: {} } // Ensure metadata is an object
 });
 
 export const CronDataModel = mongoose.model<ICronData>('CronData', CronDataSchema);
