@@ -8,7 +8,10 @@
     "YES": "Yes",
     "NO": "No",
     "ERROR": "There was an error while executing this command!",
-    "NOT_POSSIBLE": "This command cannot be used here!"
+    "NOT_POSSIBLE": "This command cannot be used here!",
+    "COMMAND_ENABLED": "Command Enabled",
+    "COMMAND_DISABLED": "Command Disabled",
+    "UNDER_CONSTRUCTION": "This command is under construction."
   },
   "VC": {
     "CONNECT_VC": "You have to be in a voice channel to use this command.",
@@ -35,6 +38,17 @@
   "AVATAR": {
     "USER": "${username}'s avatar: ${image}",
     "SELF": "Your avatar: ${image}"
+  },
+  "CRONS": {
+    "CRON_JOBS": "Scheduled jobs",
+    "NOT_FOUND": "No scheduled jobs found",
+    "DESTROYED": "The job ${job} has been successfully destroyed",
+    "SELECT_PLACEHOLDER": "Select a job to ${action}",
+    "ACTION_EDIT": "edit",
+    "ACTION_DESTROY": "destroy",
+    "ACTION_ADD_METADATA_FIELD": "add metadata",
+    "LAST_RUN": "Last run:",
+    "NEVER": "Never"
   },
   "EVENT": {
     "MODAL_TITLE": "Incoming event fellas 🥵",
@@ -75,9 +89,11 @@
     "e": "Banner: ${count}",
     "f": "Others: ${count}"
   },
-  "ULTIMATE": {
-    "MODAL_TITLE": "Command not implemented",
-    "ERROR": "This command has not been implemented yet."
+  "TOGGLE_COMMAND": {
+    "ENABLED": "The command ${command} has been enabled.",
+    "DISABLED": "The command ${command} has been disabled.",
+    "NOT_FOUND": "I could not find the command ${command}.",
+    "NOT_ALLOWED": "You cannot enable/disable this command."
   },
   "USER_INFO": {
     "USERNAME": "Username: ${name}",

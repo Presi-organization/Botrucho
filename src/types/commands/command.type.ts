@@ -1,10 +1,14 @@
 import {
+  AutocompleteInteraction,
   CommandInteraction,
   SlashCommandBuilder,
   SlashCommandOptionsOnlyBuilder,
   SlashCommandSubcommandsOnlyBuilder
 } from 'discord.js';
 import { Botrucho, IGuildData } from '@/mongodb';
+
+export type CommandInteractionWithClient = CommandInteraction & { client: Botrucho };
+export type AutoCompleteInteractionWithClient = AutocompleteInteraction & { client: Botrucho };
 
 export abstract class ICommand {
   /** Command name identifier */
@@ -15,9 +19,10 @@ export abstract class ICommand {
   abstract data: SlashCommandBuilder | SlashCommandOptionsOnlyBuilder | SlashCommandSubcommandsOnlyBuilder;
 
   /** Function that handles the command logic */
-  abstract execute(interaction: CommandInteraction | (CommandInteraction & {
-    client: Botrucho
-  }), guildDB: IGuildData): Promise<void>;
+  abstract execute(interaction: CommandInteraction | CommandInteractionWithClient, guildDB: IGuildData): Promise<void>;
+
+  /** Function that handles autocomplete interactions (optional) */
+  autocomplete?(interaction: AutocompleteInteraction | AutoCompleteInteractionWithClient): Promise<void>;
 
   /** Category the command belongs to (optional) */
   cat?: string;

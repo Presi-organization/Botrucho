@@ -77,7 +77,7 @@ const handleReactions = async (client: Botrucho, message: Message<true>): Promis
     const users: Collection<Snowflake, User> = await reaction.users.fetch();
     users.forEach((user: User) => {
       if (user.id !== client.user?.id) {
-        attendanceReactionHandler.handleAttendanceReaction(reaction, user);
+        attendanceReactionHandler.handle(reaction, user);
       }
     });
   }

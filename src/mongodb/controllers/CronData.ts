@@ -4,12 +4,12 @@ export class CronDataController {
   async getAllCrones(): Promise<ICronData[]> {
     return CronDataModel
       .find({ isActive: true })
-      .select('cronId cronName cronExpression isActive lastRun nextRun')
+      .select('cronId cronName cronExpression isActive lastRun nextRun metadata')
       .lean({ virtuals: true });
   }
 
   async getCronById(cronId: string): Promise<ICronData | null> {
-    return CronDataModel.findOne({ cronId });
+    return CronDataModel.findOne({ cronId }).lean({ virtuals: true });
   }
 
   async createOrUpdateCron(cronData: ICronData): Promise<ICronData> {
@@ -19,6 +19,7 @@ export class CronDataController {
       cronExpression,
       lastRun,
       isActive,
+      metadata
     } = cronData;
 
     const filter = cronId ? { cronId } : { cronName };
@@ -33,6 +34,7 @@ export class CronDataController {
         ...(cronExpression !== undefined && { cronExpression }),
         ...(lastRun !== undefined && { lastRun: lastRun ?? null }),
         ...(isActive !== undefined && { isActive }),
+        ...(metadata !== undefined && { metadata: metadata ?? {} }),
       },
     };
 

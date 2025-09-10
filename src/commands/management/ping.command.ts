@@ -1,12 +1,7 @@
-import {
-  CommandInteraction,
-  EmbedBuilder,
-  InteractionCallbackResponse,
-  SlashCommandOptionsOnlyBuilder
-} from 'discord.js';
+import { EmbedBuilder, InteractionCallbackResponse, SlashCommandOptionsOnlyBuilder } from 'discord.js';
 import { SlashCommandBuilder } from '@discordjs/builders';
-import { Botrucho, IGuildData } from '@/mongodb';
-import { ICommand, PingKeys, TranslationElement } from '@/types';
+import { IGuildData } from '@/mongodb';
+import { ICommand, CommandInteractionWithClient, PingKeys, TranslationElement } from '@/types';
 import { Info, logger } from '@/utils';
 
 export default class PingCommand extends ICommand {
@@ -16,7 +11,7 @@ export default class PingCommand extends ICommand {
     .setName('ping')
     .setDescription('Ping the bot to check if it is online');
 
-  async execute(interaction: CommandInteraction & { client: Botrucho }, guildDB: IGuildData): Promise<void> {
+  async execute(interaction: CommandInteractionWithClient, guildDB: IGuildData): Promise<void> {
     const { PINGING, PONG }: TranslationElement<PingKeys> = interaction.translate('PING', guildDB.lang);
 
     interaction.reply({ embeds: [Info({ description: PINGING })], withResponse: true })

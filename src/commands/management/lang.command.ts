@@ -1,7 +1,7 @@
-import { CommandInteraction, SlashCommandOptionsOnlyBuilder } from 'discord.js';
+import { SlashCommandOptionsOnlyBuilder } from 'discord.js';
 import { SlashCommandBuilder } from '@discordjs/builders';
-import { Botrucho, IGuildData } from '@/mongodb';
-import { ICommand, LanguageKeys, LanguagesKeys, TranslationElement } from '@/types';
+import { IGuildData } from '@/mongodb';
+import { ICommand, CommandInteractionWithClient, LanguageKeys, LanguagesKeys, TranslationElement } from '@/types';
 import { Info, Success } from '@/utils';
 
 export default class LangCommand extends ICommand {
@@ -15,7 +15,7 @@ export default class LangCommand extends ICommand {
       .addChoices({ name: 'English', value: 'en' }, { name: 'Spanish', value: 'es' })
     );
 
-  async execute(interaction: CommandInteraction & { client: Botrucho }, guildDB: IGuildData): Promise<void> {
+  async execute(interaction: CommandInteractionWithClient, guildDB: IGuildData): Promise<void> {
     if (!interaction.inCachedGuild()) return;
     if (!interaction.isChatInputCommand()) return;
 

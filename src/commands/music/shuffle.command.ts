@@ -1,8 +1,16 @@
-import { CommandInteraction, SlashCommandOptionsOnlyBuilder } from 'discord.js';
+import { SlashCommandOptionsOnlyBuilder } from 'discord.js';
 import { GuildQueue, Track, useQueue } from 'discord-player';
 import { SlashCommandBuilder } from '@discordjs/builders';
-import { Botrucho, IGuildData } from '@/mongodb';
-import { ICommand, MusicKeys, PlayerKeys, PlayerType, ShuffleKeys, TranslationElement } from '@/types';
+import { IGuildData } from '@/mongodb';
+import {
+  ICommand,
+  CommandInteractionWithClient,
+  MusicKeys,
+  PlayerKeys,
+  PlayerType,
+  ShuffleKeys,
+  TranslationElement
+} from '@/types';
 import { Error, Success, updateQueueMessage } from '@/utils';
 
 export default class ShuffleCommand extends ICommand {
@@ -14,7 +22,7 @@ export default class ShuffleCommand extends ICommand {
     .setName('shuffle')
     .setDescription('Shuffles the current music queue.');
 
-  async execute(interaction: CommandInteraction & { client: Botrucho }, guildDB: IGuildData): Promise<void> {
+  async execute(interaction: CommandInteractionWithClient, guildDB: IGuildData): Promise<void> {
     if (!interaction.isChatInputCommand()) return;
 
     const { SHUFFLED }: TranslationElement<ShuffleKeys> = interaction.translate('SHUFFLE', guildDB.lang);

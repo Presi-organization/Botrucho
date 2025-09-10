@@ -1,5 +1,5 @@
 import { MessageReaction, User } from 'discord.js';
-import { AttendanceReactionHandler, EventHandler } from '@/events/discord/reactionHandlers';
+import { AttendanceReactionHandler, EventHandler, ReactionHandlerInterface } from '@/events/discord/reactionHandlers';
 import { Botrucho } from '@/mongodb';
 
 export const execute = async (client: Botrucho, reaction: MessageReaction, user: User) => {
@@ -9,9 +9,12 @@ export const execute = async (client: Botrucho, reaction: MessageReaction, user:
   if (user.bot) return;
   if (!reaction.message.guild) return;
 
-  const attendanceReactionHandler: AttendanceReactionHandler = new AttendanceReactionHandler(client);
-  const eventHandler: EventHandler = new EventHandler(client, reaction, user);
+  const handlers: ReactionHandlerInterface[] = [
+    new EventHandler(client, reaction, user),
+    new AttendanceReactionHandler(client)
+  ];
 
-  await eventHandler.handleEventReaction();
-  await attendanceReactionHandler.handleAttendanceReaction(reaction, user);
+  for (const handler of handlers) {
+    await handler.handle(reaction, user);
+  }
 };

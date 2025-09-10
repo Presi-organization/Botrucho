@@ -7,6 +7,7 @@ import {
   GuildMember,
   Message,
   Partials,
+  StringSelectMenuInteraction,
 } from 'discord.js';
 import { GuildQueue } from 'discord-player';
 import { DefaultExtractors } from '@discord-player/extractor';
@@ -109,7 +110,7 @@ const setupCronJobs: () => Promise<void> = async (): Promise<void> => {
               if (client.deleted_messages.delete(interaction)) {
                 if (interaction instanceof Message) {
                   await interaction.delete();
-                } else if (interaction instanceof CommandInteraction) {
+                } else if (interaction instanceof CommandInteraction || interaction instanceof StringSelectMenuInteraction) {
                   await interaction.deleteReply();
                 }
               }

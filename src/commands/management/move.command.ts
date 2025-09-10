@@ -1,6 +1,5 @@
 import {
   ChannelType,
-  CommandInteraction,
   GuildMember,
   MessageFlags,
   SlashCommandChannelOption,
@@ -9,9 +8,9 @@ import {
   VoiceChannel
 } from 'discord.js';
 import { SlashCommandBuilder } from '@discordjs/builders';
-import { Botrucho, IGuildData } from '@/mongodb';
+import { IGuildData } from '@/mongodb';
 import { Success, Warning } from '@/utils';
-import { ICommand, MoveKeys, TranslationElement, VCKeys } from '@/types';
+import { ICommand, CommandInteractionWithClient, MoveKeys, TranslationElement, VCKeys } from '@/types';
 
 export default class MoveCommand extends ICommand {
   name = 'move';
@@ -22,7 +21,7 @@ export default class MoveCommand extends ICommand {
     .addUserOption((option: SlashCommandUserOption) => option.setName('user').setDescription('The member to move').setRequired(true))
     .addChannelOption((option: SlashCommandChannelOption) => option.setName('channel').setDescription('The channel to move').addChannelTypes(ChannelType.GuildVoice).setRequired(true));
 
-  async execute(interaction: CommandInteraction & { client: Botrucho }, guildDB: IGuildData): Promise<void> {
+  async execute(interaction: CommandInteractionWithClient, guildDB: IGuildData): Promise<void> {
     if (!interaction.inCachedGuild()) return;
     if (!interaction.isChatInputCommand()) return;
 

@@ -8,7 +8,10 @@
     "YES": "Sí",
     "NO": "No",
     "ERROR": "¡Ocurrió un error al ejecutar este comando!",
-    "NOT_POSSIBLE": "¡Este comando no puede ser usado aquí!"
+    "NOT_POSSIBLE": "¡Este comando no puede ser usado aquí!",
+    "COMMAND_ENABLED": "Comando Habilitado",
+    "COMMAND_DISABLED": "Comando Deshabilitado",
+    "UNDER_CONSTRUCTION": "Este comando está en construcción."
   },
   "VC": {
     "CONNECT_VC": "Tienes que estar en un canal de voz para usar este comando.",
@@ -35,6 +38,17 @@
   "AVATAR": {
     "USER": "Avatar de ${username}: ${image}",
     "SELF": "Tu Avatar: ${image}"
+  },
+  "CRONS": {
+    "CRON_JOBS": "Tareas programadas",
+    "NOT_FOUND": "No se encontraron tareas programadas",
+    "DESTROYED": "La tarea ${job} ha sido destruida exitosamente",
+    "SELECT_PLACEHOLDER": "Selecciona una tarea para ${action}",
+    "ACTION_EDIT": "editar",
+    "ACTION_DESTROY": "destruir",
+    "ACTION_ADD_METADATA_FIELD": "añadir metadatos",
+    "LAST_RUN": "Última ejecución:",
+    "NEVER": "Nunca"
   },
   "EVENT": {
     "MODAL_TITLE": "Se viene evento, gente 🥵",
@@ -75,9 +89,11 @@
     "e": "Banner: ${count}",
     "f": "Otros: ${count}"
   },
-  "ULTIMATE": {
-    "MODAL_TITLE": "Comando no implementado",
-    "ERROR": "Este comando aún no ha sido implementado."
+  "TOGGLE_COMMAND": {
+    "ENABLED": "El comando ${command} ha sido habilitado.",
+    "DISABLED": "El comando ${command} ha sido deshabilitado.",
+    "NOT_FOUND": "No pude encontrar el comando ${command}.",
+    "NOT_ALLOWED": "No puedes habilitar/deshabilitar este comando."
   },
   "USER_INFO": {
     "USERNAME": "Nombre de usuario: ${name}",

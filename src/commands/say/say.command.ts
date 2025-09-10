@@ -1,13 +1,7 @@
 import { Readable } from 'node:stream';
 import { Buffer } from 'node:buffer';
 import { join } from 'path';
-import {
-  CommandInteraction,
-  MessageFlags,
-  SlashCommandOptionsOnlyBuilder,
-  SlashCommandStringOption,
-  VoiceBasedChannel
-} from 'discord.js';
+import { MessageFlags, SlashCommandOptionsOnlyBuilder, SlashCommandStringOption, VoiceBasedChannel } from 'discord.js';
 import { Player, QueueRepeatMode, useMainPlayer } from 'discord-player';
 import { SlashCommandBuilder } from '@discordjs/builders';
 import {
@@ -18,8 +12,8 @@ import {
   SpeechSynthesizer
 } from 'microsoft-cognitiveservices-speech-sdk';
 import { AudioResource, createAudioResource } from 'discord-voip';
-import { Botrucho, IGuildData } from '@/mongodb';
-import { ICommand, SayKeys, TranslationElement, VCKeys } from '@/types';
+import { IGuildData } from '@/mongodb';
+import { ICommand, CommandInteractionWithClient, SayKeys, TranslationElement, VCKeys } from '@/types';
 import { logger, Success, Warning } from '@/utils';
 
 export default class SayCommand extends ICommand {
@@ -32,7 +26,7 @@ export default class SayCommand extends ICommand {
     .setDescription('Plays a phrase.')
     .addStringOption((option: SlashCommandStringOption) => option.setName('phrase').setDescription('The desired phrase').setRequired(true));
 
-  async execute(interaction: CommandInteraction & { client: Botrucho }, guildDB: IGuildData) {
+  async execute(interaction: CommandInteractionWithClient, guildDB: IGuildData) {
     if (!interaction.inCachedGuild()) return;
     if (!interaction.isChatInputCommand()) return;
 

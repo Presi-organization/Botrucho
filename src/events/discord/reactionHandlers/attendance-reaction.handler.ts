@@ -10,10 +10,11 @@ import {
   User
 } from 'discord.js';
 import { EventExpiredError, EventNotFoundError, UserAlreadyRegisteredError } from '@/errors';
+import { ReactionHandlerInterface } from '@/events/discord/reactionHandlers';
 import { Botrucho, IAttendee, IEventAttendance } from '@/mongodb';
 import { logger } from '@/utils';
 
-export class AttendanceReactionHandler {
+export class AttendanceReactionHandler implements ReactionHandlerInterface {
   private client: Botrucho;
 
   constructor(client: Botrucho) {
@@ -37,7 +38,7 @@ export class AttendanceReactionHandler {
     }
   };
 
-  handleAttendanceReaction = async (reaction: MessageReaction, user: User) => {
+  handle = async (reaction: MessageReaction, user: User) => {
     try {
       const now = new Date();
       const guildMember = await reaction.message.guild?.members.fetch(user.id);

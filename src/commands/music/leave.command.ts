@@ -1,8 +1,8 @@
-import { CommandInteraction, EmbedBuilder, SlashCommandOptionsOnlyBuilder } from 'discord.js';
+import { EmbedBuilder, SlashCommandOptionsOnlyBuilder } from 'discord.js';
 import { SlashCommandBuilder } from '@discordjs/builders';
 import { GuildQueue, useQueue } from 'discord-player';
-import { Botrucho, IGuildData } from '@/mongodb';
-import { ICommand, LeaveKeys, MusicKeys, PlayerType, TranslationElement } from '@/types';
+import { IGuildData } from '@/mongodb';
+import { ICommand, CommandInteractionWithClient, LeaveKeys, MusicKeys, PlayerType, TranslationElement } from '@/types';
 import { Error, Success } from '@/utils';
 
 export default class LeaveCommand extends ICommand {
@@ -14,7 +14,7 @@ export default class LeaveCommand extends ICommand {
     .setName('leave')
     .setDescription('Makes the bot leaving your voice channel.');
 
-  async execute(interaction: CommandInteraction & { client: Botrucho }, guildDB: IGuildData): Promise<void> {
+  async execute(interaction: CommandInteractionWithClient, guildDB: IGuildData): Promise<void> {
     if (!interaction.inCachedGuild()) return;
     if (!interaction.isChatInputCommand()) return;
 
