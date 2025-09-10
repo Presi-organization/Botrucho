@@ -1,8 +1,9 @@
 import {
   EmbedBuilder,
+  GuildMember,
   inlineCode,
   MessageFlags,
-  PermissionFlagsBits,
+  Role,
   SlashCommandBooleanOption,
   SlashCommandBuilder,
   SlashCommandOptionsOnlyBuilder,
@@ -35,8 +36,10 @@ export default class ToggleCommandCommand extends ICommand {
       option.setName('enabled')
         .setDescription('Whether the command should be enabled or disabled')
         .setRequired(true)
-    )
-    .setDefaultMemberPermissions(PermissionFlagsBits.Administrator);
+    );
+
+  private readonly TEST_ROLE_ID: string = '884962190640160839';
+  private readonly BOTS_ROLE_ID: string = '540708709945311243';
 
   async autocomplete(interaction: AutoCompleteInteractionWithClient): Promise<void> {
     const focusedValue: string = interaction.options.getFocused();
@@ -64,6 +67,15 @@ export default class ToggleCommandCommand extends ICommand {
       NOT_FOUND,
       NOT_ALLOWED
     }: TranslationElement<ToggleCommandKeys> = interaction.translate('TOGGLE_COMMAND', guildDB.lang);
+
+    const member: GuildMember | null = interaction.member;
+    if (!member || !('roles' in member) || !member.roles.cache.some((role: Role): boolean => [this.TEST_ROLE_ID, this.BOTS_ROLE_ID].includes(role.id))) {
+      await interaction.reply({
+        content: NOT_ALLOWED,
+        flags: MessageFlags.Ephemeral
+      });
+      return;
+    }
 
     const commandName: string = interaction.options.getString('command', true);
     const shouldBeEnabled: boolean = interaction.options.getBoolean('enabled', true);

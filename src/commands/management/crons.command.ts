@@ -53,7 +53,8 @@ export default class CronsCommand extends ICommand {
         .setName('list')
         .setDescription('List all cron jobs.'));
 
-  private readonly SERVER_BOOSTER_ROLE_ID: string = '791012591173369888'
+  private readonly TEST_ROLE_ID: string = '884962190640160839';
+  private readonly BOTS_ROLE_ID: string = '540708709945311243';
 
   async autocomplete(interaction: AutoCompleteInteractionWithClient): Promise<void> {
     const subcommand: string | null = interaction.options.getSubcommand(false);
@@ -79,7 +80,7 @@ export default class CronsCommand extends ICommand {
     const cronsTranslations: TranslationElement<CronsKeys> = interaction.translate('CRONS', guildDB.lang);
 
     const member = interaction.member as GuildMember | null;
-    if (!member || !('roles' in member) || !member.roles.cache.some((role: Role): boolean => role.id === this.SERVER_BOOSTER_ROLE_ID)) {
+    if (!member || !('roles' in member) || !member.roles.cache.some((role: Role): boolean => [this.TEST_ROLE_ID, this.BOTS_ROLE_ID].includes(role.id))) {
       await interaction.reply({
         content: UNDER_CONSTRUCTION,
         flags: MessageFlags.Ephemeral
