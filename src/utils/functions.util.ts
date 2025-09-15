@@ -73,7 +73,8 @@ const checkConfig: (config: ConfigType) => Promise<boolean> = async (config: Con
   }
   if (error && config.logAll) {
     logger.log('Your config verification has failed. Please fix errors and try again\n\nIf you need more help, join our support server here: https://green-bot.app/discord')
-    process.exit(0);
+    // Config validation failure should still exit the process as it's a critical startup error
+    process.exit(1);
   } else if (config.logAll) logger.log('Your config is correct. Good game 🥳');
   return error;
 };

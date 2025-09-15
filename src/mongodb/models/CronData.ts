@@ -7,6 +7,7 @@ export interface ICronData {
   cronExpression: string;
   lastRun?: Date | null;
   isActive?: boolean;
+  runOnInit?: boolean;
   metadata?: Record<string, unknown>;
 }
 
@@ -16,6 +17,7 @@ const CronDataSchema = new Schema<ICronData>({
   cronExpression: { type: String, required: true },
   lastRun: { type: Date, default: null },
   isActive: { type: Boolean, default: true },
+  runOnInit: { type: Boolean, default: false },
   metadata: { type: Object, default: {} } // Ensure metadata is an object
 });
 

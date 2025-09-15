@@ -1,13 +1,4 @@
-import {
-  ActionRowBuilder,
-  BaseInteraction,
-  ButtonBuilder,
-  ButtonStyle,
-  Collection,
-  inlineCode,
-  MessageFlags,
-  TextInputModalData
-} from 'discord.js';
+import { ActionRowBuilder, BaseInteraction, ButtonBuilder, ButtonStyle, inlineCode, MessageFlags } from 'discord.js';
 import cron from 'node-cron';
 import { IIntCreateHandler } from '@/events/discord/interactionCreateHandlers';
 import { Botrucho, ICronData } from '@/mongodb';
@@ -28,16 +19,38 @@ export class EditCronHandler implements IIntCreateHandler {
 
     const nameInput: string = interaction.fields.getTextInputValue('cron-edit-name-input');
     const cronInput: string = interaction.fields.getTextInputValue('cron-edit-cron-input');
-    const metadataInput: Collection<string, TextInputModalData> = interaction.fields.fields.filter((field: TextInputModalData) => field.customId.startsWith('cron-edit-metadata-input:'));
+    const runOnInitInput: string = interaction.fields.getTextInputValue('cron-edit-run-on-init-input');
+    const metadataInput: string = interaction.fields.getTextInputValue('cron-edit-metadata-input');
     const metadata: Record<string, unknown> = {};
-    metadataInput.forEach((field: TextInputModalData) => {
-      const key: string = field.customId.split(':')[1];
+    let retryButton: ButtonBuilder | null = null;
+    if (metadataInput && metadataInput.trim() !== '') {
       try {
-        metadata[key] = JSON.parse(field.value);
+        const parsedMetadata: unknown = JSON.parse(metadataInput);
+        if (typeof parsedMetadata === 'object' && parsedMetadata !== null && !Array.isArray(parsedMetadata)) {
+          Object.assign(metadata, parsedMetadata as Record<string, unknown>);
+        } else {
+          retryButton = new ButtonBuilder()
+            .setCustomId(`retry-cron-modal:${interaction.customId.split(':')[1]}`)
+            .setLabel('Try Again')
+            .setStyle(ButtonStyle.Primary);
+        }
       } catch {
-        metadata[key] = field.value;
+        retryButton = new ButtonBuilder()
+          .setCustomId(`retry-cron-modal:${interaction.customId.split(':')[1]}`)
+          .setLabel('Try Again')
+          .setStyle(ButtonStyle.Primary);
       }
-    });
+      if (retryButton) {
+        const row: ActionRowBuilder<ButtonBuilder> = new ActionRowBuilder<ButtonBuilder>().addComponents(retryButton);
+
+        await interaction.reply({
+          content: 'Invalid JSON format in metadata. Please ensure it is a valid JSON object.',
+          components: [row],
+          flags: MessageFlags.Ephemeral,
+          withResponse: true
+        });
+      }
+    }
 
     const cronId: string = interaction.customId.split(':')[1];
     const existingCron: ICronData | null = await this.client.cronData.getCronById(cronId);
@@ -64,6 +77,28 @@ export class EditCronHandler implements IIntCreateHandler {
       return true;
     }
 
+    // Validate runOnInit input
+    let runOnInit = false;
+    if (runOnInitInput && runOnInitInput.trim() !== '') {
+      if (runOnInitInput.toLowerCase() === 'true') runOnInit = true;
+      else if (runOnInitInput.toLowerCase() === 'false') runOnInit = false;
+      else {
+        const retryButton: ButtonBuilder = new ButtonBuilder()
+          .setCustomId(`retry-cron-modal:${cronId}`)
+          .setLabel('Try Again')
+          .setStyle(ButtonStyle.Primary);
+
+        const row: ActionRowBuilder<ButtonBuilder> = new ActionRowBuilder<ButtonBuilder>().addComponents(retryButton);
+        await interaction.reply({
+          content: 'Invalid input for "Run on Init". Please enter either `true` or `false`.',
+          components: [row],
+          flags: MessageFlags.Ephemeral,
+          withResponse: true
+        });
+        return true;
+      }
+    }
+
     // Validate emoji fields in metadata
     const emojiValidation = this._findAndValidateEmojiFields(metadata);
     if (!emojiValidation.isValid) {
@@ -87,17 +122,19 @@ export class EditCronHandler implements IIntCreateHandler {
       return true;
     }
 
-    await this.client.cronData.createOrUpdateCron({
+    const updatedCron: ICronData = await this.client.cronData.createOrUpdateCron({
       ...existingCron,
       cronName: nameInput,
       cronExpression: cronInput,
+      runOnInit,
       metadata
     });
+    if (updatedCron && this.client.cronManager) this.client.cronManager.updateCronJob(updatedCron);
 
     await interaction.reply({
       embeds: [Success({
         title: 'Cron Job Updated',
-        description: `The cron job has been updated successfully!\n\n**Name:** ${nameInput}\n**Cron:** ${inlineCode(cronInput)}\n**Metadata:** ${JSON.stringify(metadata, null, 2)}`
+        description: `The cron job has been updated successfully!\n\n**Name:** ${nameInput}\n**Cron:** ${inlineCode(cronInput)}\n**Run-On-Init:** ${inlineCode(String(runOnInit))}\n**Metadata:** ${JSON.stringify(metadata, null, 2)}`
       })],
       flags: MessageFlags.Ephemeral
     });

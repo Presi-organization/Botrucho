@@ -1,25 +1,14 @@
-import cron from 'node-cron';
 import mongoose from 'mongoose';
-import {
-  ClientOptions,
-  CommandInteraction,
-  GatewayIntentBits as Intents,
-  GuildMember,
-  Message,
-  Partials,
-  StringSelectMenuInteraction,
-} from 'discord.js';
+import { ClientOptions, GatewayIntentBits as Intents, GuildMember, Partials, } from 'discord.js';
 import { GuildQueue } from 'discord-player';
 import { DefaultExtractors } from '@discord-player/extractor';
 import { YoutubeiExtractor } from 'discord-player-youtubei';
-import { Botrucho, ICronData } from '@/mongodb';
-import CommandLoader from '@/commands/CommandLoader';
-import { cleanUnreadAttendance, initializeFrisbeeEventCron } from '@/services';
+import { Botrucho } from '@/mongodb';
+import { cleanUnreadAttendance } from '@/services';
 import { ActivityPresence } from '@/types';
 import { logger } from '@/utils';
+
 import '@/utils/extenders.util';
-import { workerRadarProcess } from '@/workers/radar.process';
-import * as process from 'node:process';
 
 const client: Botrucho = new Botrucho({
   intents: [
@@ -86,46 +75,6 @@ const loadExtractors: () => Promise<void> = async (): Promise<void> => {
   })
 };
 
-const loadCommands: () => Promise<void> = async (): Promise<void> => {
-  const commandLoader = new CommandLoader(client);
-  await commandLoader.loadCommands();
-};
-
-const setupCronJobs: () => Promise<void> = async (): Promise<void> => {
-  const cronJobs: ICronData[] = await client.cronData.getAllCrones();
-
-  cronJobs.forEach((job: ICronData) => {
-    cron.schedule(job.cronExpression, async () => {
-      await client.cronData.createOrUpdateCron({ ...job, lastRun: new Date() });
-      switch (job.cronName) {
-        case 'ultimateFrisbee':
-          await initializeFrisbeeEventCron(client);
-          break;
-        case 'workerRadarProcess':
-          await workerRadarProcess();
-          break;
-        case 'deleteNonBotMessages':
-          for (const interaction of client.deleted_messages) {
-            try {
-              if (client.deleted_messages.delete(interaction)) {
-                if (interaction instanceof Message) {
-                  await interaction.delete();
-                } else if (interaction instanceof CommandInteraction || interaction instanceof StringSelectMenuInteraction) {
-                  await interaction.deleteReply();
-                }
-              }
-            } catch (error: unknown) {
-              logger.error('Error deleting interaction reply:', error);
-            }
-          }
-          break;
-        default:
-          logger.warn(`Unknown cron job: ${job.cronName}`);
-      }
-    }, { timezone: 'America/Bogota' })
-  });
-};
-
 const setupClientEvents: () => void = (): void => {
   client.once('clientReady', async () => {
     cleanUnreadAttendance(client).catch(error => logger.error('Error cleaning unread attendance:', error));
@@ -143,19 +92,7 @@ const setupClientEvents: () => void = (): void => {
     };
     setInterval(pickPresence, 5000);
     logger.log('Ready!');
-    await setupCronJobs();
-    await workerRadarProcess();
-
-    /**
-     * * Example code to delete all messages in a channel
-     *
-     *     const channel = await client.channels.fetch('xxxx') as TextChannel | null;
-     *     if (channel) {
-     *       const messages = await channel.messages.fetch({ limit: 100 });
-     *       await Promise.all(Array.from(messages.values()).map(message => message.delete()));
-     *     }
-     */
-
+    await client.cronManager.initializeCronJobs();
   });
 
   client.once('reconnecting', (): void => {
@@ -178,7 +115,7 @@ const startBot: () => Promise<void> = async (): Promise<void> => {
     await connectToDatabase();
     await ensureSingleInstance();
     await loadExtractors();
-    await loadCommands();
+    await client.commandLoader.loadCommands();
     setupClientEvents();
     client.login(client.config.token).catch(e => {
       logger.log('[Discord login]: Please provide a valid discord bot token\n' + e);

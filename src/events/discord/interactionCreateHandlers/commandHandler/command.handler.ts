@@ -1,7 +1,7 @@
 import { BaseInteraction, EmbedBuilder, Guild, MessageFlags } from 'discord.js';
 import { IIntCreateHandler } from '@/events/discord/interactionCreateHandlers';
 import { Botrucho, IGuildData } from '@/mongodb';
-import { ICommand, MiscKeys, TranslationElement } from '@/types';
+import { ICommand, MiscKeys, ToggleCommandKeys, TranslationElement } from '@/types';
 import { Error, logger } from '@/utils';
 
 export class CommandHandler implements IIntCreateHandler {
@@ -20,9 +20,10 @@ export class CommandHandler implements IIntCreateHandler {
 
     if (this.guildDB.disabledCommands?.includes(command.name)) {
       const { COMMAND_DISABLED }: TranslationElement<MiscKeys> = interaction.translate('MISC', this.guildDB.lang);
+      const { DISABLED }: TranslationElement<ToggleCommandKeys> = interaction.translate('TOGGLE_COMMAND', this.guildDB.lang);
       const embedError: EmbedBuilder = Error({
         title: COMMAND_DISABLED,
-        description: `The command "${command.name}" is disabled in this server.`
+        description: DISABLED.replace('${command}', command.name)
       });
       await interaction.reply({ embeds: [embedError], flags: MessageFlags.Ephemeral });
       return true;

@@ -1,11 +1,9 @@
 import { Interaction } from 'discord.js';
 import { Botrucho, IGuildData } from '@/mongodb';
 import {
-  AddMetadataFieldHandler,
   AutocompleteHandler,
   CalendarEventHandler,
   CommandHandler,
-  CronAddMetadataFieldSelectHandler,
   CronEditSelectHandler,
   EditCronHandler,
   IIntCreateHandler,
@@ -28,11 +26,9 @@ module.exports = {
       new RetryModalHandler(client),
 
       // Edit handlers
-      new AddMetadataFieldHandler(client),
       new EditCronHandler(client),
 
       // Selection handlers
-      new CronAddMetadataFieldSelectHandler(client),
       new CronEditSelectHandler(client),
 
       // Event handlers

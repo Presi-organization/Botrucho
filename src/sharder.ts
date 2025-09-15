@@ -34,7 +34,7 @@ logger.log('[Shards] Starting spawn...');
 manager.spawn({ timeout: -1 }).then((shards) => {
   shards.forEach((shard: Shard) => {
     shard.on('death', async () => {
-      logger.error(`Stopping Shard ${shard.id} due to shard process exit.`);
+      logger.error(`Shard ${shard.id} died. Attempting restart...`);
       if (mongoose && mongoose.connection && mongoose.connection.readyState !== 0) {
         logger.log('Closing mongoose connection...');
         await mongoose.connection.close();
@@ -42,7 +42,7 @@ manager.spawn({ timeout: -1 }).then((shards) => {
       process.exit(1);
     });
     shard.on('disconnect', async () => {
-      logger.error(`Stopping Shard ${shard.id} due to shard disconnect.`);
+      logger.error(`Shard ${shard.id} disconnected. Attempting restart...`);
       if (mongoose && mongoose.connection && mongoose.connection.readyState !== 0) {
         logger.log('Closing mongoose connection...');
         await mongoose.connection.close();

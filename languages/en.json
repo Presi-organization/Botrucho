@@ -11,7 +11,8 @@
     "NOT_POSSIBLE": "This command cannot be used here!",
     "COMMAND_ENABLED": "Command Enabled",
     "COMMAND_DISABLED": "Command Disabled",
-    "UNDER_CONSTRUCTION": "This command is under construction."
+    "UNDER_CONSTRUCTION": "This command is under construction.",
+    "ALREADY_EXISTS": "This entry already exists."
   },
   "VC": {
     "CONNECT_VC": "You have to be in a voice channel to use this command.",
@@ -46,7 +47,6 @@
     "SELECT_PLACEHOLDER": "Select a job to ${action}",
     "ACTION_EDIT": "edit",
     "ACTION_DESTROY": "destroy",
-    "ACTION_ADD_METADATA_FIELD": "add metadata",
     "LAST_RUN": "Last run:",
     "NEVER": "Never"
   },

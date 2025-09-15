@@ -19,8 +19,7 @@
     "@discordjs/rest": "^2.6.0",
     "@dotenvx/dotenvx-pro": "^0.26.0",
     "canvas": "^3.2.0",
-    "debug": "^4.4.1",
-    "discord-api-types": "^0.38.23",
+    "discord-api-types": "^0.38.25",
     "discord-player": "^7.1.0",
     "discord-player-youtubei": "^1.5.0",
     "discord-voip": "^7.1.0",
@@ -40,6 +39,6 @@
     "@types/node-cron": "^3.0.11",
     "eslint": "^9.35.0",
     "typescript": "^5.9.2",
-    "typescript-eslint": "^8.43.0"
+    "typescript-eslint": "^8.44.0"
   }
 }

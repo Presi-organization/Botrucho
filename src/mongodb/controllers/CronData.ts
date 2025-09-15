@@ -4,7 +4,7 @@ export class CronDataController {
   async getAllCrones(): Promise<ICronData[]> {
     return CronDataModel
       .find({ isActive: true })
-      .select('cronId cronName cronExpression isActive lastRun nextRun metadata')
+      .select('cronId cronName cronExpression isActive runOnInit lastRun nextRun metadata')
       .lean({ virtuals: true });
   }
 
@@ -19,6 +19,7 @@ export class CronDataController {
       cronExpression,
       lastRun,
       isActive,
+      runOnInit,
       metadata
     } = cronData;
 
@@ -34,6 +35,7 @@ export class CronDataController {
         ...(cronExpression !== undefined && { cronExpression }),
         ...(lastRun !== undefined && { lastRun: lastRun ?? null }),
         ...(isActive !== undefined && { isActive }),
+        ...(runOnInit !== undefined && { runOnInit }),
         ...(metadata !== undefined && { metadata: metadata ?? {} }),
       },
     };

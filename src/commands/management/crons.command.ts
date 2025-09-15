@@ -32,10 +32,6 @@ export default class CronsCommand extends ICommand {
     .setDescription('Manage scheduled events and threads.')
     .addSubcommand(subcommand =>
       subcommand
-        .setName('add-metadata-field')
-        .setDescription('Add a metadata field to an existing cron job.'))
-    .addSubcommand(subcommand =>
-      subcommand
         .setName('edit')
         .setDescription('Edit an existing cron job.'))
     .addSubcommand(subcommand =>
@@ -89,12 +85,6 @@ export default class CronsCommand extends ICommand {
     }
     const subcommand: string = interaction.options.getSubcommand();
     switch (subcommand) {
-      case 'add-metadata-field':
-        return this._showCronSelectMenu(interaction, {
-          customId: 'cron-add-metadata-field-select',
-          action: cronsTranslations.ACTION_ADD_METADATA_FIELD,
-          translations: cronsTranslations
-        });
       case 'edit':
         return this._showCronSelectMenu(interaction, {
           customId: 'cron-edit-select',

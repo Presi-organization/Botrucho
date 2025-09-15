@@ -34,7 +34,15 @@ export interface TranslationsType {
 export type TranslationElement<T extends string> = Record<T, string>;
 
 export type LanguagesKeys = 'ES' | 'EN';
-export type MiscKeys = 'YES' | 'NO' | 'ERROR' | 'NOT_POSSIBLE' | 'COMMAND_ENABLED' | 'COMMAND_DISABLED';
+export type MiscKeys =
+  'YES'
+  | 'NO'
+  | 'ERROR'
+  | 'NOT_POSSIBLE'
+  | 'COMMAND_ENABLED'
+  | 'COMMAND_DISABLED'
+  | 'UNDER_CONSTRUCTION'
+  | 'ALREADY_EXISTS';
 export type VCKeys = 'CONNECT_VC' | 'USER_NOT_IN';
 export type MusicKeys = 'NOT_PLAYING_TITLE' | 'NOT_PLAYING_DESC';
 export type CoinKeys = 'COIN_FLIP' | 'HEADS' | 'TAILS';
@@ -47,7 +55,6 @@ export type CronsKeys =
   | 'SELECT_PLACEHOLDER'
   | 'ACTION_EDIT'
   | 'ACTION_DESTROY'
-  | 'ACTION_ADD_METADATA_FIELD'
   | 'LAST_RUN'
   | 'NEVER';
 export type EventKeys =

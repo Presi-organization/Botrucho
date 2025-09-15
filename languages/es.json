@@ -11,7 +11,8 @@
     "NOT_POSSIBLE": "¡Este comando no puede ser usado aquí!",
     "COMMAND_ENABLED": "Comando Habilitado",
     "COMMAND_DISABLED": "Comando Deshabilitado",
-    "UNDER_CONSTRUCTION": "Este comando está en construcción."
+    "UNDER_CONSTRUCTION": "Este comando está en construcción.",
+    "ALREADY_EXISTS": "Esta entrada ya existe."
   },
   "VC": {
     "CONNECT_VC": "Tienes que estar en un canal de voz para usar este comando.",
@@ -46,7 +47,6 @@
     "SELECT_PLACEHOLDER": "Selecciona una tarea para ${action}",
     "ACTION_EDIT": "editar",
     "ACTION_DESTROY": "destruir",
-    "ACTION_ADD_METADATA_FIELD": "añadir metadatos",
     "LAST_RUN": "Última ejecución:",
     "NEVER": "Nunca"
   },

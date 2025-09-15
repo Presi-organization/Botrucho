@@ -2,7 +2,7 @@ import { bold, EmbedBuilder, GuildMember, hyperlink, italic, Message, underline,
 import { Botrucho } from '@/mongodb';
 import { Info, logger } from '@/utils';
 
-const CLAN_URL = 'https://link.clashroyale.com/invite/clan/es?tag=G8RUCYP2&token=z2bwm83n&platform=android';
+const CLAN_URL = 'https://link.clashroyale.com/invite/clan/es?tag=G8RUCYP2&token=2r96xcb4&platform=android';
 
 const _sendClanInvitationDM = async (client: Botrucho, member: GuildMember | null): Promise<void> => {
   const targetUserIds: string[] = ['691317296559554601', '246804706536456193', '172127628290031625', '175677535537987584', '352618665276997632', '429375441267195924']; // Migue, Nitro, Zapal, Dansa, Ótalvaro, yo
