@@ -1,11 +1,28 @@
-import { bold, EmbedBuilder, GuildMember, hyperlink, italic, Message, underline, VoiceState } from 'discord.js';
-import { Botrucho } from '@/mongodb';
-import { Info, logger } from '@/utils';
+import {
+  bold,
+  EmbedBuilder,
+  GuildMember,
+  hyperlink,
+  italic,
+  Message, TextChannel,
+  underline,
+  VoiceBasedChannel,
+  VoiceState
+} from 'discord.js';
+import { Player, QueueRepeatMode, useMainPlayer } from "discord-player";
+import { AudioResource, createAudioResource } from "discord-voip";
+import { Botrucho, IGuildData } from '@/mongodb';
+import { deleteMessagesFromChannel, Info, logger } from '@/utils';
+import { join } from "path";
+import { PlayerKeys, TranslationElement, TranslationsType } from "@/types";
+import en from '@languages/en.json';
+import es from '@languages/es.json';
 
 const CLAN_URL = 'https://link.clashroyale.com/invite/clan/es?tag=G8RUCYP2&token=2r96xcb4&platform=android';
 
+const targetUserIds: string[] = ['429375441267195924', '172127628290031625', '359010137404342272', '175677535537987584']; // Yo, Zapal, Lucho, Dansa
+
 const _sendClanInvitationDM = async (client: Botrucho, member: GuildMember | null): Promise<void> => {
-  const targetUserIds: string[] = ['691317296559554601', '246804706536456193', '172127628290031625', '175677535537987584', '352618665276997632', '429375441267195924']; // Migue, Nitro, Zapal, Dansa, Ótalvaro, yo
   const isTargetUser = Boolean(member?.id && targetUserIds.includes(member?.id));
   const canSendDM = Boolean(member?.user?.dmChannel || member?.user?.createDM);
   if (isTargetUser && canSendDM) {
@@ -33,19 +50,83 @@ const _sendClanInvitationDM = async (client: Botrucho, member: GuildMember | nul
         timestamp: new Date().toISOString(),
       });
       const message: Message<false> | undefined = await member?.send({ embeds: [embed] });
-      if (message) setTimeout(() => client.deleted_messages.add(message), 180_000);
+      const dmChannelId = message?.channelId;
+      if (dmChannelId) setTimeout(async () => await deleteMessagesFromChannel(client, dmChannelId), 180_000);
     } catch (error) {
       logger.error(`Could not send DM to user ${member?.displayName}`, error);
     }
   }
 };
 
+const _sendClanInvitationAudioChannel = async (client: Botrucho, member: GuildMember | null): Promise<void> => {
+  const isTargetUser = Boolean(member?.id && targetUserIds.includes(member?.id));
+  const guild = member?.guild;
+  let channel: VoiceBasedChannel | null | undefined = member?.voice.channel;
+  const guildDB: IGuildData | null = guild?.id ? await client.guildData.showGuild(guild.id) : null;
+  const defaultChannelId: string | null | undefined = guildDB?.defaultSpamChannelID;
+  const textChannel: TextChannel | null | undefined = defaultChannelId ? guild?.channels.cache.get(defaultChannelId) as TextChannel : null;
+  if (isTargetUser && channel?.isVoiceBased) {
+    const player: Player = useMainPlayer();
+    const audioFile: string = join(__dirname, '../../../assets/voice/audio_clan.mp3');
+    try {
+      const resource: AudioResource = createAudioResource(audioFile, { metadata: { title: 'M-19 Clan Invitation' } });
+      if (!player.nodes.has(channel.guild.id)) {
+        const { track } = await player.play(channel, resource, {
+          nodeOptions: {
+            metadata: {
+              channel: textChannel,
+              queueMessage: null,
+              currentTrack: undefined,
+              queueTitles: [],
+              message: {
+                guild,
+                translate: (text: keyof TranslationsType, guildDBLang = 'en'): TranslationElement<string> => {
+                  const languages: Record<string, TranslationsType> = { en, es };
+                  if (!text || !languages[guildDBLang] || !languages[guildDBLang][text]) {
+                    return {} as TranslationElement<PlayerKeys>;
+                  }
+                  const translation = languages[guildDBLang][text];
+                  if (typeof translation === 'object') {
+                    return translation as TranslationElement<PlayerKeys>;
+                  }
+                  return {} as TranslationElement<PlayerKeys>;
+                }
+              } as unknown as Message,
+            },
+            volume: 100,
+            repeatMode: QueueRepeatMode.OFF,
+            noEmitInsert: true,
+            leaveOnStop: false,
+            leaveOnEmpty: true,
+            leaveOnEmptyCooldown: 30000,
+            leaveOnEnd: true,
+            leaveOnEndCooldown: 30000,
+            pauseOnEmpty: true,
+            preferBridgedMetadata: true,
+            disableBiquad: true
+          },
+          requestedBy: member?.user,
+          connectionOptions: {
+            deaf: true,
+          }
+        });
+        if (track.hasResource) {
+          track.setResource(null);
+        }
+      }
+    } catch {
+
+    }
+  }
+}
+
 export const execute = async (client: Botrucho, oldState: VoiceState, newState: VoiceState) => {
   if (!newState.channel?.id) {
     logger.debug(`user ${oldState.member?.displayName} left channel ${oldState.channel?.name}`);
   } else if (!oldState.channel?.id) {
     logger.debug(`user ${newState.member?.displayName} joined channel ${newState.channel?.name}`);
-    await _sendClanInvitationDM(client, newState.member);
+    await _sendClanInvitationAudioChannel(client, newState.member);
+    setTimeout(async () => await _sendClanInvitationDM(client, newState.member), 37_000); // wait 37 seconds before sending the DM
   } else {
     logger.debug(`user ${newState.member?.displayName} moved channels ${oldState.channel?.name} ${newState.channel?.name}`);
   }

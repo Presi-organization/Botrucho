@@ -1,20 +1,7 @@
 # Build Stage
-FROM node:22-alpine AS build
+FROM node:22-bookworm-slim AS build
 
 WORKDIR /botrucho
-
-# Instala herramientas necesarias para compilar addons nativos
-RUN apk add --no-cache \
-    python3 \
-    make \
-    g++ \
-    pkgconfig \
-    pixman \
-    cairo-dev \
-    pango-dev \
-    jpeg-dev \
-    giflib-dev \
-    pixman-dev
 
 COPY package*.json ./
 RUN npm ci
@@ -23,20 +10,8 @@ COPY . .
 RUN npm run clean && npm run build
 
 # Production Stage
-FROM node:22-alpine AS production
-RUN apk add --no-cache \
-    python3 \
-    make \
-    g++ \
-    pkgconfig \
-    pixman \
-    cairo-dev \
-    pango-dev \
-    jpeg-dev \
-    giflib-dev \
-    pixman-dev
-
-RUN apk add --no-cache ffmpeg curl
+FROM node:22-bookworm-slim AS production
+RUN apt-get update && apt-get install -y --no-install-recommends ffmpeg curl
 
 ENV FFMPEG_PATH=/usr/bin/ffmpeg
 ENV TZ=America/Bogota

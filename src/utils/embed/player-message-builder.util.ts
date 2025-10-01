@@ -3,6 +3,7 @@ import { GuildQueue, Track } from 'discord-player';
 import { PlayerKeys, PlayerType, TranslationElement } from '@/types';
 import { Info } from '@/utils';
 
+// ▶ **ARTIST** - SONG_NAME
 const updateQueueMessage = async (
   queue: GuildQueue<PlayerType>,
   track: Track,
@@ -49,8 +50,6 @@ const updateQueueMessage = async (
   } else {
     await queue.metadata.queueMessage.edit(replyOptions);
   }
-
-  // ▶ ** Chrystal** - The Days - NOTION Remix
 };
 
 export { updateQueueMessage };

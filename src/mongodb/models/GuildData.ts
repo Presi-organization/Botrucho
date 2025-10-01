@@ -9,6 +9,7 @@ export interface IGuildData extends Document {
   loopMode?: 'OFF' | 'AUTOPLAY' | 'TRACK' | 'QUEUE';
   color?: string;
   disabledCommands: string[];
+  defaultSpamChannelID?: string | null;
   plugins?: {
     welcome?: {
       status: boolean;
@@ -66,6 +67,7 @@ const GuildDataSchema = new Schema<IGuildData>({
   loopMode: { type: String, enum: ['OFF', 'AUTOPLAY', 'TRACK', 'QUEUE'], default: 'OFF' },
   color: { type: String, default: config.color },
   disabledCommands: { type: [String], default: [] },
+  defaultSpamChannelID: { type: String, default: null },
   plugins: {
     type: Object,
     default: {
