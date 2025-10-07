@@ -18,7 +18,7 @@ import { PlayerKeys, TranslationElement, TranslationsType } from "@/types";
 import en from '@languages/en.json';
 import es from '@languages/es.json';
 
-const CLAN_URL = 'https://link.clashroyale.com/invite/clan/es?tag=G8RUCYP2&token=2r96xcb4&platform=android';
+const CLAN_URL = 'https://link.clashroyale.com/invite/clan/es?tag=G8RUCYP2&token=pnpn4nxp&platform=android';
 
 const targetUserIds: string[] = ['429375441267195924', '172127628290031625', '359010137404342272', '175677535537987584']; // Yo, Zapal, Lucho, Dansa
 
@@ -67,7 +67,7 @@ const _sendClanInvitationAudioChannel = async (client: Botrucho, member: GuildMe
   const textChannel: TextChannel | null | undefined = defaultChannelId ? guild?.channels.cache.get(defaultChannelId) as TextChannel : null;
   if (isTargetUser && channel?.isVoiceBased) {
     const player: Player = useMainPlayer();
-    const audioFile: string = join(__dirname, '../../../assets/voice/audio_clan.mp3');
+    const audioFile: string = join(__dirname, '../../../assets/voice/audio_clanV3.mp3');
     try {
       const resource: AudioResource = createAudioResource(audioFile, { metadata: { title: 'M-19 Clan Invitation' } });
       if (!player.nodes.has(channel.guild.id)) {
@@ -126,7 +126,7 @@ export const execute = async (client: Botrucho, oldState: VoiceState, newState: 
   } else if (!oldState.channel?.id) {
     logger.debug(`user ${newState.member?.displayName} joined channel ${newState.channel?.name}`);
     await _sendClanInvitationAudioChannel(client, newState.member);
-    setTimeout(async () => await _sendClanInvitationDM(client, newState.member), 37_000); // wait 37 seconds before sending the DM
+    setTimeout(async () => await _sendClanInvitationDM(client, newState.member), 20_000); // wait 20 seconds before sending the DM
   } else {
     logger.debug(`user ${newState.member?.displayName} moved channels ${oldState.channel?.name} ${newState.channel?.name}`);
   }
