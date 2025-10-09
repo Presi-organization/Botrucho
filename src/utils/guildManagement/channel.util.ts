@@ -7,3 +7,13 @@ export const changeChannelName = async (client: Botrucho, channelId: string, new
     await channel.setName(newName, 'Channel name updated by bot');
   }
 }
+
+export const changeUserAlias = async (client: Botrucho, guildId: string, userId: string, newNickname: string) => {
+  const guild = await client.guilds.fetch(guildId);
+  if (guild) {
+    const member = await guild.members.fetch(userId);
+    if (member) {
+      await member.setNickname(newNickname, 'Nickname updated by bot');
+    }
+  }
+}
