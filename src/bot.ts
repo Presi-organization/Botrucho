@@ -72,7 +72,7 @@ const loadExtractors: () => Promise<void> = async (): Promise<void> => {
   await client.player.extractors.register(YoutubeiExtractor, {
     streamOptions: { useClient: 'WEB_EMBEDDED', },
     generateWithPoToken: true,
-    innertubeConfigRaw: { player_id: '0004de42' } // This is the player ID for the web embedded player
+    innertubeConfigRaw: { player_id: '0004de42' }, // This is the player ID for the web embedded player
   })
 };
 

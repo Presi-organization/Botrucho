@@ -125,7 +125,7 @@ export const execute = async (client: Botrucho, oldState: VoiceState, newState: 
     logger.debug(`user ${oldState.member?.displayName} left channel ${oldState.channel?.name}`);
   } else if (!oldState.channel?.id) {
     logger.debug(`user ${newState.member?.displayName} joined channel ${newState.channel?.name}`);
-    await _sendClanInvitationAudioChannel(client, newState.member);
+    // await _sendClanInvitationAudioChannel(client, newState.member);
     // setTimeout(async () => await _sendClanInvitationDM(client, newState.member), 20_000); // wait 20 seconds before sending the DM
   } else {
     logger.debug(`user ${newState.member?.displayName} moved channels ${oldState.channel?.name} ${newState.channel?.name}`);
