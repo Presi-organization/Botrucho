@@ -19,16 +19,17 @@
     "@discordjs/rest": "^2.6.0",
     "@dotenvx/dotenvx-pro": "^0.26.1",
     "canvas": "^3.2.0",
-    "discord-api-types": "^0.38.32",
+    "discord-api-types": "^0.38.34",
     "discord-player": "^7.1.0",
+    "discord-player-googlevideo": "^0.2.0",
     "discord-player-youtubei": "^1.5.0",
     "discord-voip": "^7.1.0",
-    "discord.js": "^14.24.2",
+    "discord.js": "^14.25.0",
     "express": "^5.1.0",
     "gif-encoder-2": "^1.0.5",
     "jimp": "^1.6.0",
-    "microsoft-cognitiveservices-speech-sdk": "^1.46.0",
-    "mongoose": "^8.19.3",
+    "microsoft-cognitiveservices-speech-sdk": "^1.47.0",
+    "mongoose": "^8.20.0",
     "node-cron": "^4.2.1"
   },
   "devDependencies": {
@@ -39,7 +40,7 @@
     "@types/node-cron": "^3.0.11",
     "eslint": "^9.39.1",
     "typescript": "^5.9.3",
-    "typescript-eslint": "^8.46.3"
+    "typescript-eslint": "^8.47.0"
   },
   "engines": {
     "node": ">=22.x"

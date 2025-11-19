@@ -2,7 +2,7 @@ import mongoose from 'mongoose';
 import { ClientOptions, GatewayIntentBits as Intents, GuildMember, Partials, } from 'discord.js';
 import { GuildQueue } from 'discord-player';
 import { DefaultExtractors } from '@discord-player/extractor';
-import { YoutubeiExtractor } from 'discord-player-youtubei';
+import { YoutubeSabrExtractor } from 'discord-player-googlevideo';
 import { Botrucho } from '@/mongodb';
 import { cleanUnreadAttendance } from '@/services';
 import { ActivityPresence } from '@/types';
@@ -69,11 +69,7 @@ const loadExtractors: () => Promise<void> = async (): Promise<void> => {
   ];
   const extractors = DefaultExtractors.filter(extractor => !extractorsToExclude.includes(extractor.name));
   await client.player.extractors.loadMulti(extractors);
-  await client.player.extractors.register(YoutubeiExtractor, {
-    streamOptions: { useClient: 'WEB_EMBEDDED', },
-    generateWithPoToken: true,
-    innertubeConfigRaw: { player_id: '0004de42' }, // This is the player ID for the web embedded player
-  })
+  await client.player.extractors.register(YoutubeSabrExtractor, { })
 };
 
 const setupClientEvents: () => void = (): void => {
