@@ -1,6 +1,6 @@
 import 'tsconfig-paths/register';
 import dotenv from 'dotenv';
-
+// add this line to load environment variables from .env file
 dotenv.config();
 
 import { Shard, ShardingManager } from 'discord.js';
