@@ -1,9 +1,13 @@
+import 'tsconfig-paths/register';
+import dotenv from 'dotenv';
+
+dotenv.config();
+
 import { Shard, ShardingManager } from 'discord.js';
 import express, { Express } from 'express';
 import mongoose from 'mongoose';
 import healthRoute from '@/routes/health';
 import { logger } from '@/utils';
-
 import config from '@/config';
 
 const validateEnv = () => {
@@ -21,7 +25,9 @@ const app: Express = express();
 
 const port = process.env.PORT || 3000;
 
-const manager = new ShardingManager(`${__dirname}/bot.js`, {
+process.env.NODE_OPTIONS = '-r ts-node/register -r tsconfig-paths/register -r dotenv/config';
+
+const manager = new ShardingManager(`${__dirname}/bot.ts`, {
   token: config.token,
   shardArgs: process.argv,
   totalShards: config.shards ?? 'auto',
