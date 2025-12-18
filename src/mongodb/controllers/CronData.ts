@@ -3,7 +3,7 @@ import { CronDataModel, ICronData } from '@/mongodb/models/CronData';
 export class CronDataController {
   async getAllCrones(): Promise<ICronData[]> {
     return CronDataModel
-      .find({ isActive: true })
+      .find()
       .select('cronId cronName cronExpression isActive runOnInit lastRun nextRun metadata')
       .lean({ virtuals: true });
   }

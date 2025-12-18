@@ -14,7 +14,14 @@ import {
 import { Snowflake, ThreadAutoArchiveDuration } from 'discord-api-types/v10';
 import { EventAlreadyExistsError } from '@/errors';
 import { AttendanceReactionHandler } from '@/events/discord/reactionHandlers';
-import { AttendanceDataController, Botrucho, IEventAttendance, IThread } from '@/mongodb';
+import {
+  AttendanceDataController,
+  Botrucho,
+  CronDataController,
+  ICronData,
+  IEventAttendance,
+  IThread
+} from '@/mongodb';
 import { logger } from '@/utils';
 
 /**
@@ -118,21 +125,25 @@ const cleanUnreadAttendance = async (client: Botrucho): Promise<void> => {
 /**
  * Send a message with an existing webhook
  * @arg {WebhookClient} webhook The Webhook client
+ * @arg {string} webhookTitle The title of the webhook message
  */
-const sendMessageWithWebhook: (webhook: WebhookClient) => Promise<APIMessage> = (webhook: WebhookClient): Promise<APIMessage> => {
-  return webhook.send({
-    content: `<@&540708709945311243>\n<a:WEEWOO:1329263115530928208> Asistencia ${getTomorrowsDay()} <a:frisbeeT:1309633549967556619> <a:WEEWOO:1329263115530928208>`
-  });
+const sendMessageWithWebhook: (webhook: WebhookClient, webhookTitle: string) => Promise<APIMessage> = async (webhook: WebhookClient, webhookTitle: string): Promise<APIMessage> => {
+  return webhook.send({ content: webhookTitle });
 }
 
-const sendAMessageAndThread: (channel: TextChannel, webhook: WebhookClient, attendanceData: AttendanceDataController) => Promise<void> = async (channel: TextChannel, webhook: WebhookClient, attendanceData: AttendanceDataController): Promise<void> => {
+const sendAMessageAndThread: (channel: TextChannel, webhook: WebhookClient, attendanceData: AttendanceDataController, cronData: CronDataController) => Promise<void> = async (channel: TextChannel, webhook: WebhookClient, attendanceData: AttendanceDataController, cronData: CronDataController): Promise<void> => {
   try {
-    const message: APIMessage = await sendMessageWithWebhook(webhook);
+    const cronId = '8ff357d5-4463-488f-90f4-7ec016457b8e';
+    const ultimateData: ICronData | null = await cronData.getCronById(cronId);
+    const webhookTitle: string = (ultimateData?.metadata?.title as string).replace('${date}', getTomorrowsDay()) || `<@&540708709945311243>\n<a:WEEWOO:1329263115530928208> Asistencia ${getTomorrowsDay()} <a:frisbeeT:1309633549967556619> <a:WEEWOO:1329263115530928208>`;
+    const emojis: string[] = [
+      ultimateData?.metadata?.emojiYes as string || '<:pepe_si:1332572265677586572>',
+      ultimateData?.metadata?.emojiNo as string || '<:pepe_no:1332572291317502014>'
+    ];
+
+    const message: APIMessage = await sendMessageWithWebhook(webhook, webhookTitle);
     const fetchedMessage: Message<true> = await channel.messages.fetch(message.id);
-    await Promise.all([
-      fetchedMessage.react('<:pepe_si:1332572265677586572>'),
-      fetchedMessage.react('<:pepe_no:1332572291317502014>')
-    ]);
+    await Promise.all(emojis.map((emoji: string) => fetchedMessage.react(emoji)));
 
     const thread: PublicThreadChannel<false> = await fetchedMessage.startThread({
       name: `Asistencia ${getTomorrowsDay()}`,
@@ -172,7 +183,7 @@ const initializeFrisbeeEventCron = async (client: Botrucho) => {
     const users: string[] | undefined = channel.guild.roles.cache.find((role: Role) => role.id === '540708709945311243')?.members
       .reduce((acc: string[], m: GuildMember) => !m.user.bot ? [...acc, m.user.displayName] : acc, []);
     logger.log(users);
-    return sendAMessageAndThread(channel, webhook, client.eventAttendanceData);
+    return sendAMessageAndThread(channel, webhook, client.eventAttendanceData, client.cronData);
   }
 }
 
