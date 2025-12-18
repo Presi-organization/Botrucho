@@ -1,6 +1,6 @@
 {
   "name": "botrucho",
-  "version": "1.6.3",
+  "version": "1.6.4",
   "description": "",
   "main": "src/sharder.ts",
   "scripts": {

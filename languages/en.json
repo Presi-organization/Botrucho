@@ -43,10 +43,10 @@
   "CRONS": {
     "CRON_JOBS": "Scheduled jobs",
     "NOT_FOUND": "No scheduled jobs found",
-    "DESTROYED": "The job ${job} has been successfully destroyed",
+    "ENABLED": "Enabled ${job}.",
+    "DISABLED": "Disabled ${job}.",
     "SELECT_PLACEHOLDER": "Select a job to ${action}",
     "ACTION_EDIT": "edit",
-    "ACTION_DESTROY": "destroy",
     "LAST_RUN": "Last run:",
     "NEVER": "Never"
   },

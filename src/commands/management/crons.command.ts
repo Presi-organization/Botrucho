@@ -36,11 +36,11 @@ export default class CronsCommand extends ICommand {
         .setDescription('Edit an existing cron job.'))
     .addSubcommand(subcommand =>
       subcommand
-        .setName('destroy')
-        .setDescription('Destroy an existing cron job.')
+        .setName('toggle')
+        .setDescription('Enable/disable an existing cron job.')
         .addStringOption(input => input
           .setName('cron-id')
-          .setDescription('The ID of the cron job to destroy.')
+          .setDescription('The ID of the cron job to toggle.')
           .setRequired(true)
           .setAutocomplete(true)
         ))
@@ -54,7 +54,7 @@ export default class CronsCommand extends ICommand {
 
   async autocomplete(interaction: AutoCompleteInteractionWithClient): Promise<void> {
     const subcommand: string | null = interaction.options.getSubcommand(false);
-    if (subcommand !== 'destroy') return;
+    if (subcommand !== 'toggle') return;
     const focusedOption: AutocompleteFocusedOption = interaction.options.getFocused(true);
     if (focusedOption.name !== 'cron-id') return;
 
@@ -93,8 +93,8 @@ export default class CronsCommand extends ICommand {
         });
       case 'list':
         return this._listCronJobs(interaction, cronsTranslations);
-      case 'destroy': {
-        return this._destroyCronJob(interaction, cronsTranslations);
+      case 'toggle': {
+        return this._toggleCronJob(interaction, cronsTranslations);
       }
       default:
         await interaction.reply({ content: ERROR, flags: MessageFlags.Ephemeral });
@@ -161,10 +161,10 @@ export default class CronsCommand extends ICommand {
     return;
   };
 
-  private async _destroyCronJob(interaction: CommandInteractionWithClient, translations: TranslationElement<CronsKeys>): Promise<void> {
+  private async _toggleCronJob(interaction: CommandInteractionWithClient, translations: TranslationElement<CronsKeys>): Promise<void> {
     if (!interaction.isChatInputCommand()) return;
 
-    const { DESTROYED, NOT_FOUND } = translations;
+    const { NOT_FOUND, ENABLED, DISABLED } = translations;
 
     const cronId: string = interaction.options.getString('cron-id', true);
     const cronJob: ICronData | null = await interaction.client.cronData.getCronById(cronId);
@@ -172,9 +172,10 @@ export default class CronsCommand extends ICommand {
       await interaction.reply({ content: NOT_FOUND, flags: MessageFlags.Ephemeral });
       return;
     }
-    await interaction.client.cronData.createOrUpdateCron({ ...cronJob, isActive: false });
+    const nextIsActive: boolean = !cronJob.isActive;
+    await interaction.client.cronData.createOrUpdateCron({ ...cronJob, isActive: nextIsActive });
     await interaction.reply({
-      content: DESTROYED.replace('${job}', inlineCode(cronJob.cronName)),
+      content: (nextIsActive ? ENABLED : DISABLED).replace('${job}', inlineCode(cronJob.cronName)),
       flags: MessageFlags.Ephemeral
     });
     return;

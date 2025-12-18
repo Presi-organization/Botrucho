@@ -51,10 +51,10 @@ export type AvatarKeys = 'USER' | 'SELF';
 export type CronsKeys =
   'CRON_JOBS'
   | 'NOT_FOUND'
-  | 'DESTROYED'
+  | 'ENABLED'
+  | 'DISABLED'
   | 'SELECT_PLACEHOLDER'
   | 'ACTION_EDIT'
-  | 'ACTION_DESTROY'
   | 'LAST_RUN'
   | 'NEVER';
 export type EventKeys =

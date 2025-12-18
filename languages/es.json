@@ -43,10 +43,10 @@
   "CRONS": {
     "CRON_JOBS": "Tareas programadas",
     "NOT_FOUND": "No se encontraron tareas programadas",
-    "DESTROYED": "La tarea ${job} ha sido destruida exitosamente",
+    "ENABLED": "Se habilitó ${job}.",
+    "DISABLED": "Se deshabilitó ${job}.",
     "SELECT_PLACEHOLDER": "Selecciona una tarea para ${action}",
     "ACTION_EDIT": "editar",
-    "ACTION_DESTROY": "destruir",
     "LAST_RUN": "Última ejecución:",
     "NEVER": "Nunca"
   },
