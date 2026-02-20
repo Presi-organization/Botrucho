@@ -23,7 +23,7 @@ export class CronDataController {
       metadata
     } = cronData;
 
-    const filter = cronId ? { cronId } : { cronName };
+    const filter = cronId ? {  cronId: cronId } : { cronName: cronName };
 
     if (!cronId && (!cronName || !cronExpression)) {
       throw new Error('Provide cronId, or provide cronName and cronExpression.');
@@ -42,7 +42,7 @@ export class CronDataController {
 
     return CronDataModel.findOneAndUpdate(filter, update, {
       upsert: true,
-      new: true,
+      returnDocument: 'after',
       runValidators: true,
       setDefaultsOnInsert: true,
     });

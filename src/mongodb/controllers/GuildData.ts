@@ -14,7 +14,7 @@ export class GuildDataController {
     return GuildDataModel.findOneAndUpdate(
       { serverID: guildId },
       { defaultVolume: newVolume },
-      { new: true, upsert: true }
+      { returnDocument: 'after', upsert: true }
     ).exec();
   }
 
@@ -22,7 +22,7 @@ export class GuildDataController {
     return GuildDataModel.findOneAndUpdate(
       { serverID: guildId },
       { lang: newLanguage },
-      { new: true, upsert: true }
+      { returnDocument: 'after', upsert: true }
     ).exec();
   }
 }

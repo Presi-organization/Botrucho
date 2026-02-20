@@ -1,0 +1,18 @@
+services:
+  botrucho:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile
+      platforms:
+        - linux/amd64
+        - linux/arm64
+    image: jonathanstrf/botrucho:${VERSION:-1.6.4}
+    container_name: botrucho
+    ports:
+      - "3000:3000"
+    environment:
+      - DOTENV_PRIVATE_KEY_PRODUCTION=${DOTENV_PRIVATE_KEY_PRODUCTION}
+    restart: on-failure:5
+    dns: 8.8.8.8
+    init: true
+

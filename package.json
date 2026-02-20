@@ -9,7 +9,10 @@
     "copy-assets": "npx cpx \"assets/**/*\" dist/assets && npx cpx \"languages/**/*\" dist/languages",
     "build": "swc src -d dist -s -D && npm run copy-assets && npm run copy-env",
     "start": "npm run build && dotenvx run -f .env.development -- node dist/src/sharder.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "version:patch": "npm version patch",
+    "version:minor": "npm version minor",
+    "version:major": "npm version major"
   },
   "author": "",
   "license": "ISC",
@@ -18,29 +21,29 @@
     "@discordjs/builders": "^1.13.1",
     "@discordjs/rest": "^2.6.0",
     "@dotenvx/dotenvx-pro": "^0.26.1",
-    "canvas": "^3.2.0",
-    "discord-api-types": "^0.38.37",
+    "canvas": "^3.2.1",
+    "discord-api-types": "^0.38.40",
     "discord-player": "^7.1.0",
-    "discord-player-googlevideo": "^0.2.0",
+    "discord-player-googlevideo": "^0.2.2",
     "discord-player-youtubei": "^1.5.0",
     "discord-voip": "^7.1.0",
     "discord.js": "^14.25.1",
     "express": "^5.2.1",
     "gif-encoder-2": "^1.0.5",
     "jimp": "^1.6.0",
-    "microsoft-cognitiveservices-speech-sdk": "^1.47.0",
-    "mongoose": "^9.0.2",
+    "microsoft-cognitiveservices-speech-sdk": "^1.48.0",
+    "mongoose": "^9.2.1",
     "node-cron": "^4.2.1"
   },
   "devDependencies": {
-    "@eslint/js": "^9.39.2",
-    "@swc/cli": "^0.7.9",
+    "@eslint/js": "^10.0.1",
+    "@swc/cli": "^0.8.0",
     "@swc/core": "1.13.5",
     "@types/express": "^5.0.6",
     "@types/node-cron": "^3.0.11",
-    "eslint": "^9.39.2",
+    "eslint": "^10.0.0",
     "typescript": "^5.9.3",
-    "typescript-eslint": "^8.50.0"
+    "typescript-eslint": "^8.56.0"
   },
   "engines": {
     "node": ">=22.x"
