@@ -23,7 +23,7 @@ export class CronDataController {
       metadata
     } = cronData;
 
-    const filter = cronId ? {  cronId: cronId } : { cronName: cronName };
+    const filter = cronId ? { cronId } : { cronName };
 
     if (!cronId && (!cronName || !cronExpression)) {
       throw new Error('Provide cronId, or provide cronName and cronExpression.');
@@ -45,7 +45,9 @@ export class CronDataController {
       returnDocument: 'after',
       runValidators: true,
       setDefaultsOnInsert: true,
-    });
+    })
+      .select('cronId cronName cronExpression isActive runOnInit lastRun nextRun metadata')
+      .lean({ virtuals: true });
   }
 
   async deleteCron(cronId: string): Promise<void> {

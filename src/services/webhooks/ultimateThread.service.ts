@@ -31,11 +31,11 @@ import { logger } from '@/utils';
 const getEventDates = (): { eventDate: Date, expirationDate: Date } => {
   const eventDate = new Date();
   eventDate.setHours(0, 0, 0, 0);
-  eventDate.setDate(eventDate.getDate() + 2);
+  eventDate.setDate(eventDate.getDate() + 3);
 
   const expirationDate = new Date();
   expirationDate.setHours(0, 0, 0, 0);
-  expirationDate.setDate(expirationDate.getDate() + 15 + 3);
+  expirationDate.setDate(expirationDate.getDate() + 15 + 4);
 
   return { eventDate, expirationDate };
 }
