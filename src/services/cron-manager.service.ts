@@ -1,7 +1,7 @@
 import { CommandInteraction, Message, StringSelectMenuInteraction } from 'discord.js';
 import { schedule, ScheduledTask, ScheduleOptions } from 'node-cron';
 import { Botrucho, ICronData } from '@/mongodb';
-import { initializeFrisbeeEventCron } from '@/services/webhooks';
+import { initializeFrisbeeEventCron, sendReminderToConfirmAttendance } from '@/services/webhooks';
 import { logger } from '@/utils';
 import { workerRadarProcess } from '@/workers/radar.process';
 
@@ -70,6 +70,9 @@ export class CronManager {
           break;
         case 'deleteNonBotMessages':
           await this.deleteNonBotMessages();
+          break;
+        case 'reminderUltimateFrisbeeConfirmAttendance':
+          await sendReminderToConfirmAttendance(this.client);
           break;
         default:
           logger.warn(`Unknown cron job: ${job.cronName}`);

@@ -18,11 +18,12 @@ import {
   AttendanceDataController,
   Botrucho,
   CronDataController,
+  IAttendee,
   ICronData,
   IEventAttendance,
   IThread
 } from '@/mongodb';
-import { logger } from '@/utils';
+import { logger, Warning } from '@/utils';
 
 /**
  * Retrieves the current Date + one day and + three days
@@ -31,11 +32,14 @@ import { logger } from '@/utils';
 const getEventDates = (): { eventDate: Date, expirationDate: Date } => {
   const eventDate = new Date();
   eventDate.setHours(0, 0, 0, 0);
-  eventDate.setDate(eventDate.getDate() + 3);
 
-  const expirationDate = new Date();
-  expirationDate.setHours(0, 0, 0, 0);
-  expirationDate.setDate(expirationDate.getDate() + 15 + 4);
+  const currentDay = eventDate.getDay();
+  const daysUntilSaturday = (6 - currentDay + 7) % 7;
+
+  eventDate.setDate(eventDate.getDate() + daysUntilSaturday);
+
+  const expirationDate = new Date(eventDate);
+  expirationDate.setDate(expirationDate.getDate() + 3);
 
   return { eventDate, expirationDate };
 }
@@ -187,4 +191,47 @@ const initializeFrisbeeEventCron = async (client: Botrucho) => {
   }
 }
 
-export { cleanUnreadAttendance, initializeFrisbeeEventCron, createWebhook, editWebhook }
+const sendReminderToConfirmAttendance = async (client: Botrucho) => {
+  const channel = await client.channels.fetch('1231030584680251432') as TextChannel | null;
+  if (channel?.isTextBased()) {
+    const { thread: { threadId }, messageId } = await client.eventAttendanceData.getEventAttendance({});
+    const attendees = await client.eventAttendanceData.getAttendees(messageId);
+    const thread: TextThreadChannel | null = await channel.threads.fetch(threadId);
+    const users: string[] | undefined = channel.guild.roles.cache.find((role: Role) => role.id === '540708709945311243')?.members.reduce((acc: string[], m: GuildMember) => !m.user.bot ? [...acc, m.user.id] : acc, []);
+    const usersNotInAttendees: string[] = users?.filter((userId: string) => !attendees.some((attendee: IAttendee) => attendee.userId === userId)) || [];
+    if (thread && usersNotInAttendees.length > 0) {
+      const userMentions = usersNotInAttendees.map(userId => `<@${userId}>`).join(', ');
+
+      const reminderEmbed = Warning({
+        title: '⚠️ Recordatorio de Asistencia',
+        description: `Por favor confirma tu asistencia para el evento del ${getTomorrowsDay()}`,
+        fields: [
+          {
+            name: '¿Cómo confirmar?',
+            value: '¡Reacciona al mensaje de asistencia!',
+            inline: false
+          }
+        ],
+        timestamp: new Date().toISOString(),
+        footer: {
+          text: 'Botrucho Frisbee'
+        }
+      });
+
+      await thread.send({
+        content: userMentions,
+        embeds: [reminderEmbed]
+      });
+
+      logger.log(`Reminder sent to ${usersNotInAttendees.length} users`);
+    }
+  }
+}
+
+export {
+  cleanUnreadAttendance,
+  initializeFrisbeeEventCron,
+  createWebhook,
+  editWebhook,
+  sendReminderToConfirmAttendance
+}
