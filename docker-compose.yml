@@ -6,7 +6,7 @@ services:
       platforms:
         - linux/amd64
         - linux/arm64
-    image: jonathanstrf/botrucho:${VERSION:-1.6.4}
+    image: jonathanstrf/botrucho:${VERSION:-latest}
     container_name: botrucho
     ports:
       - "3000:3000"

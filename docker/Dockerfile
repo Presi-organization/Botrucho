@@ -4,7 +4,7 @@ FROM node:24-bookworm-slim AS build
 WORKDIR /botrucho
 
 COPY package*.json ./
-RUN npm ci
+RUN npm install --production=false
 
 COPY . .
 RUN npm run clean && npm run build
