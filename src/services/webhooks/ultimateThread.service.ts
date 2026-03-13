@@ -193,12 +193,13 @@ const initializeFrisbeeEventCron = async (client: Botrucho) => {
 
 const sendReminderToConfirmAttendance = async (client: Botrucho) => {
   const channel = await client.channels.fetch('1231030584680251432') as TextChannel | null;
+  const userIdToAvoid = ['772690171228848131', '175677535537987584', '359010137404342272'];
   if (channel?.isTextBased()) {
     const { thread: { threadId }, messageId } = await client.eventAttendanceData.getEventAttendance({});
     const attendees = await client.eventAttendanceData.getAttendees(messageId);
     const thread: TextThreadChannel | null = await channel.threads.fetch(threadId);
     const users: string[] | undefined = channel.guild.roles.cache.find((role: Role) => role.id === '540708709945311243')?.members.reduce((acc: string[], m: GuildMember) => !m.user.bot ? [...acc, m.user.id] : acc, []);
-    const usersNotInAttendees: string[] = users?.filter((userId: string) => !attendees.some((attendee: IAttendee) => attendee.userId === userId)) || [];
+    const usersNotInAttendees: string[] = users?.filter((userId: string) => !attendees.some((attendee: IAttendee) => attendee.userId === userId) && !userIdToAvoid.includes(userId)) || [];
     if (thread && usersNotInAttendees.length > 0) {
       const userMentions = usersNotInAttendees.map(userId => `<@${userId}>`).join(', ');
 

@@ -173,7 +173,8 @@ export default class CronsCommand extends ICommand {
       return;
     }
     const nextIsActive: boolean = !cronJob.isActive;
-    await interaction.client.cronData.createOrUpdateCron({ ...cronJob, isActive: nextIsActive });
+    const updatedCron: ICronData = await interaction.client.cronData.createOrUpdateCron({ ...cronJob, isActive: nextIsActive });
+    if (updatedCron && interaction.client.cronManager) interaction.client.cronManager.updateCronJob(updatedCron);
     await interaction.reply({
       content: (nextIsActive ? ENABLED : DISABLED).replace('${job}', inlineCode(cronJob.cronName)),
       flags: MessageFlags.Ephemeral
