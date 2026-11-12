@@ -2,7 +2,7 @@ name: Deploy Discord bot to GCP
 
 on:
   push:
-    branches: [main]
+    branches: [master]
 
 permissions:
   contents: read

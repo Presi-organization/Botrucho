@@ -165,7 +165,7 @@ Enable **Server Members Intent** in Discord Developer Portal. Presence/Message C
 
 ## 5. Build and deploy
 
-Pushes to **main** run `.github/workflows/deploy.yml`. The branch must exist and receive the merge; no branch is renamed automatically.
+Pushes and PR merges to **master** run `.github/workflows/deploy.yml`. Pushing a feature branch does not deploy; merge it into the repository's existing `master` branch when ready.
 
 `npm run build` performs TS7 checking, SWC compilation and explicit asset/language copying. Entrypoint: **`dist/src/sharder.js`**. Production working directory: **`/opt/discord-bot/dist`**, containing assets/languages. SWC rewrites aliases; production needs no alias hook.
 

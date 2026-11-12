@@ -2,6 +2,12 @@ const { test } = require('node:test');
 const assert = require('node:assert/strict');
 const fs = require('node:fs');
 
+test('deployment runs on pushes to master rather than main', () => {
+  const workflow = fs.readFileSync('.github/workflows/deploy.yml', 'utf8');
+  assert.match(workflow, /push:\s*\n\s+branches:\s*\[master\]/);
+  assert.doesNotMatch(workflow, /branches:\s*\[main\]/);
+});
+
 test('deployment uses one application key instead of reconstructing application settings', () => {
   const workflow = fs.readFileSync('.github/workflows/deploy.yml', 'utf8');
   const secrets = [
