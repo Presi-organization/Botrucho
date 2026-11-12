@@ -21,7 +21,6 @@ const updateQueueMessage = async (
   const embed: EmbedBuilder = new EmbedBuilder()
     .setDescription(`[${track.title}](${track.url})`)
     .setTitle(NOW_PLAYING)
-    .setThumbnail(track.thumbnail)
     .addFields(
       queue.metadata.queueTitles.slice(0, 20).map((title: string, index: number) => ({
         name: SONG.replace('${index}', (index + 1).toString()),
@@ -32,6 +31,18 @@ const updateQueueMessage = async (
       text: REQUESTED_BY.replace('${username}', track.requestedBy?.displayName as string),
       iconURL: track.requestedBy?.displayAvatarURL(),
     });
+
+  if (
+    typeof track.thumbnail === 'string' &&
+    URL.canParse(track.thumbnail) &&
+    ['http:', 'https:'].includes(new URL(track.thumbnail).protocol)
+  ) {
+    embed.setThumbnail(track.thumbnail);
+  } else {
+    logger.warn(
+      `[Player] Ignoring invalid thumbnail ${JSON.stringify(track.thumbnail) ?? String(track.thumbnail)} for track ${track.url} (extractor: ${track.extractor?.identifier ?? 'unknown'})`,
+    );
+  }
 
   if (queue.metadata.queueTitles.length > 20) {
     embed.addFields({
