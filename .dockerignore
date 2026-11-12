@@ -2,4 +2,12 @@ node_modules
 dist
 .flaskenv*
 .env.keys
-terraform
+.git
+**/.terraform
+**/*.tfstate*
+**/*.tfvars
+**/*.tfplan
+.env
+**/*.pem
+**/id_rsa
+**/id_ed25519

@@ -1,9 +1,7 @@
-name: Trigger Portainer via Tailscale
+name: Portainer opcional (manual)
 
 on:
-  push:
-    branches:
-      - master
+  workflow_dispatch:
 
 jobs:
   deploy:
@@ -46,8 +44,11 @@ jobs:
           tailscale ip
 
       - name: Call Portainer webhook
+        env:
+          PORTAINER_WEBHOOK_URL: ${{ secrets.PORTAINER_WEBHOOK_URL }}
         run: |
-          curl -X POST http://100.92.18.76:9000/api/webhooks/536639cb-d9bd-4fe9-8c5a-94e4a62267fa
+          test -n "$PORTAINER_WEBHOOK_URL"
+          curl --fail --show-error --silent -X POST "$PORTAINER_WEBHOOK_URL"
 
       - name: Cleanup Tailscale
         if: always()

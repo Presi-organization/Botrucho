@@ -1,5 +1,10 @@
 import { MessageReaction, User } from 'discord.js';
-import { AttendanceReactionHandler, EventHandler, ReactionHandlerInterface } from '@/events/discord/reactionHandlers';
+
+import {
+  AttendanceReactionHandler,
+  EventHandler,
+  ReactionHandlerInterface,
+} from '@/events/discord/reactionHandlers';
 import { Botrucho } from '@/mongodb';
 
 export const execute = async (client: Botrucho, reaction: MessageReaction, user: User) => {
@@ -11,7 +16,7 @@ export const execute = async (client: Botrucho, reaction: MessageReaction, user:
 
   const handlers: ReactionHandlerInterface[] = [
     new EventHandler(client, reaction, user),
-    new AttendanceReactionHandler(client)
+    new AttendanceReactionHandler(client),
   ];
 
   for (const handler of handlers) {

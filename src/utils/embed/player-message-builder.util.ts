@@ -1,22 +1,22 @@
-import { EmbedBuilder, MessageCreateOptions, MessageEditOptions } from 'discord.js';
 import { GuildQueue, Track } from 'discord-player';
+import { EmbedBuilder, MessageCreateOptions, MessageEditOptions } from 'discord.js';
+
 import { PlayerKeys, PlayerType, TranslationElement } from '@/types';
-import { Info } from '@/utils';
+import { Info, logger } from '@/utils';
 
 // ▶ **ARTIST** - SONG_NAME
 const updateQueueMessage = async (
   queue: GuildQueue<PlayerType>,
   track: Track,
-  {
-    NOW_PLAYING,
-    SONG,
-    REQUESTED_BY,
-    TRACKS_LEFT
-  }: TranslationElement<PlayerKeys>
+  { NOW_PLAYING, SONG, REQUESTED_BY, TRACKS_LEFT }: TranslationElement<PlayerKeys>,
 ): Promise<void> => {
-  if (track.extractor === null) return;
+  if (track.extractor === null) {
+    logger.warn(`[Player] Track extractor is null for: ${track.title} - ${track.author}`);
+  }
 
-  queue.metadata.queueTitles = queue.tracks.data.map((track: Track): string => `[${track.title} - ${track.author}](${track.url})`);
+  queue.metadata.queueTitles = queue.tracks.data.map(
+    (track: Track): string => `[${track.title} - ${track.author}](${track.url})`,
+  );
   queue.metadata.currentTrack = track;
   const embed: EmbedBuilder = new EmbedBuilder()
     .setDescription(`[${track.title}](${track.url})`)
@@ -25,18 +25,18 @@ const updateQueueMessage = async (
     .addFields(
       queue.metadata.queueTitles.slice(0, 20).map((title: string, index: number) => ({
         name: SONG.replace('${index}', (index + 1).toString()),
-        value: title
-      }))
+        value: title,
+      })),
     )
     .setFooter({
-      text: REQUESTED_BY.replace('${username}', (track.requestedBy?.displayName as string)),
-      iconURL: track.requestedBy?.displayAvatarURL()
+      text: REQUESTED_BY.replace('${username}', track.requestedBy?.displayName as string),
+      iconURL: track.requestedBy?.displayAvatarURL(),
     });
 
   if (queue.metadata.queueTitles.length > 20) {
     embed.addFields({
       name: TRACKS_LEFT,
-      value: (queue.metadata.queueTitles.length - 20).toString()
+      value: (queue.metadata.queueTitles.length - 20).toString(),
     });
   }
 

@@ -12,15 +12,16 @@ import {
   SlashCommandSubcommandsOnlyBuilder,
   StringSelectMenuBuilder,
   StringSelectMenuOptionBuilder,
-  underline
+  underline,
 } from 'discord.js';
+
 import { ICronData, IGuildData } from '@/mongodb';
 import {
   AutoCompleteInteractionWithClient,
   CommandInteractionWithClient,
   CronsKeys,
   ICommand,
-  TranslationElement
+  TranslationElement,
 } from '@/types';
 import { Error, Success } from '@/utils';
 
@@ -30,24 +31,24 @@ export default class CronsCommand extends ICommand {
   data: SlashCommandSubcommandsOnlyBuilder = new SlashCommandBuilder()
     .setName('crons')
     .setDescription('Manage scheduled events and threads.')
-    .addSubcommand(subcommand =>
-      subcommand
-        .setName('edit')
-        .setDescription('Edit an existing cron job.'))
-    .addSubcommand(subcommand =>
+    .addSubcommand((subcommand) =>
+      subcommand.setName('edit').setDescription('Edit an existing cron job.'),
+    )
+    .addSubcommand((subcommand) =>
       subcommand
         .setName('toggle')
         .setDescription('Enable/disable an existing cron job.')
-        .addStringOption(input => input
-          .setName('cron-id')
-          .setDescription('The ID of the cron job to toggle.')
-          .setRequired(true)
-          .setAutocomplete(true)
-        ))
-    .addSubcommand(subcommand =>
-      subcommand
-        .setName('list')
-        .setDescription('List all cron jobs.'));
+        .addStringOption((input) =>
+          input
+            .setName('cron-id')
+            .setDescription('The ID of the cron job to toggle.')
+            .setRequired(true)
+            .setAutocomplete(true),
+        ),
+    )
+    .addSubcommand((subcommand) =>
+      subcommand.setName('list').setDescription('List all cron jobs.'),
+    );
 
   private readonly TEST_ROLE_ID: string = '884962190640160839';
   private readonly BOTS_ROLE_ID: string = '540708709945311243';
@@ -60,26 +61,37 @@ export default class CronsCommand extends ICommand {
 
     const cronJobs: ICronData[] = await interaction.client.cronData.getAllCrones();
     const choices = cronJobs.map((cron: ICronData) => ({
-      name: `${cron.isActive ? '🟢' : '🔴'} ${cron.cronName.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase())} │ ${cron.cronExpression} │`,
-      value: cron.cronId as string
+      name: `${cron.isActive ? '🟢' : '🔴'} ${cron.cronName.replace(/([A-Z])/g, ' $1').replace(/^./, (str) => str.toUpperCase())} │ ${cron.cronExpression} │`,
+      value: cron.cronId as string,
     }));
 
-    const filtered = choices.filter(choice => choice.name.toLowerCase().includes(focusedOption.value.toLowerCase()));
-    await interaction.respond(
-      filtered.slice(0, 25) // Discord allows a maximum of 25 suggestions
+    const filtered = choices.filter((choice) =>
+      choice.name.toLowerCase().includes(focusedOption.value.toLowerCase()),
     );
-  };
+    await interaction.respond(
+      filtered.slice(0, 25), // Discord allows a maximum of 25 suggestions
+    );
+  }
 
   async execute(interaction: CommandInteractionWithClient, guildDB: IGuildData): Promise<void> {
     if (!interaction.isChatInputCommand()) return;
     const { ERROR, UNDER_CONSTRUCTION } = interaction.translate('MISC', guildDB.lang);
-    const cronsTranslations: TranslationElement<CronsKeys> = interaction.translate('CRONS', guildDB.lang);
+    const cronsTranslations: TranslationElement<CronsKeys> = interaction.translate(
+      'CRONS',
+      guildDB.lang,
+    );
 
     const member = interaction.member as GuildMember | null;
-    if (!member || !('roles' in member) || !member.roles.cache.some((role: Role): boolean => [this.TEST_ROLE_ID, this.BOTS_ROLE_ID].includes(role.id))) {
+    if (
+      !member ||
+      !('roles' in member) ||
+      !member.roles.cache.some((role: Role): boolean =>
+        [this.TEST_ROLE_ID, this.BOTS_ROLE_ID].includes(role.id),
+      )
+    ) {
       await interaction.reply({
         content: UNDER_CONSTRUCTION,
-        flags: MessageFlags.Ephemeral
+        flags: MessageFlags.Ephemeral,
       });
       return;
     }
@@ -89,7 +101,7 @@ export default class CronsCommand extends ICommand {
         return this._showCronSelectMenu(interaction, {
           customId: 'cron-edit-select',
           action: cronsTranslations.ACTION_EDIT,
-          translations: cronsTranslations
+          translations: cronsTranslations,
         });
       case 'list':
         return this._listCronJobs(interaction, cronsTranslations);
@@ -99,13 +111,16 @@ export default class CronsCommand extends ICommand {
       default:
         await interaction.reply({ content: ERROR, flags: MessageFlags.Ephemeral });
     }
-  };
+  }
 
-  private async _showCronSelectMenu(interaction: CommandInteractionWithClient, options: {
-    customId: string;
-    action: string;
-    translations: TranslationElement<CronsKeys>;
-  }): Promise<void> {
+  private async _showCronSelectMenu(
+    interaction: CommandInteractionWithClient,
+    options: {
+      customId: string;
+      action: string;
+      translations: TranslationElement<CronsKeys>;
+    },
+  ): Promise<void> {
     const { CRON_JOBS, NOT_FOUND, SELECT_PLACEHOLDER } = options.translations;
 
     const cronJobs: ICronData[] = await interaction.client.cronData.getAllCrones();
@@ -114,27 +129,32 @@ export default class CronsCommand extends ICommand {
       return;
     }
 
-    const selectOptions: StringSelectMenuOptionBuilder[] = cronJobs.map(cron => (
-      new StringSelectMenuOptionBuilder({
-        label: `${cron.isActive ? '🟢' : '🔴'} ${cron.cronName.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase())} │ ${cron.cronExpression} │`,
-        value: cron.cronId as string
-      })
-    ));
+    const selectOptions: StringSelectMenuOptionBuilder[] = cronJobs.map(
+      (cron) =>
+        new StringSelectMenuOptionBuilder({
+          label: `${cron.isActive ? '🟢' : '🔴'} ${cron.cronName.replace(/([A-Z])/g, ' $1').replace(/^./, (str) => str.toUpperCase())} │ ${cron.cronExpression} │`,
+          value: cron.cronId as string,
+        }),
+    );
 
     const select: StringSelectMenuBuilder = new StringSelectMenuBuilder()
       .setCustomId(options.customId)
       .setPlaceholder(SELECT_PLACEHOLDER.replace('${action}', options.action))
       .addOptions(selectOptions);
-    const row: ActionRowBuilder<StringSelectMenuBuilder> = new ActionRowBuilder<StringSelectMenuBuilder>().addComponents(select);
+    const row: ActionRowBuilder<StringSelectMenuBuilder> =
+      new ActionRowBuilder<StringSelectMenuBuilder>().addComponents(select);
 
     await interaction.reply({
       embeds: [Success({ title: CRON_JOBS })],
       components: [row],
-      flags: MessageFlags.Ephemeral
+      flags: MessageFlags.Ephemeral,
     });
-  };
+  }
 
-  private async _listCronJobs(interaction: CommandInteractionWithClient, translations: TranslationElement<CronsKeys>): Promise<void> {
+  private async _listCronJobs(
+    interaction: CommandInteractionWithClient,
+    translations: TranslationElement<CronsKeys>,
+  ): Promise<void> {
     if (!interaction.isChatInputCommand()) return;
 
     const { NOT_FOUND, CRON_JOBS } = translations;
@@ -152,16 +172,19 @@ export default class CronsCommand extends ICommand {
       fields: cronJobs.map((cronJob: ICronData) => ({
         name: `${cronJob.isActive ? '🟢' : '🔴'} ${underline(cronJob.cronName)} ${inlineCode(cronJob.cronExpression)}`,
         value: this._formatCronJobDetails(cronJob, translations),
-        inline: false
-      }))
-    })
+        inline: false,
+      })),
+    });
 
     await interaction.editReply({ embeds: [embed] });
     setTimeout(() => client.deleted_messages.add(interaction), 10_000); // Delete after 10 seconds
     return;
-  };
+  }
 
-  private async _toggleCronJob(interaction: CommandInteractionWithClient, translations: TranslationElement<CronsKeys>): Promise<void> {
+  private async _toggleCronJob(
+    interaction: CommandInteractionWithClient,
+    translations: TranslationElement<CronsKeys>,
+  ): Promise<void> {
     if (!interaction.isChatInputCommand()) return;
 
     const { NOT_FOUND, ENABLED, DISABLED } = translations;
@@ -173,31 +196,42 @@ export default class CronsCommand extends ICommand {
       return;
     }
     const nextIsActive: boolean = !cronJob.isActive;
-    const updatedCron: ICronData = await interaction.client.cronData.createOrUpdateCron({ ...cronJob, isActive: nextIsActive });
-    if (updatedCron && interaction.client.cronManager) interaction.client.cronManager.updateCronJob(updatedCron);
+    const updatedCron: ICronData = await interaction.client.cronData.createOrUpdateCron({
+      ...cronJob,
+      isActive: nextIsActive,
+    });
+    if (updatedCron && interaction.client.cronManager)
+      interaction.client.cronManager.updateCronJob(updatedCron);
     await interaction.reply({
       content: (nextIsActive ? ENABLED : DISABLED).replace('${job}', inlineCode(cronJob.cronName)),
-      flags: MessageFlags.Ephemeral
+      flags: MessageFlags.Ephemeral,
     });
     return;
-  };
+  }
 
-  private _formatCronJobDetails(cronJob: ICronData, translations: TranslationElement<CronsKeys>): string {
+  private _formatCronJobDetails(
+    cronJob: ICronData,
+    translations: TranslationElement<CronsKeys>,
+  ): string {
     const { LAST_RUN, NEVER } = translations;
 
     const metadataSection: string = cronJob.metadata
       ? `${italic(bold('Metadata:'))} ${JSON.stringify(cronJob.metadata, null, 2)}\n`
       : '';
-    const lastRunSection = `${italic(bold(LAST_RUN))} ${cronJob.lastRun ? new Date(cronJob.lastRun).toLocaleString('en-US', {
-      day: '2-digit',
-      month: '2-digit',
-      year: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit',
-      second: '2-digit',
-      hour12: true
-    }) : NEVER}`;
+    const lastRunSection = `${italic(bold(LAST_RUN))} ${
+      cronJob.lastRun
+        ? new Date(cronJob.lastRun).toLocaleString('en-US', {
+            day: '2-digit',
+            month: '2-digit',
+            year: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit',
+            second: '2-digit',
+            hour12: true,
+          })
+        : NEVER
+    }`;
 
     return `${metadataSection}${lastRunSection}\n`;
-  };
+  }
 }

@@ -1,8 +1,16 @@
-import { EmbedBuilder, SlashCommandOptionsOnlyBuilder } from 'discord.js';
 import { SlashCommandBuilder } from '@discordjs/builders';
 import { GuildQueue, useQueue } from 'discord-player';
+import { EmbedBuilder, SlashCommandOptionsOnlyBuilder } from 'discord.js';
+
 import { IGuildData } from '@/mongodb';
-import { ICommand, CommandInteractionWithClient, LeaveKeys, MusicKeys, PlayerType, TranslationElement } from '@/types';
+import {
+  ICommand,
+  CommandInteractionWithClient,
+  LeaveKeys,
+  MusicKeys,
+  PlayerType,
+  TranslationElement,
+} from '@/types';
 import { Error, Success } from '@/utils';
 
 export default class LeaveCommand extends ICommand {
@@ -19,11 +27,12 @@ export default class LeaveCommand extends ICommand {
     if (!interaction.isChatInputCommand()) return;
 
     const { client } = interaction;
-    const { DISCONNECTED, SUCCESS }: TranslationElement<LeaveKeys> = interaction.translate('LEAVE', guildDB.lang);
-    const {
-      NOT_PLAYING_TITLE,
-      NOT_PLAYING_DESC
-    }: TranslationElement<MusicKeys> = interaction.translate('MUSIC', guildDB.lang);
+    const { DISCONNECTED, SUCCESS }: TranslationElement<LeaveKeys> = interaction.translate(
+      'LEAVE',
+      guildDB.lang,
+    );
+    const { NOT_PLAYING_TITLE, NOT_PLAYING_DESC }: TranslationElement<MusicKeys> =
+      interaction.translate('MUSIC', guildDB.lang);
 
     await interaction.deferReply();
 
@@ -35,8 +44,8 @@ export default class LeaveCommand extends ICommand {
         description: NOT_PLAYING_DESC,
         author: {
           name: interaction.guild.name,
-          iconURL: interaction.guild.iconURL() ?? undefined
-        }
+          iconURL: interaction.guild.iconURL() ?? undefined,
+        },
       });
 
       await interaction.editReply({ embeds: [embed] });
@@ -55,8 +64,8 @@ export default class LeaveCommand extends ICommand {
       description: SUCCESS,
       author: {
         name: interaction.guild.name,
-        iconURL: interaction.guild.iconURL() ?? undefined
-      }
+        iconURL: interaction.guild.iconURL() ?? undefined,
+      },
     });
 
     client.deleted_messages.add(interaction);

@@ -1,0 +1,4 @@
+project_id     = "discord-bot-514515"
+instance_name  = "discord-bot-vm"
+ssh_public_key = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAILtugOPro11UVrFOVY4qwq7+GTzql7aQmsxVBLoZKSsY github-actions-botrucho"
+ssh_source_ranges = ["0.0.0.0/0"]

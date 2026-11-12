@@ -1,17 +1,17 @@
-import { Client, ClientOptions, Collection, Interaction, Message } from 'discord.js';
 import { Player } from 'discord-player';
+import { Client, ClientOptions, Collection, Interaction, Message } from 'discord.js';
+
 import CommandLoader from '@/commands/CommandLoader';
+import config from '@/config';
 import {
   AttendanceDataController,
   BotInstanceDataController,
   CronDataController,
   EventDataController,
-  GuildDataController
+  GuildDataController,
 } from '@/mongodb';
 import { CronManager } from '@/services';
 import { ConfigType, ICommand } from '@/types';
-
-import config from '@/config';
 
 export class Botrucho extends Client {
   config: ConfigType;
@@ -25,7 +25,7 @@ export class Botrucho extends Client {
   player: Player;
   queue: Map<unknown, unknown>;
   commands: Collection<string, ICommand>;
-  commandLoader: CommandLoader
+  commandLoader: CommandLoader;
   cronManager: CronManager;
   guildData: GuildDataController;
   eventData: EventDataController;

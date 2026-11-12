@@ -1,0 +1,21 @@
+# Disposable Linux verification image; not the production VM deployment path.
+FROM node:26-trixie
+ENV DEBIAN_FRONTEND=noninteractive
+ENV YOUTUBE_DL_SKIP_PYTHON_CHECK=1
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    git sudo systemd rsync openssh-client ffmpeg libatomic1 \
+    python3 make g++ pkg-config libcairo2-dev libpango1.0-dev libjpeg-dev libgif-dev librsvg2-dev \
+    && rm -rf /var/lib/apt/lists/*
+WORKDIR /workspace
+COPY package*.json ./
+RUN npm ci
+COPY . .
+# .git is intentionally excluded from the build context (historical secrets).
+# A fresh empty repository lets ignore-policy tests run without copying history.
+RUN git init --initial-branch=verification . \
+    && git config --global --add safe.directory /workspace \
+    && npm run lint \
+    && BOT_VERIFY_SUDO=1 npm test \
+    && npm run build \
+    && npm prune --omit=dev \
+    && node -e "require('canvas').createCanvas(4,4); require('discord-player-youtubei'); require('./dist/src/commands/registry.js'); console.log(process.version, 'post-prune production imports OK')"

@@ -1,35 +1,21 @@
-variable "dotenv" {
-  description = "DOTENV KEY for decrypt env.vault"
+variable "project_id" {
+  description = "ID del proyecto GCP con facturación y Compute Engine API habilitados."
   type        = string
-  sensitive   = true
 }
 
-variable "ssh_private_key_path" {
-  description = "path where is the private key"
-  default     = "botrucho"
+variable "instance_name" {
+  description = "Nombre de la VM e2-micro."
   type        = string
-  sensitive   = true
+  default     = "discord-bot"
 }
 
-variable "ssh_user" {
-  description = "SSH user for remote Docker host"
+variable "ssh_public_key" {
+  description = "Una clave pública OpenSSH para botuser; nunca una clave privada."
   type        = string
-  sensitive   = true
 }
 
-variable "ssh_host" {
-  description = "SSH host for remote Docker host"
-  type        = string
-  sensitive   = true
-}
-
-variable "ssh_port" {
-  type    = string
-  default = "22"
-}
-
-variable "docker_token" {
-  type      = string
-  default   = "null"
-  sensitive = true
+variable "ssh_source_ranges" {
+  description = "Orígenes SSH permitidos; revisar también default-allow-ssh de la VPC existente."
+  type        = list(string)
+  default     = ["0.0.0.0/0"]
 }

@@ -1,5 +1,5 @@
 import { Interaction } from 'discord.js';
-import { Botrucho, IGuildData } from '@/mongodb';
+
 import {
   AutocompleteHandler,
   CalendarEventHandler,
@@ -7,8 +7,9 @@ import {
   CronEditSelectHandler,
   EditCronHandler,
   IIntCreateHandler,
-  RetryModalHandler
+  RetryModalHandler,
 } from '@/events/discord/interactionCreateHandlers';
+import { Botrucho, IGuildData } from '@/mongodb';
 
 module.exports = {
   async execute(client: Botrucho, interaction: Interaction): Promise<void> {
@@ -39,5 +40,5 @@ module.exports = {
       const handled: boolean = await handler.handle(interaction);
       if (handled) break;
     }
-  }
+  },
 };

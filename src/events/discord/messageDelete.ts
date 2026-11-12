@@ -1,4 +1,5 @@
 import { Message } from 'discord.js';
+
 import { Botrucho } from '@/mongodb';
 
 export async function execute(client: Botrucho, message: Message) {

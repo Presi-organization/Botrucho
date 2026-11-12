@@ -5,7 +5,7 @@ export class BotInstanceDataController {
     const fifteenSecondsAgo = new Date(Date.now() - 15000);
     return !!(await BotInstanceDataModel.findOne({
       instanceId: { $ne: instanceId },
-      lastHeartbeat: { $gte: fifteenSecondsAgo }
+      lastHeartbeat: { $gte: fifteenSecondsAgo },
     }));
   }
 
@@ -13,7 +13,7 @@ export class BotInstanceDataController {
     await BotInstanceDataModel.findOneAndUpdate(
       { instanceId },
       { lastHeartbeat: new Date(), uptime: Math.floor(process.uptime()) },
-      { upsert: true }
+      { upsert: true },
     );
   }
 

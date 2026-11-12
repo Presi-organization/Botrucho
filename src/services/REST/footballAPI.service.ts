@@ -1,7 +1,6 @@
+import config from '@/config';
 import { ApiCompetition, ApiMatch, Competitions, FootballResult, Matches, Results } from '@/types';
 import { logger } from '@/utils';
-
-import config from '@/config';
 
 const FOOTBALL_URI = 'https://api.football-data.org/v4';
 const headers = new Headers({
@@ -18,7 +17,7 @@ const _makeRequest = async <T>(endpoint: string, method: string, body?: unknown)
   if (!response.ok) {
     throw new Error(`Request failed with status ${response.status}`);
   }
-  return await response.json() as T;
+  return (await response.json()) as T;
 };
 
 const _convertToGMTMinus5 = (utcDate: string): string => {
@@ -31,17 +30,22 @@ const _convertToGMTMinus5 = (utcDate: string): string => {
     year: 'numeric',
     hour: '2-digit',
     minute: '2-digit',
-    hour12: false
+    hour12: false,
   });
 
   formattedDate = formattedDate.replace(/\sde\s/g, '/').replace(',', '');
-  formattedDate = formattedDate.replace(/\/(\w+)/, (_match, month) => `/${month.charAt(0).toUpperCase() + month.slice(1)}`);
+  formattedDate = formattedDate.replace(
+    /\/(\w+)/,
+    (_match, month) => `/${month.charAt(0).toUpperCase() + month.slice(1)}`,
+  );
   return formattedDate;
 };
 
 const _buildMatches = (matches: ApiMatch[]): Matches => {
   const nextStage: string = matches[0].stage;
-  const nextRoundMatches: ApiMatch[] = matches.filter((match: ApiMatch) => match.stage === nextStage);
+  const nextRoundMatches: ApiMatch[] = matches.filter(
+    (match: ApiMatch) => match.stage === nextStage,
+  );
 
   return {
     stage: nextStage,
@@ -49,15 +53,16 @@ const _buildMatches = (matches: ApiMatch[]): Matches => {
       homeTeam: match.homeTeam.shortName,
       awayTeam: match.awayTeam.shortName,
       localDate: _convertToGMTMinus5(match.utcDate),
-      stage: match.stage
-    }))
-  }
-}
+      stage: match.stage,
+    })),
+  };
+};
 
 const _buildResults = (results: ApiMatch[]): Results => {
   const previousMatch: ApiMatch = results.slice(-1)[0];
   const previousMatches: ApiMatch[] = results.filter(
-    (match: ApiMatch) => match.matchday === previousMatch.matchday && match.stage === previousMatch.stage
+    (match: ApiMatch) =>
+      match.matchday === previousMatch.matchday && match.stage === previousMatch.stage,
   );
 
   return {
@@ -67,12 +72,15 @@ const _buildResults = (results: ApiMatch[]): Results => {
       homeResult: match.score.fullTime.home,
       awayTeam: match.awayTeam.shortName,
       awayResult: match.score.fullTime.away,
-      localDate: _convertToGMTMinus5(match.utcDate)
-    }))
-  }
-}
+      localDate: _convertToGMTMinus5(match.utcDate),
+    })),
+  };
+};
 
-export const getCompetitions = async (competition: Competitions, status: 'SCHEDULED' | 'FINISHED'): Promise<FootballResult> => {
+export const getCompetitions = async (
+  competition: Competitions,
+  status: 'SCHEDULED' | 'FINISHED',
+): Promise<FootballResult> => {
   try {
     const url = `${FOOTBALL_URI}/competitions/${competition}/matches?status=${status}`;
     const response: ApiCompetition = await _makeRequest<ApiCompetition>(url, 'GET');
@@ -91,4 +99,4 @@ export const getCompetitions = async (competition: Competitions, status: 'SCHEDU
     }
     return undefined;
   }
-}
+};

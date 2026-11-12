@@ -9,10 +9,19 @@ services:
     image: jonathanstrf/botrucho:${VERSION:-latest}
     container_name: botrucho
     ports:
-      - "3000:3000"
+      - '${BOT_BIND_ADDRESS:-127.0.0.1}:3000:3000'
     environment:
       - DOTENV_PRIVATE_KEY_PRODUCTION=${DOTENV_PRIVATE_KEY_PRODUCTION}
-    restart: on-failure:5
+      - SHARDS=${SHARDS:-1}
+    restart: unless-stopped
+    mem_limit: 700m
+    memswap_limit: 700m
+    cpus: 0.5
+    stop_grace_period: 15s
+    logging:
+      driver: json-file
+      options:
+        max-size: '10m'
+        max-file: '3'
     dns: 8.8.8.8
     init: true
-

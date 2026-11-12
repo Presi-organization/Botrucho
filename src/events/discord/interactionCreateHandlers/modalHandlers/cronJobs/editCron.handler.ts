@@ -1,5 +1,13 @@
-import { ActionRowBuilder, BaseInteraction, ButtonBuilder, ButtonStyle, inlineCode, MessageFlags } from 'discord.js';
+import {
+  ActionRowBuilder,
+  BaseInteraction,
+  ButtonBuilder,
+  ButtonStyle,
+  inlineCode,
+  MessageFlags,
+} from 'discord.js';
 import cron from 'node-cron';
+
 import { IIntCreateHandler } from '@/events/discord/interactionCreateHandlers';
 import { Botrucho, ICronData } from '@/mongodb';
 import { Success } from '@/utils';
@@ -19,14 +27,20 @@ export class EditCronHandler implements IIntCreateHandler {
 
     const nameInput: string = interaction.fields.getTextInputValue('cron-edit-name-input');
     const cronInput: string = interaction.fields.getTextInputValue('cron-edit-cron-input');
-    const runOnInitInput: string = interaction.fields.getTextInputValue('cron-edit-run-on-init-input');
+    const runOnInitInput: string = interaction.fields.getTextInputValue(
+      'cron-edit-run-on-init-input',
+    );
     const metadataInput: string = interaction.fields.getTextInputValue('cron-edit-metadata-input');
     const metadata: Record<string, unknown> = {};
     let retryButton: ButtonBuilder | null = null;
     if (metadataInput && metadataInput.trim() !== '') {
       try {
         const parsedMetadata: unknown = JSON.parse(metadataInput);
-        if (typeof parsedMetadata === 'object' && parsedMetadata !== null && !Array.isArray(parsedMetadata)) {
+        if (
+          typeof parsedMetadata === 'object' &&
+          parsedMetadata !== null &&
+          !Array.isArray(parsedMetadata)
+        ) {
           Object.assign(metadata, parsedMetadata as Record<string, unknown>);
         } else {
           retryButton = new ButtonBuilder()
@@ -41,13 +55,14 @@ export class EditCronHandler implements IIntCreateHandler {
           .setStyle(ButtonStyle.Primary);
       }
       if (retryButton) {
-        const row: ActionRowBuilder<ButtonBuilder> = new ActionRowBuilder<ButtonBuilder>().addComponents(retryButton);
+        const row: ActionRowBuilder<ButtonBuilder> =
+          new ActionRowBuilder<ButtonBuilder>().addComponents(retryButton);
 
         await interaction.reply({
           content: 'Invalid JSON format in metadata. Please ensure it is a valid JSON object.',
           components: [row],
           flags: MessageFlags.Ephemeral,
-          withResponse: true
+          withResponse: true,
         });
       }
     }
@@ -55,7 +70,10 @@ export class EditCronHandler implements IIntCreateHandler {
     const cronId: string = interaction.customId.split(':')[1];
     const existingCron: ICronData | null = await this.client.cronData.getCronById(cronId);
     if (!existingCron) {
-      await interaction.reply({ content: 'Error: Cron job not found', flags: MessageFlags.Ephemeral });
+      await interaction.reply({
+        content: 'Error: Cron job not found',
+        flags: MessageFlags.Ephemeral,
+      });
       return true;
     }
 
@@ -66,13 +84,14 @@ export class EditCronHandler implements IIntCreateHandler {
         .setLabel('Try Again')
         .setStyle(ButtonStyle.Primary);
 
-      const row: ActionRowBuilder<ButtonBuilder> = new ActionRowBuilder<ButtonBuilder>().addComponents(retryButton);
+      const row: ActionRowBuilder<ButtonBuilder> =
+        new ActionRowBuilder<ButtonBuilder>().addComponents(retryButton);
 
       await interaction.reply({
         content: 'Invalid cron expression. Please use the format: `* * * * *`',
         components: [row],
         flags: MessageFlags.Ephemeral,
-        withResponse: true
+        withResponse: true,
       });
       return true;
     }
@@ -88,12 +107,13 @@ export class EditCronHandler implements IIntCreateHandler {
           .setLabel('Try Again')
           .setStyle(ButtonStyle.Primary);
 
-        const row: ActionRowBuilder<ButtonBuilder> = new ActionRowBuilder<ButtonBuilder>().addComponents(retryButton);
+        const row: ActionRowBuilder<ButtonBuilder> =
+          new ActionRowBuilder<ButtonBuilder>().addComponents(retryButton);
         await interaction.reply({
           content: 'Invalid input for "Run on Init". Please enter either `true` or `false`.',
           components: [row],
           flags: MessageFlags.Ephemeral,
-          withResponse: true
+          withResponse: true,
         });
         return true;
       }
@@ -102,22 +122,24 @@ export class EditCronHandler implements IIntCreateHandler {
     // Validate emoji fields in metadata
     const emojiValidation = this._findAndValidateEmojiFields(metadata);
     if (!emojiValidation.isValid) {
-      const errorMessages: string = emojiValidation.invalidFields
-        ?.map(field => `- Field "${field.field}": ${field.message}`)
-        .join('\n') || 'Invalid emoji format in one or more fields.';
+      const errorMessages: string =
+        emojiValidation.invalidFields
+          ?.map((field) => `- Field "${field.field}": ${field.message}`)
+          .join('\n') || 'Invalid emoji format in one or more fields.';
 
       const retryButton: ButtonBuilder = new ButtonBuilder()
         .setCustomId(`retry-cron-modal:${cronId}`)
         .setLabel('Try Again')
         .setStyle(ButtonStyle.Primary);
 
-      const row: ActionRowBuilder<ButtonBuilder> = new ActionRowBuilder<ButtonBuilder>().addComponents(retryButton);
+      const row: ActionRowBuilder<ButtonBuilder> =
+        new ActionRowBuilder<ButtonBuilder>().addComponents(retryButton);
 
       await interaction.reply({
         content: `Invalid emoji content detected:\n${errorMessages}\n\nPlease use only valid emoji characters or Discord custom emojis.`,
         components: [row],
         flags: MessageFlags.Ephemeral,
-        withResponse: true
+        withResponse: true,
       });
       return true;
     }
@@ -127,24 +149,26 @@ export class EditCronHandler implements IIntCreateHandler {
       cronName: nameInput,
       cronExpression: cronInput,
       runOnInit,
-      metadata
+      metadata,
     });
     if (updatedCron && this.client.cronManager) this.client.cronManager.updateCronJob(updatedCron);
 
     await interaction.reply({
-      embeds: [Success({
-        title: 'Cron Job Updated',
-        description: `The cron job has been updated successfully!\n\n**Name:** ${nameInput}\n**Cron:** ${inlineCode(cronInput)}\n**Run-On-Init:** ${inlineCode(String(runOnInit))}\n**Metadata:** ${JSON.stringify(metadata, null, 2)}`
-      })],
-      flags: MessageFlags.Ephemeral
+      embeds: [
+        Success({
+          title: 'Cron Job Updated',
+          description: `The cron job has been updated successfully!\n\n**Name:** ${nameInput}\n**Cron:** ${inlineCode(cronInput)}\n**Run-On-Init:** ${inlineCode(String(runOnInit))}\n**Metadata:** ${JSON.stringify(metadata, null, 2)}`,
+        }),
+      ],
+      flags: MessageFlags.Ephemeral,
     });
     this.client.deleted_messages.add(interaction);
     return true;
-  }
+  };
 
   private _testPattern = (input: string): boolean => {
     return cron.validate(input);
-  }
+  };
 
   /**
    * Validates if a string contains only valid emojis
@@ -165,34 +189,42 @@ export class EditCronHandler implements IIntCreateHandler {
     if (cleanText.length > 0) {
       return {
         isValid: false,
-        message: 'Contains invalid characters. Please use only emoji characters or Discord custom emojis.'
+        message:
+          'Contains invalid characters. Please use only emoji characters or Discord custom emojis.',
       };
     }
 
     return { isValid: true };
   };
 
-  private _findAndValidateEmojiFields = (metadata: Record<string, unknown>): {
+  private _findAndValidateEmojiFields = (
+    metadata: Record<string, unknown>,
+  ): {
     isValid: boolean;
-    invalidFields?: { field: string; message: string }[]
+    invalidFields?: { field: string; message: string }[];
   } => {
     const emojiFields: string[] = ['emojis', 'reactions', 'emoji'];
     const invalidFields: { field: string; message: string }[] = [];
 
     for (const field of Object.keys(metadata)) {
-      const isEmojiField: boolean = emojiFields.some((emojiField: string) => field.toLowerCase().includes(emojiField.toLowerCase()));
+      const isEmojiField: boolean = emojiFields.some((emojiField: string) =>
+        field.toLowerCase().includes(emojiField.toLowerCase()),
+      );
 
       if (isEmojiField && typeof metadata[field] === 'string') {
         const validation = this._validateEmojis(metadata[field] as string);
         if (!validation.isValid) {
           invalidFields.push({
             field,
-            message: validation.message || `Invalid emoji content in field '${field}'`
+            message: validation.message || `Invalid emoji content in field '${field}'`,
           });
         }
       }
     }
 
-    return { isValid: invalidFields.length === 0, invalidFields: invalidFields.length > 0 ? invalidFields : undefined };
-  }
+    return {
+      isValid: invalidFields.length === 0,
+      invalidFields: invalidFields.length > 0 ? invalidFields : undefined,
+    };
+  };
 }

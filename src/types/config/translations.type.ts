@@ -9,7 +9,7 @@ export interface TranslationsType {
   AVATAR: TranslationElement<AvatarKeys>;
   CRONS: TranslationElement<CronsKeys>;
   EVENT: TranslationElement<EventKeys>;
-  LANGUAGE: TranslationElement<LanguageKeys>
+  LANGUAGE: TranslationElement<LanguageKeys>;
   MOVE: TranslationElement<MoveKeys>;
   PING: TranslationElement<PingKeys>;
   PRUNE: TranslationElement<PruneKeys>;
@@ -27,15 +27,15 @@ export interface TranslationsType {
   SIATA: TranslationElement<SiataKeys>;
   TFT_ELO: TranslationElement<TftEloKeys>;
   _EVENTS: string;
-  DELETE: TranslationElement<DeleteKeys>
-  PLAYER: TranslationElement<PlayerKeys>
+  DELETE: TranslationElement<DeleteKeys>;
+  PLAYER: TranslationElement<PlayerKeys>;
 }
 
 export type TranslationElement<T extends string> = Record<T, string>;
 
 export type LanguagesKeys = 'ES' | 'EN';
 export type MiscKeys =
-  'YES'
+  | 'YES'
   | 'NO'
   | 'ERROR'
   | 'NOT_POSSIBLE'
@@ -46,10 +46,11 @@ export type MiscKeys =
 export type VCKeys = 'CONNECT_VC' | 'USER_NOT_IN';
 export type MusicKeys = 'NOT_PLAYING_TITLE' | 'NOT_PLAYING_DESC';
 export type CoinKeys = 'COIN_FLIP' | 'HEADS' | 'TAILS';
-export type DiceKeys = 'ROLL' | 'RESULT' | 'INITIAL_TITLE' | 'INITIAL_FOOTER' | 'RESULT_TITLE' | 'RESULT_FOOTER';
+export type DiceKeys =
+  'ROLL' | 'RESULT' | 'INITIAL_TITLE' | 'INITIAL_FOOTER' | 'RESULT_TITLE' | 'RESULT_FOOTER';
 export type AvatarKeys = 'USER' | 'SELF';
 export type CronsKeys =
-  'CRON_JOBS'
+  | 'CRON_JOBS'
   | 'NOT_FOUND'
   | 'ENABLED'
   | 'DISABLED'
@@ -58,7 +59,7 @@ export type CronsKeys =
   | 'LAST_RUN'
   | 'NEVER';
 export type EventKeys =
-  'MODAL_TITLE'
+  | 'MODAL_TITLE'
   | 'NAME'
   | 'DATE'
   | 'TIME'
@@ -78,19 +79,17 @@ export type ToggleCommandKeys = 'ENABLED' | 'DISABLED' | 'NOT_FOUND' | 'NOT_ALLO
 export type UserInfoKeys = 'USERNAME' | 'ID';
 export type LeaveKeys = 'DISCONNECTED' | 'SUCCESS';
 export type LyricsKeys = 'NO_QUEUE' | 'NOT_FOUND' | 'SYNCED_LYRICS';
-export type PlayKeys = 'NO_RESULTS_TITLE' | 'NO_RESULTS_DESC' | 'ADDED_2_QUEUE_TITLE' | 'ADDED_2_QUEUE_DESC';
+export type PlayKeys =
+  'NO_RESULTS_TITLE' | 'NO_RESULTS_DESC' | 'ADDED_2_QUEUE_TITLE' | 'ADDED_2_QUEUE_DESC';
 export type ShuffleKeys = 'SHUFFLED';
 export type SkipKeys = 'SKIPPED_TITLE' | 'SKIPPED_DESC';
 export type VolumeKeys =
-  'VOLUME_CHANGED_TITLE'
-  | 'VOLUME_CHANGED_DESC'
-  | 'CURRENT_VOLUME_TITLE'
-  | 'CURRENT_VOLUME_DESC';
+  'VOLUME_CHANGED_TITLE' | 'VOLUME_CHANGED_DESC' | 'CURRENT_VOLUME_TITLE' | 'CURRENT_VOLUME_DESC';
 export type SayKeys = 'SYNTHESIZING';
 export type FinesKeys = 'TITLE' | 'DESC';
 export type SiataKeys = 'ZOOM' | 'ERR';
 export type TftEloKeys =
-  'ELO'
+  | 'ELO'
   | 'SUMMONER_NOT_FOUND'
   | 'UNRANKED'
   | 'GAME_MODE'

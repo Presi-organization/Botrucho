@@ -1,10 +1,11 @@
+import { SlashCommandBuilder } from '@discordjs/builders';
 import {
   CommandInteraction,
   EmbedBuilder,
   SlashCommandSubcommandGroupBuilder,
-  SlashCommandSubcommandsOnlyBuilder
+  SlashCommandSubcommandsOnlyBuilder,
 } from 'discord.js';
-import { SlashCommandBuilder } from '@discordjs/builders';
+
 import { getCompetitions } from '@/services';
 import {
   competitionNames,
@@ -15,7 +16,7 @@ import {
   isResults,
   Match,
   Result,
-  subcommandToCompetition
+  subcommandToCompetition,
 } from '@/types';
 import { Error, Info } from '@/utils';
 
@@ -27,7 +28,7 @@ const competitions = [
   { name: 'seriea', description: 'Serie A' },
   { name: 'ligue1', description: 'Ligue 1' },
   { name: 'bundesliga', description: 'Bundesliga' },
-  { name: 'fpc', description: 'Fútbol Profesional Colombiano' }
+  { name: 'fpc', description: 'Fútbol Profesional Colombiano' },
 ];
 
 export default class FootballCommand extends ICommand {
@@ -51,34 +52,31 @@ export default class FootballCommand extends ICommand {
     try {
       const response: FootballResult = await getCompetitions(
         competition,
-        group === 'matches' ? 'SCHEDULED' : 'FINISHED'
+        group === 'matches' ? 'SCHEDULED' : 'FINISHED',
       );
       if (!response) {
         await interaction.editReply({ embeds: [Error({ description: 'No matches found' })] });
         return;
       }
 
-      const embed: EmbedBuilder = new EmbedBuilder()
-        .setTitle(`⚽ ${competitionNames[competition]}`)
+      const embed: EmbedBuilder = new EmbedBuilder().setTitle(
+        `⚽ ${competitionNames[competition]}`,
+      );
 
       if (isMatches(response)) {
         const fields = response.matches.map((match: Match) => ({
           name: `> ***${match.homeTeam}*** ᴠs ***${match.awayTeam}***`,
           value: `⤳ 🗓️ ${match.localDate}`,
-          inline: false
+          inline: false,
         }));
-        embed
-          .setDescription(`📌 Next matches for ${response?.stage}`)
-          .setFields(fields);
+        embed.setDescription(`📌 Next matches for ${response?.stage}`).setFields(fields);
       } else if (isResults(response)) {
         const fields = response.results.map((result: Result) => ({
           name: `> ***${result.homeTeam}*** ᴠs ***${result.awayTeam}***`,
           value: `⤳ 🏆 ${result.homeResult} - ${result.awayResult}`,
-          inline: false
+          inline: false,
         }));
-        embed
-          .setDescription(`📌 Last matches for ${response?.stage}`)
-          .setFields(fields);
+        embed.setDescription(`📌 Last matches for ${response?.stage}`).setFields(fields);
       }
       await interaction.editReply({ embeds: [Info(embed.toJSON())] });
     } catch {
@@ -86,17 +84,20 @@ export default class FootballCommand extends ICommand {
     }
   }
 
-  private _createSubcommandGroup(name: string, description: string): SlashCommandSubcommandGroupBuilder {
+  private _createSubcommandGroup(
+    name: string,
+    description: string,
+  ): SlashCommandSubcommandGroupBuilder {
     const group = new SlashCommandSubcommandGroupBuilder()
       .setName(name)
       .setDescription(description);
 
-    competitions.forEach(comp => {
-      group.addSubcommand(subcommand =>
-        subcommand.setName(comp.name).setDescription(comp.description)
+    competitions.forEach((comp) => {
+      group.addSubcommand((subcommand) =>
+        subcommand.setName(comp.name).setDescription(comp.description),
       );
     });
 
     return group;
-  };
+  }
 }

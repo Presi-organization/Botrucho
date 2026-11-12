@@ -1,34 +1,40 @@
 import { Tint } from '@/utils';
 
-const stringifyMessages = (messages: unknown[]): string => messages.map(msg => {
-  if (msg instanceof Error) {
-    return msg.stack || msg.message;
-  }
-  if (typeof msg === 'object') {
-    try {
-      return JSON.stringify(msg);
-    } catch {
-      return '[Unserializable Object]';
-    }
-  }
-  return String(msg);
-}).join(' ');
+const stringifyMessages = (messages: unknown[]): string =>
+  messages
+    .map((msg) => {
+      if (msg instanceof Error) {
+        return msg.stack || msg.message;
+      }
+      if (typeof msg === 'object') {
+        try {
+          return JSON.stringify(msg);
+        } catch {
+          return '[Unserializable Object]';
+        }
+      }
+      return String(msg);
+    })
+    .join(' ');
 
-const getTimestamp = (): string => new Date().toLocaleString('en-GB', {
-  hour12: true,
-  day: '2-digit',
-  month: '2-digit',
-  year: 'numeric',
-  hour: '2-digit',
-  minute: '2-digit',
-  second: '2-digit'
-});
+const getTimestamp = (): string =>
+  new Date().toLocaleString('en-GB', {
+    hour12: true,
+    day: '2-digit',
+    month: '2-digit',
+    year: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
+    second: '2-digit',
+  });
 
 const getCaller = (): string => {
   const stack: string[] | undefined = new Error().stack?.split('\n');
   if (stack && stack.length > 3) {
     const callerLine: string = stack[4];
-    const match: RegExpMatchArray | null = callerLine.match(/src\/(?:.*\/)?([^/.]+)(?:\.\w+)*\.(js|ts)(?=[:)])/);
+    const match: RegExpMatchArray | null = callerLine.match(
+      /src\/(?:.*\/)?([^/.]+)(?:\.\w+)*\.(js|ts)(?=[:)])/,
+    );
     return match ? match[1] : 'Unknown';
   }
   return 'Unknown';
@@ -62,4 +68,3 @@ export const logger = {
     console.log(formatLog(Tint.blue('TRACE'), Tint.blue(stringifyMessages(messages))));
   },
 };
-

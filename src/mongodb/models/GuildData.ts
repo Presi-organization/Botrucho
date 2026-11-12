@@ -75,21 +75,21 @@ const GuildDataSchema = new Schema<IGuildData>({
         status: false,
         message: null,
         channel: null,
-        image: false
+        image: false,
       },
       goodbye: {
         status: false,
         message: null,
         channel: null,
-        image: false
+        image: false,
       },
       autoping: {
         status: false,
         message: null,
         channel: null,
-        image: false
+        image: false,
       },
-    }
+    },
   },
   protections: {
     type: Object,
@@ -98,29 +98,29 @@ const GuildDataSchema = new Schema<IGuildData>({
         status: false,
         message: null,
         channel: null,
-        image: false
+        image: false,
       },
       anti_spam: {
         status: false,
         message: null,
         channel: null,
-        image: false
+        image: false,
       },
       anti_mentions: {
         status: false,
         message: null,
         channel: null,
-        image: false
+        image: false,
       },
       anti_dc: {
         status: false,
         message: null,
         channel: null,
-        image: false
+        image: false,
       },
       anti_pub: null,
-      antiraid_logs: null
-    }
+      antiraid_logs: null,
+    },
   },
 });
 

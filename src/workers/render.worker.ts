@@ -1,5 +1,7 @@
 import { parentPort, workerData } from 'worker_threads';
+
 import { createCanvas, loadImage } from 'canvas';
+
 import { drawCroppedImage, invertCanvasImage } from '@/utils';
 
 (async () => {
@@ -28,7 +30,12 @@ import { drawCroppedImage, invertCanvasImage } from '@/utils';
 
     ctx.globalAlpha = 0.5;
     const radarImg = invertRadarLegend ? await invertCanvasImage(radarImgRaw) : radarImgRaw;
-    drawCroppedImage(ctx, radarImg, radarCrop, { x: 0, y: 0, width: outputSize, height: outputSize });
+    drawCroppedImage(ctx, radarImg, radarCrop, {
+      x: 0,
+      y: 0,
+      width: outputSize,
+      height: outputSize,
+    });
 
     // Legend
     const legendImg = invertRadarLegend ? await invertCanvasImage(legendImgRaw) : legendImgRaw;

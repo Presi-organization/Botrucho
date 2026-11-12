@@ -1,11 +1,17 @@
 import { promises as fs, unlinkSync } from 'node:fs';
 import { join } from 'path';
+
 import { GuildQueue, Track } from 'discord-player';
+
 import { Botrucho } from '@/mongodb';
 import { PlayerType } from '@/types';
 import { logger } from '@/utils';
 
-export async function execute(_: Botrucho, queue: GuildQueue<PlayerType>, track: Track): Promise<void> {
+export async function execute(
+  _: Botrucho,
+  queue: GuildQueue<PlayerType>,
+  track: Track,
+): Promise<void> {
   logger.log(`Track: ${track.title} finished playing!`);
   if (queue.metadata.queueTitles.length === 0) {
     if (queue.metadata.queueMessage) {

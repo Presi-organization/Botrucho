@@ -4,11 +4,15 @@ import {
   ModalBuilder,
   StringSelectMenuInteraction,
   TextInputBuilder,
-  TextInputStyle
+  TextInputStyle,
 } from 'discord.js';
+
 import { ICronData } from '@/mongodb';
 
-export const showEditCronModal = (interaction: StringSelectMenuInteraction | ButtonInteraction, cronJob: ICronData): Promise<void> => {
+export const showEditCronModal = (
+  interaction: StringSelectMenuInteraction | ButtonInteraction,
+  cronJob: ICronData,
+): Promise<void> => {
   const cronModal: ModalBuilder = new ModalBuilder()
     .setCustomId(`cron-setup-modal:${cronJob.cronId}`)
     .setTitle('Edit Cron Job')
@@ -20,7 +24,7 @@ export const showEditCronModal = (interaction: StringSelectMenuInteraction | But
           .setStyle(TextInputStyle.Short)
           .setRequired(true)
           .setValue(cronJob.cronName)
-          .setPlaceholder('Weekly Ultimate Frisbee')
+          .setPlaceholder('Weekly Ultimate Frisbee'),
       ),
       new ActionRowBuilder<TextInputBuilder>().addComponents(
         new TextInputBuilder()
@@ -29,7 +33,7 @@ export const showEditCronModal = (interaction: StringSelectMenuInteraction | But
           .setStyle(TextInputStyle.Short)
           .setRequired(true)
           .setValue(cronJob.cronExpression)
-          .setPlaceholder('* * * * *')
+          .setPlaceholder('* * * * *'),
       ),
       new ActionRowBuilder<TextInputBuilder>().addComponents(
         new TextInputBuilder()
@@ -39,8 +43,8 @@ export const showEditCronModal = (interaction: StringSelectMenuInteraction | But
           .setRequired(false)
           .setValue(cronJob.runOnInit ? 'true' : 'false')
           .setPlaceholder('false')
-          .setMinLength(4)  // Length of "true"
-          .setMaxLength(5)  // Length of "false"
+          .setMinLength(4) // Length of "true"
+          .setMaxLength(5), // Length of "false"
       ),
       new ActionRowBuilder<TextInputBuilder>().addComponents(
         new TextInputBuilder()
@@ -49,8 +53,8 @@ export const showEditCronModal = (interaction: StringSelectMenuInteraction | But
           .setStyle(TextInputStyle.Paragraph)
           .setRequired(false)
           .setValue(JSON.stringify(cronJob.metadata || {}))
-          .setPlaceholder('{"key": "value"}')
-      )
+          .setPlaceholder('{"key": "value"}'),
+      ),
     );
 
   return interaction.showModal(cronModal);

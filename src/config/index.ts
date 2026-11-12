@@ -1,7 +1,9 @@
-import { ActivityType } from 'discord.js';
 import { randomUUID } from 'crypto';
-import { ConfigType } from '@/types';
 import * as process from 'node:process';
+
+import { ActivityType } from 'discord.js';
+
+import { ConfigType } from '@/types';
 
 const config: ConfigType = {
   discord_client: process.env.CLIENT_ID as string,
@@ -13,9 +15,9 @@ const config: ConfigType = {
     { status: 'dnd', type: ActivityType.Competing, content: 'nada importante por ahora' },
     { status: 'dnd', type: ActivityType.Watching, content: 'el techo (del server)' },
     { status: 'dnd', type: ActivityType.Listening, content: 'los lloros de los @BOTS' },
-    { status: 'dnd', type: ActivityType.Custom, content: 'Planeando un ataque inminente' }
+    { status: 'dnd', type: ActivityType.Custom, content: 'Planeando un ataque inminente' },
   ],
-  color: 0xF5B719,
+  color: 0xf5b719,
   defaultLanguage: 'en',
   devMode: true,
   devServer: '775108414560534588',
@@ -23,13 +25,27 @@ const config: ConfigType = {
   checkConfig: null,
   shards: 1,
   categories: {
-    configuration: { enabled: true, name: 'Configuration', desc: 'Setup the bot with the configuration commands' },
-    utilities: { enabled: true, name: 'Utilities', desc: 'Some useful commands', aliases: ['general'] },
+    configuration: {
+      enabled: true,
+      name: 'Configuration',
+      desc: 'Setup the bot with the configuration commands',
+    },
+    utilities: {
+      enabled: true,
+      name: 'Utilities',
+      desc: 'Some useful commands',
+      aliases: ['general'],
+    },
     music: { enabled: true, name: 'Music', desc: 'Listen music with bot' },
-    owner: { hide: true, enabled: true, name: 'Owner', desc: 'Manage your bot with the owner commands' }
+    owner: {
+      hide: true,
+      enabled: true,
+      name: 'Owner',
+      desc: 'Manage your bot with the owner commands',
+    },
   },
   links: {
-    invite: null
+    invite: null,
   },
   database: {
     MongoURL: process.env.MONGO_URI as string,
@@ -39,7 +55,7 @@ const config: ConfigType = {
   isProduction: process.env.NODE_ENV === 'production',
   frisbeeHook: {
     id: process.env.WEBHOOK_ID as string,
-    token: process.env.WEBOOK_TOKEN as string
+    token: process.env.WEBOOK_TOKEN as string,
   },
   apis: {
     football: process.env.FOOTBALL_TOKEN as string,

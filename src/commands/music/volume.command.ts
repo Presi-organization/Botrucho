@@ -1,8 +1,20 @@
-import { EmbedBuilder, MessageFlags, SlashCommandIntegerOption, SlashCommandOptionsOnlyBuilder } from 'discord.js';
 import { SlashCommandBuilder } from '@discordjs/builders';
 import { GuildQueueTimeline, useTimeline } from 'discord-player';
+import {
+  EmbedBuilder,
+  MessageFlags,
+  SlashCommandIntegerOption,
+  SlashCommandOptionsOnlyBuilder,
+} from 'discord.js';
+
 import { IGuildData } from '@/mongodb';
-import { ICommand, CommandInteractionWithClient, MusicKeys, TranslationElement, VolumeKeys } from '@/types';
+import {
+  ICommand,
+  CommandInteractionWithClient,
+  MusicKeys,
+  TranslationElement,
+  VolumeKeys,
+} from '@/types';
 import { Error, Success } from '@/utils';
 
 export default class VolumeCommand extends ICommand {
@@ -16,7 +28,12 @@ export default class VolumeCommand extends ICommand {
   data: SlashCommandOptionsOnlyBuilder = new SlashCommandBuilder()
     .setName('volume')
     .setDescription('Changes the Volume')
-    .addIntegerOption((option: SlashCommandIntegerOption) => option.setName('gain').setDescription('The new volume you want me to set to [1-200]').setRequired(false));
+    .addIntegerOption((option: SlashCommandIntegerOption) =>
+      option
+        .setName('gain')
+        .setDescription('The new volume you want me to set to [1-200]')
+        .setRequired(false),
+    );
 
   async execute(interaction: CommandInteractionWithClient, guildDB: IGuildData): Promise<void> {
     if (!interaction.inCachedGuild()) return;
@@ -26,12 +43,10 @@ export default class VolumeCommand extends ICommand {
       CURRENT_VOLUME_TITLE,
       CURRENT_VOLUME_DESC,
       VOLUME_CHANGED_TITLE,
-      VOLUME_CHANGED_DESC
+      VOLUME_CHANGED_DESC,
     }: TranslationElement<VolumeKeys> = interaction.translate('VOLUME', guildDB.lang);
-    const {
-      NOT_PLAYING_TITLE,
-      NOT_PLAYING_DESC
-    }: TranslationElement<MusicKeys> = interaction.translate('MUSIC', guildDB.lang)
+    const { NOT_PLAYING_TITLE, NOT_PLAYING_DESC }: TranslationElement<MusicKeys> =
+      interaction.translate('MUSIC', guildDB.lang);
 
     const { client } = interaction;
 
@@ -45,8 +60,8 @@ export default class VolumeCommand extends ICommand {
         description: NOT_PLAYING_DESC,
         author: {
           name: interaction.guild.name,
-          icon_url: interaction.guild.iconURL() ?? undefined
-        }
+          icon_url: interaction.guild.iconURL() ?? undefined,
+        },
       });
       client.deleted_messages.add(interaction);
       await interaction.editReply({ embeds: [embed] });
@@ -64,8 +79,8 @@ export default class VolumeCommand extends ICommand {
         description: VOLUME_CHANGED_DESC.replace('${gain}', amount.toString()),
         author: {
           name: interaction.guild.name,
-          icon_url: interaction.guild.iconURL() ?? undefined
-        }
+          icon_url: interaction.guild.iconURL() ?? undefined,
+        },
       });
     } else {
       embed = Success({
@@ -73,8 +88,8 @@ export default class VolumeCommand extends ICommand {
         description: CURRENT_VOLUME_DESC.replace('${gain}', timeline.volume.toString()),
         author: {
           name: interaction.guild.name,
-          icon_url: interaction.guild.iconURL() ?? undefined
-        }
+          icon_url: interaction.guild.iconURL() ?? undefined,
+        },
       });
     }
 

@@ -1,6 +1,7 @@
 import fs from 'fs';
-import path from 'path';
 import https from 'https';
+import path from 'path';
+
 import { logger } from '@/utils';
 
 const RADAR_URL = 'https://siata.gov.co/kml/00_Radar/Ultimo_Barrido/AreaMetRadar_10_120_DBZH.png';
@@ -11,9 +12,12 @@ const MAX_IMAGES = 10;
 // Function to fetch headers
 function fetchHeaders(url: string): Promise<Record<string, string>> {
   return new Promise((resolve, reject) => {
-    https.get(url, { method: 'HEAD' }, (res) => {
-      resolve(res.headers as Record<string, string>);
-    }).on('error', reject).end();
+    https
+      .get(url, { method: 'HEAD' }, (res) => {
+        resolve(res.headers as Record<string, string>);
+      })
+      .on('error', reject)
+      .end();
   });
 }
 
@@ -21,18 +25,20 @@ function fetchHeaders(url: string): Promise<Record<string, string>> {
 function downloadFile(url: string, filePath: string): Promise<void> {
   return new Promise((resolve, reject) => {
     const fileStream = fs.createWriteStream(filePath);
-    https.get(url, (res) => {
-      res.pipe(fileStream);
-      fileStream.on('finish', () => {
-        fileStream.close();
-        resolve();
+    https
+      .get(url, (res) => {
+        res.pipe(fileStream);
+        fileStream.on('finish', () => {
+          fileStream.close();
+          resolve();
+        });
+      })
+      .on('error', (err) => {
+        fs.unlink(filePath, () => {
+          logger.error(`Failed to download file: ${err.message}`);
+        });
+        reject(err);
       });
-    }).on('error', (err) => {
-      fs.unlink(filePath, () => {
-        logger.error(`Failed to download file: ${err.message}`);
-      });
-      reject(err);
-    });
   });
 }
 
@@ -76,10 +82,10 @@ export async function checkAndSaveRadarImage(): Promise<void> {
     // Maintain max 10 files (delete oldest if needed)
     if (existingFiles.length >= MAX_IMAGES) {
       const oldestFiles = existingFiles
-        .filter(file => file.startsWith('radar_'))
-        .map(file => ({
+        .filter((file) => file.startsWith('radar_'))
+        .map((file) => ({
           name: file,
-          time: parseInt(file.replace('radar_', '').replace('.png', ''), 10)
+          time: parseInt(file.replace('radar_', '').replace('.png', ''), 10),
         }))
         .sort((a, b) => a.time - b.time);
 

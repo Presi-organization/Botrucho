@@ -1,8 +1,20 @@
-import { MessageFlags, SlashCommandOptionsOnlyBuilder, SlashCommandStringOption, VoiceBasedChannel } from 'discord.js';
-import { Player, QueueRepeatMode, SearchResult, useMainPlayer } from 'discord-player';
 import { SlashCommandBuilder } from '@discordjs/builders';
+import { Player, QueueRepeatMode, SearchResult, useMainPlayer } from 'discord-player';
+import {
+  MessageFlags,
+  SlashCommandOptionsOnlyBuilder,
+  SlashCommandStringOption,
+  VoiceBasedChannel,
+} from 'discord.js';
+
 import { IGuildData } from '@/mongodb';
-import { ICommand, CommandInteractionWithClient, PlayKeys, TranslationElement, VCKeys } from '@/types';
+import {
+  ICommand,
+  CommandInteractionWithClient,
+  PlayKeys,
+  TranslationElement,
+  VCKeys,
+} from '@/types';
 import { Error, logger, Success, Warning } from '@/utils';
 
 export default class PlayCommand extends ICommand {
@@ -13,7 +25,9 @@ export default class PlayCommand extends ICommand {
   data: SlashCommandOptionsOnlyBuilder = new SlashCommandBuilder()
     .setName('play')
     .setDescription('Plays a music in your voice channel.')
-    .addStringOption((option: SlashCommandStringOption) => option.setName('song').setDescription('The name of the song.').setRequired(true));
+    .addStringOption((option: SlashCommandStringOption) =>
+      option.setName('song').setDescription('The name of the song.').setRequired(true),
+    );
 
   async execute(interaction: CommandInteractionWithClient, guildDB: IGuildData): Promise<void> {
     if (!interaction.inCachedGuild()) return;
@@ -25,7 +39,7 @@ export default class PlayCommand extends ICommand {
       NO_RESULTS_TITLE,
       NO_RESULTS_DESC,
       ADDED_2_QUEUE_TITLE,
-      ADDED_2_QUEUE_DESC
+      ADDED_2_QUEUE_DESC,
     }: TranslationElement<PlayKeys> = interaction.translate('PLAY', guildDB.lang);
     const { CONNECT_VC }: TranslationElement<VCKeys> = interaction.translate('VC', guildDB.lang);
 
@@ -49,8 +63,8 @@ export default class PlayCommand extends ICommand {
         description: NO_RESULTS_DESC.replace('${songName}', name),
         author: {
           name: interaction.guild.name,
-          icon_url: interaction.guild.iconURL() ?? undefined
-        }
+          icon_url: interaction.guild.iconURL() ?? undefined,
+        },
       };
 
       await interaction.editReply({ embeds: [Error(embed)] });
@@ -60,21 +74,25 @@ export default class PlayCommand extends ICommand {
 
     const getDescription = (): string => {
       if (searchResult.hasPlaylist()) {
-        return ADDED_2_QUEUE_DESC
-          .replace('${songName}', `${searchResult.playlist?.title}`)
-          .replace('${songUrl}', searchResult.playlist?.url || '') + ` [${searchResult.playlist?.tracks.length}]`;
+        return (
+          ADDED_2_QUEUE_DESC.replace('${songName}', `${searchResult.playlist?.title}`).replace(
+            '${songUrl}',
+            searchResult.playlist?.url || '',
+          ) + ` [${searchResult.playlist?.tracks.length}]`
+        );
       }
       const track = searchResult.tracks[0];
-      return ADDED_2_QUEUE_DESC
-        .replace('${songName}', `${track.title} - ${track.author}`)
-        .replace('${songUrl}', track.url);
+      return ADDED_2_QUEUE_DESC.replace('${songName}', `${track.title} - ${track.author}`).replace(
+        '${songUrl}',
+        track.url,
+      );
     };
 
     const description = getDescription();
 
     const embed = {
       title: ADDED_2_QUEUE_TITLE,
-      description: description
+      description: description,
     };
 
     await interaction.editReply({ embeds: [Success(embed)] });
@@ -100,15 +118,19 @@ export default class PlayCommand extends ICommand {
           leaveOnEndCooldown: 30000,
           pauseOnEmpty: true,
           preferBridgedMetadata: true,
-          disableBiquad: true
+          disableBiquad: true,
         },
         requestedBy: interaction.user,
         connectionOptions: {
           deaf: true,
-        }
+        },
       });
     } catch (e) {
-      logger.log(`Something went wrong: ${e}`);
+      const error = e as Error;
+      logger.error(`[Play Command] Error playing track: ${error.message || e}`);
+      if (error.stack) {
+        logger.error(`[Play Command] Stack trace: ${error.stack}`);
+      }
     }
   }
 }
