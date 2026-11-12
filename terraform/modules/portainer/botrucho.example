@@ -1,0 +1,6 @@
+# Placeholder only — this file is NOT an SSH private key.
+# Do not paste private keys here or commit them anywhere in this repository.
+# Generate/store the real key outside the checkout and set, for example:
+# ssh_private_key_path = "/home/your-user/.ssh/botrucho"
+# On Windows, use an external path such as "C:/Users/your-user/.ssh/botrucho".
+# If the previous key was exposed, revoke its public key on the server.

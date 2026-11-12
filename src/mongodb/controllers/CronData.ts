@@ -2,8 +2,7 @@ import { CronDataModel, ICronData } from '@/mongodb/models/CronData';
 
 export class CronDataController {
   async getAllCrones(): Promise<ICronData[]> {
-    return CronDataModel
-      .find()
+    return CronDataModel.find()
       .select('cronId cronName cronExpression isActive runOnInit lastRun nextRun metadata')
       .lean({ virtuals: true });
   }
@@ -13,15 +12,7 @@ export class CronDataController {
   }
 
   async createOrUpdateCron(cronData: ICronData): Promise<ICronData> {
-    const {
-      cronId,
-      cronName,
-      cronExpression,
-      lastRun,
-      isActive,
-      runOnInit,
-      metadata
-    } = cronData;
+    const { cronId, cronName, cronExpression, lastRun, isActive, runOnInit, metadata } = cronData;
 
     const filter = cronId ? { cronId } : { cronName };
 

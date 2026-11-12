@@ -6,7 +6,7 @@ export enum Competitions {
   SERIE_A = 'SA',
   BUNDESLIGA = 'BL1',
   LIGUE_1 = 'FL1',
-  FPC = 'COL'
+  FPC = 'COL',
 }
 
 export const subcommandToCompetition: Record<string, Competitions> = {
@@ -17,7 +17,7 @@ export const subcommandToCompetition: Record<string, Competitions> = {
   seriea: Competitions.SERIE_A,
   bundesliga: Competitions.BUNDESLIGA,
   ligue1: Competitions.LIGUE_1,
-  fpc: Competitions.FPC
+  fpc: Competitions.FPC,
 };
 
 export const competitionNames: Record<Competitions, string> = {
@@ -28,8 +28,8 @@ export const competitionNames: Record<Competitions, string> = {
   [Competitions.SERIE_A]: 'Serie A',
   [Competitions.BUNDESLIGA]: 'Bundesliga',
   [Competitions.LIGUE_1]: 'Ligue 1',
-  [Competitions.FPC]: 'Fútbol Profesional Colombiano'
-}
+  [Competitions.FPC]: 'Fútbol Profesional Colombiano',
+};
 
 export interface ApiCompetition extends Record<string, unknown> {
   matches: ApiMatch[];
@@ -41,7 +41,7 @@ export interface ApiMatch {
   utcDate: string;
   stage: string;
   matchday: number;
-  score: Score
+  score: Score;
 }
 
 export interface Team {
@@ -53,7 +53,7 @@ interface Score {
   fullTime: {
     home: number;
     away: number;
-  }
+  };
 }
 
 export interface Matches {
@@ -85,8 +85,8 @@ export type FootballResult = Matches | Results | undefined;
 
 export const isMatches = (data: FootballResult): data is Matches => {
   return !!data && 'matches' in data;
-}
+};
 
 export const isResults = (data: FootballResult): data is Results => {
   return !!data && 'results' in data;
-}
+};

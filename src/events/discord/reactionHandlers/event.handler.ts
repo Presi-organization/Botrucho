@@ -1,4 +1,5 @@
 import { EmbedBuilder, Guild, MessageReaction, User } from 'discord.js';
+
 import { ReactionHandlerInterface } from '@/events/discord/reactionHandlers';
 import { Botrucho, IEventData } from '@/mongodb';
 import { EventKeys, TranslationElement } from '@/types';
@@ -19,16 +20,21 @@ export class EventHandler implements ReactionHandlerInterface {
     if (this.reaction.emoji.name === '👽') {
       const guild: Guild | null = this.reaction.message.guild;
       if (!guild) return;
-      const eventInfo: IEventData | null = await guild.fetchEventDB(this.client.eventData, this.reaction.message.id);
+      const eventInfo: IEventData | null = await guild.fetchEventDB(
+        this.client.eventData,
+        this.reaction.message.id,
+      );
       if (eventInfo) {
-        const userFind: string | undefined = eventInfo.userAssisting ? eventInfo.userAssisting.find((userID: string) => userID === this.user.id) : undefined;
+        const userFind: string | undefined = eventInfo.userAssisting
+          ? eventInfo.userAssisting.find((userID: string) => userID === this.user.id)
+          : undefined;
         if (!userFind) {
-          await this.client.eventData.addAssistance(eventInfo.id, this.user.id);
+          await this.client.eventData.addAssistance(eventInfo._id.toString(), this.user.id);
 
           const {
             ASSISTANCE_CONFIRMED,
             INVITATION_LINK,
-            EVENT_GENERATED
+            EVENT_GENERATED,
           }: TranslationElement<EventKeys> = await guild.translate('EVENT', this.client.guildData);
 
           const exampleEmbed: EmbedBuilder = new EmbedBuilder()
@@ -39,24 +45,26 @@ export class EventHandler implements ReactionHandlerInterface {
             .setTimestamp()
             .setFooter({
               text: EVENT_GENERATED.replace('${username}', this.client.user?.username ?? 'Bot'),
-              iconURL: this.client.user?.displayAvatarURL({
-                size: 512
-              }) ?? undefined
+              iconURL:
+                this.client.user?.displayAvatarURL({
+                  size: 512,
+                }) ?? undefined,
             });
 
-          this.user.send({
-            embeds: [exampleEmbed]
-          })
-            .then(msg => {
+          this.user
+            .send({
+              embeds: [exampleEmbed],
+            })
+            .then((msg) => {
               setTimeout(() => {
                 this.client.deleted_messages.add(msg);
-              }, 120000)
+              }, 120000);
             })
             .catch(() => {
-              logger.log('I couldn\'t send a DM');
+              logger.log("I couldn't send a DM");
             });
         }
       }
     }
-  }
+  };
 }

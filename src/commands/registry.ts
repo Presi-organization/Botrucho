@@ -9,9 +9,16 @@ import {
   PruneCommand,
   ServerCommand,
   ToggleCommandCommand,
-  UserInfoCommand
+  UserInfoCommand,
 } from '@/commands/management';
-import { LeaveCommand, LyricsCommand, PlayCommand, ShuffleCommand, SkipCommand, VolumeCommand } from '@/commands/music';
+import {
+  LeaveCommand,
+  LyricsCommand,
+  PlayCommand,
+  ShuffleCommand,
+  SkipCommand,
+  VolumeCommand,
+} from '@/commands/music';
 import { SayCommand } from '@/commands/say';
 import { FootballCommand, MultasCommand, SiataCommand, TFTEloCommand } from '@/commands/searching';
 import { ICommand } from '@/types';

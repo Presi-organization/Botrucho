@@ -1,13 +1,15 @@
 import fs from 'fs/promises';
 import path from 'path';
+
+import { SlashCommandBuilder } from '@discordjs/builders';
 import {
   AttachmentBuilder,
   CommandInteraction,
   SlashCommandNumberOption,
   SlashCommandSubcommandGroupBuilder,
-  SlashCommandSubcommandsOnlyBuilder
+  SlashCommandSubcommandsOnlyBuilder,
 } from 'discord.js';
-import { SlashCommandBuilder } from '@discordjs/builders';
+
 import { IGuildData } from '@/mongodb';
 import {
   CropInfo,
@@ -16,14 +18,14 @@ import {
   RenderParams,
   RenderParamsWithGif,
   SiataKeys,
-  TranslationElement
+  TranslationElement,
 } from '@/types';
 import { Error, logger, runRenderWorker, Success } from '@/utils';
 
 const radarLayers = [
   { name: 'locations', description: 'Addresses shown on map' },
   { name: 'clean', description: 'Map without markers' },
-  { name: 'timelapse', description: 'Generate a timelapse of radar images' }
+  { name: 'timelapse', description: 'Generate a timelapse of radar images' },
 ];
 
 const OUTPUT_SIZE = 1080;
@@ -40,14 +42,17 @@ export default class SiataCommand extends ICommand {
   description = 'Display siata image.';
   data: SlashCommandSubcommandsOnlyBuilder = new SlashCommandBuilder()
     .setName('siata')
-    .setDescription('Siata\'s image.')
+    .setDescription("Siata's image.")
     .addSubcommandGroup(this._createSubcommandGroup('google', 'Google Maps Tile Layer'))
     .addSubcommandGroup(this._createSubcommandGroup('stadia', 'Stadia Maps Tile Layer'));
 
   async execute(interaction: CommandInteraction, guildDB: IGuildData): Promise<void> {
     if (!interaction.isChatInputCommand()) return;
 
-    const { ZOOM, ERR }: TranslationElement<SiataKeys> = interaction.translate('SIATA', guildDB.lang);
+    const { ZOOM, ERR }: TranslationElement<SiataKeys> = interaction.translate(
+      'SIATA',
+      guildDB.lang,
+    );
     await interaction.deferReply();
 
     const group = interaction.options.getSubcommandGroup(true);
@@ -56,18 +61,38 @@ export default class SiataCommand extends ICommand {
     const { mapCrop, radarCrop, folder } = this._getCropSettings(circles, group);
 
     try {
-      if (subcommand === 'timelapse') await this._handleTimelapse(interaction, group, folder, mapCrop, radarCrop, circles);
-      else await this._handleStaticImage(interaction, group, folder, subcommand, mapCrop, radarCrop, circles, ZOOM);
+      if (subcommand === 'timelapse')
+        await this._handleTimelapse(interaction, group, folder, mapCrop, radarCrop, circles);
+      else
+        await this._handleStaticImage(
+          interaction,
+          group,
+          folder,
+          subcommand,
+          mapCrop,
+          radarCrop,
+          circles,
+          ZOOM,
+        );
     } catch (error) {
       logger.error('Error processing images:', error);
       await interaction.editReply({ embeds: [Error({ description: ERR })] });
     }
   }
 
-  private async _handleTimelapse(interaction: CommandInteraction, group: string, folder: string, mapCrop: CropInfo, radarCrop: CropInfo, circles: number): Promise<void> {
+  private async _handleTimelapse(
+    interaction: CommandInteraction,
+    group: string,
+    folder: string,
+    mapCrop: CropInfo,
+    radarCrop: CropInfo,
+    circles: number,
+  ): Promise<void> {
     const radarImages = await this._getSortedRadarImages();
     if (radarImages.length < 2) {
-      await interaction.editReply({ embeds: [Error({ description: 'Not enough radar images collected yet for a timelapse.' })] });
+      await interaction.editReply({
+        embeds: [Error({ description: 'Not enough radar images collected yet for a timelapse.' })],
+      });
       return;
     }
 
@@ -82,7 +107,7 @@ export default class SiataCommand extends ICommand {
       outputSize: OUTPUT_SIZE,
       gifPath,
       invertRadar: group === 'stadia',
-      showProgress: true
+      showProgress: true,
     };
 
     await runRenderWorker(workerParams);
@@ -93,11 +118,20 @@ export default class SiataCommand extends ICommand {
       'SIATA Radar Timelapse',
       `Showing ${radarImages.length} radar images`,
       attachment,
-      'radar_timelapse.gif'
+      'radar_timelapse.gif',
     );
   }
 
-  private async _handleStaticImage(interaction: CommandInteraction, group: string, folder: string, subcommand: string, mapCrop: CropInfo, radarCrop: CropInfo, circles: number, zoomText: string) {
+  private async _handleStaticImage(
+    interaction: CommandInteraction,
+    group: string,
+    folder: string,
+    subcommand: string,
+    mapCrop: CropInfo,
+    radarCrop: CropInfo,
+    circles: number,
+    zoomText: string,
+  ) {
     const mapPath = this._resolveAssetPath('siata', folder, subcommand, `map${circles}x.png`);
     const radarPath = this._resolveAssetPath('siata', 'radar.png');
     const legendPath = this._resolveAssetPath('siata', 'radarLegend.png');
@@ -110,7 +144,7 @@ export default class SiataCommand extends ICommand {
       radarCrop,
       outputSize: OUTPUT_SIZE,
       invertRadarLegend: group === 'stadia',
-      legendScale: LEGEND_SCALE
+      legendScale: LEGEND_SCALE,
     };
 
     const buffer = await runRenderWorker(workerParams);
@@ -120,7 +154,7 @@ export default class SiataCommand extends ICommand {
       'SIATA',
       zoomText.replace('${zoom}', circles.toString()),
       attachment,
-      'siata.png'
+      'siata.png',
     );
   }
 
@@ -128,9 +162,9 @@ export default class SiataCommand extends ICommand {
     const radarDir = this._resolveAssetPath('siata', 'radar_history');
     const files = await fs.readdir(radarDir);
     return files
-      .filter(f => f.startsWith('radar_') && f.endsWith('.png'))
+      .filter((f) => f.startsWith('radar_') && f.endsWith('.png'))
       .sort((a, b) => parseInt(a.split('_')[1]) - parseInt(b.split('_')[1]))
-      .map(f => path.join(radarDir, f));
+      .map((f) => path.join(radarDir, f));
   }
 
   private _getCropSettings(circles: number, group: string) {
@@ -153,27 +187,33 @@ export default class SiataCommand extends ICommand {
     title: string,
     description: string,
     attachment: AttachmentBuilder,
-    filename: string
+    filename: string,
   ) {
     await interaction.editReply({
       embeds: [Success({ title, description, image: { url: `attachment://${filename}` } })],
-      files: [attachment]
+      files: [attachment],
     });
   }
 
-  private _createSubcommandGroup(name: string, description: string): SlashCommandSubcommandGroupBuilder {
+  private _createSubcommandGroup(
+    name: string,
+    description: string,
+  ): SlashCommandSubcommandGroupBuilder {
     const group = new SlashCommandSubcommandGroupBuilder()
       .setName(name)
       .setDescription(description);
 
-    radarLayers.forEach(radarLayer => {
-      group.addSubcommand(subcommand =>
-        subcommand.setName(radarLayer.name).setDescription(radarLayer.description)
-          .addNumberOption((input: SlashCommandNumberOption) => input
-            .setName('circles')
-            .setDescription('Number of circles (zoom) to display')
-            .addChoices({ name: '1', value: 1 }, { name: '2', value: 2 })
-          )
+    radarLayers.forEach((radarLayer) => {
+      group.addSubcommand((subcommand) =>
+        subcommand
+          .setName(radarLayer.name)
+          .setDescription(radarLayer.description)
+          .addNumberOption((input: SlashCommandNumberOption) =>
+            input
+              .setName('circles')
+              .setDescription('Number of circles (zoom) to display')
+              .addChoices({ name: '1', value: 1 }, { name: '2', value: 2 }),
+          ),
       );
     });
 

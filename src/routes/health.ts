@@ -1,15 +1,17 @@
 import { Request, Response, Router } from 'express';
 
-const router: Router = Router()
+export function createHealthRoute(isReady: () => boolean): Router {
+  const router: Router = Router();
 
-router.get('/', (_req: Request, res: Response): void => {
-  const data = {
-    uptime: process.uptime(),
-    message: 'Ok',
-    date: new Date()
-  }
+  router.get('/', (_req: Request, res: Response): void => {
+    const data = {
+      uptime: process.uptime(),
+      message: isReady() ? 'Ready' : 'Not ready',
+      date: new Date(),
+    };
 
-  res.status(200).send(data);
-});
+    res.status(data.message === 'Ready' ? 200 : 503).send(data);
+  });
 
-export default router;
+  return router;
+}

@@ -5,8 +5,9 @@ import {
   SlashCommandBuilder,
   SlashCommandOptionsOnlyBuilder,
   TextInputBuilder,
-  TextInputStyle
+  TextInputStyle,
 } from 'discord.js';
+
 import { IGuildData } from '@/mongodb';
 import { EventKeys, ICommand, TranslationElement } from '@/types';
 
@@ -18,18 +19,10 @@ export default class EventCommand extends ICommand {
     .setDescription('Create an event');
 
   async execute(interaction: CommandInteraction, guildDB: IGuildData): Promise<void> {
-    const {
-      MODAL_TITLE,
-      NAME,
-      DATE,
-      TIME,
-      DESCRIPTION,
-      LOCATION
-    }: TranslationElement<EventKeys> = interaction.translate('EVENT', guildDB.lang);
+    const { MODAL_TITLE, NAME, DATE, TIME, DESCRIPTION, LOCATION }: TranslationElement<EventKeys> =
+      interaction.translate('EVENT', guildDB.lang);
 
-    const modal: ModalBuilder = new ModalBuilder()
-      .setCustomId('event-modal')
-      .setTitle(MODAL_TITLE);
+    const modal: ModalBuilder = new ModalBuilder().setCustomId('event-modal').setTitle(MODAL_TITLE);
 
     const eventNameInput: TextInputBuilder = new TextInputBuilder()
       .setCustomId('eventNameInput')
@@ -67,13 +60,24 @@ export default class EventCommand extends ICommand {
       .setStyle(TextInputStyle.Short)
       .setRequired(false);
 
-    const firstActionRow: ActionRowBuilder<TextInputBuilder> = new ActionRowBuilder<TextInputBuilder>().addComponents(eventNameInput);
-    const secondActionRow: ActionRowBuilder<TextInputBuilder> = new ActionRowBuilder<TextInputBuilder>().addComponents(eventDateInput);
-    const thirdActionRow: ActionRowBuilder<TextInputBuilder> = new ActionRowBuilder<TextInputBuilder>().addComponents(eventTimeInput);
-    const fourthActionRow: ActionRowBuilder<TextInputBuilder> = new ActionRowBuilder<TextInputBuilder>().addComponents(eventDescriptionInput);
-    const fifthActionRow: ActionRowBuilder<TextInputBuilder> = new ActionRowBuilder<TextInputBuilder>().addComponents(eventLinkInput);
+    const firstActionRow: ActionRowBuilder<TextInputBuilder> =
+      new ActionRowBuilder<TextInputBuilder>().addComponents(eventNameInput);
+    const secondActionRow: ActionRowBuilder<TextInputBuilder> =
+      new ActionRowBuilder<TextInputBuilder>().addComponents(eventDateInput);
+    const thirdActionRow: ActionRowBuilder<TextInputBuilder> =
+      new ActionRowBuilder<TextInputBuilder>().addComponents(eventTimeInput);
+    const fourthActionRow: ActionRowBuilder<TextInputBuilder> =
+      new ActionRowBuilder<TextInputBuilder>().addComponents(eventDescriptionInput);
+    const fifthActionRow: ActionRowBuilder<TextInputBuilder> =
+      new ActionRowBuilder<TextInputBuilder>().addComponents(eventLinkInput);
 
-    modal.addComponents(firstActionRow, secondActionRow, thirdActionRow, fourthActionRow, fifthActionRow);
+    modal.addComponents(
+      firstActionRow,
+      secondActionRow,
+      thirdActionRow,
+      fourthActionRow,
+      fifthActionRow,
+    );
 
     await interaction.showModal(modal);
   }

@@ -1,0 +1,78 @@
+name: Deploy Discord bot to GCP
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: discord-bot-production
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    container: node:26-trixie
+    env:
+      YOUTUBE_DL_SKIP_PYTHON_CHECK: '1'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '26'
+          cache: npm
+      - name: Install native build requirements
+        run: |
+          test "$(uname -m)" = x86_64
+          apt-get update
+          apt-get install -y --no-install-recommends rsync openssh-client curl python3 make g++ pkg-config libatomic1 libcairo2-dev libpango1.0-dev libjpeg-dev libgif-dev librsvg2-dev
+      - name: Test and build in GitHub, not on the VM
+        run: |
+          npm ci
+          npm run lint
+          npm test
+          npm run build
+          npm prune --omit=dev
+          node -e "require('canvas').createCanvas(4,4); require('discord-player-youtubei'); require('./dist/src/commands/registry.js')"
+      - name: Prepare runtime key and verified host
+        id: ssh
+        shell: bash
+        env:
+          DOTENV_PRIVATE_KEY_PRODUCTION: ${{ secrets.DOTENV_PRIVATE_KEY_PRODUCTION }}
+          VM_HOST: ${{ secrets.VM_HOST }}
+          VM_SSH_KNOWN_HOSTS: ${{ secrets.VM_SSH_KNOWN_HOSTS }}
+        run: |
+          set -euo pipefail
+          [[ "$DOTENV_PRIVATE_KEY_PRODUCTION" =~ ^[[:xdigit:]]{64}$ ]] || { echo 'Missing or invalid dotenvx private key' >&2; exit 1; }
+          umask 077
+          printf 'DOTENV_PRIVATE_KEY_PRODUCTION=%s\n' "$DOTENV_PRIVATE_KEY_PRODUCTION" > .env.keys
+          chmod 600 .env.keys
+          printf '%s\n' "$VM_SSH_KNOWN_HOSTS" > "$RUNNER_TEMP/bot_known_hosts"
+          ssh-keygen -F "$VM_HOST" -f "$RUNNER_TEMP/bot_known_hosts" >/dev/null
+          fingerprint="$(ssh-keygen -F "$VM_HOST" -f "$RUNNER_TEMP/bot_known_hosts" -l -E sha256 | awk '$3 ~ /^SHA256:/ {print $3; exit}')"
+          [[ "$fingerprint" == SHA256:* ]]
+          echo "fingerprint=$fingerprint" >> "$GITHUB_OUTPUT"
+      - name: Upload compiled files and encrypted configuration
+        uses: easingthemes/ssh-deploy@5d8aeab1a56041e269567e67a08ce00df324a617 # v6.0.1
+        with:
+          SSH_PRIVATE_KEY: ${{ secrets.VM_SSH_PRIVATE_KEY }}
+          REMOTE_HOST: ${{ secrets.VM_HOST }}
+          REMOTE_USER: botuser
+          SOURCE: 'dist node_modules package.json .env.production .env.keys'
+          TARGET: /opt/discord-bot/
+          ARGS: '-az --delete'
+          SSH_CMD_ARGS: '-o StrictHostKeyChecking=yes, -o UserKnownHostsFile=${{ runner.temp }}/bot_known_hosts, -o GlobalKnownHostsFile=/dev/null, -o BatchMode=yes, -o IdentitiesOnly=yes'
+      - name: Restart systemd and check status
+        uses: appleboy/ssh-action@0ff4204d59e8e51228ff73bce53f80d53301dee2 # v1.2.5
+        with:
+          host: ${{ secrets.VM_HOST }}
+          username: botuser
+          key: ${{ secrets.VM_SSH_PRIVATE_KEY }}
+          fingerprint: ${{ steps.ssh.outputs.fingerprint }}
+          script: sudo systemctl restart discord-bot && systemctl is-active --quiet discord-bot
+      - name: Remove temporary key files
+        if: always()
+        run: rm -f -- .env.keys "$RUNNER_TEMP/bot_known_hosts"

@@ -10,19 +10,31 @@ export class GuildDataController {
     return guild.save();
   }
 
-  async setVolume({ guildId, newVolume }: { guildId: string; newVolume: number }): Promise<IGuildData | null> {
+  async setVolume({
+    guildId,
+    newVolume,
+  }: {
+    guildId: string;
+    newVolume: number;
+  }): Promise<IGuildData | null> {
     return GuildDataModel.findOneAndUpdate(
       { serverID: guildId },
       { defaultVolume: newVolume },
-      { returnDocument: 'after', upsert: true }
+      { returnDocument: 'after', upsert: true },
     ).exec();
   }
 
-  async setLanguage({ guildId, newLanguage }: { guildId: string; newLanguage: string }): Promise<IGuildData | null> {
+  async setLanguage({
+    guildId,
+    newLanguage,
+  }: {
+    guildId: string;
+    newLanguage: string;
+  }): Promise<IGuildData | null> {
     return GuildDataModel.findOneAndUpdate(
       { serverID: guildId },
       { lang: newLanguage },
-      { returnDocument: 'after', upsert: true }
+      { returnDocument: 'after', upsert: true },
     ).exec();
   }
 }

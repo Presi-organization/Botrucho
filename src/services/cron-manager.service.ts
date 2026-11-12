@@ -1,6 +1,8 @@
 import { CommandInteraction, Message, StringSelectMenuInteraction } from 'discord.js';
-import { schedule, ScheduledTask, ScheduleOptions } from 'node-cron';
+import { schedule, ScheduledTask } from 'node-cron';
+
 import { Botrucho, ICronData } from '@/mongodb';
+import { withTimeout } from '@/runtime/lifecycle';
 import { initializeFrisbeeEventCron, sendReminderToConfirmAttendance } from '@/services/webhooks';
 import { logger } from '@/utils';
 import { workerRadarProcess } from '@/workers/radar.process';
@@ -8,6 +10,8 @@ import { workerRadarProcess } from '@/workers/radar.process';
 export class CronManager {
   private readonly client: Botrucho;
   private activeTasks: Map<string, ScheduledTask> = new Map<string, ScheduledTask>();
+  private running = new Set<Promise<void>>();
+  private stopping = false;
 
   constructor(client: Botrucho) {
     this.client = client;
@@ -26,16 +30,22 @@ export class CronManager {
   }
 
   addCronJob(job: ICronData): void {
+    if (this.stopping) return;
     // Remove existing task if it exists
     this.removeCronJob(job.cronId as string);
 
-    const scheduleOptions: ScheduleOptions = {
+    const run = () => {
+      if (this.stopping) return Promise.resolve();
+      const pending = this.executeCronJob(job);
+      this.running.add(pending);
+      void pending.finally(() => this.running.delete(pending));
+      return pending;
+    };
+    const task: ScheduledTask = schedule(job.cronExpression, run, {
       timezone: 'America/Bogota',
-      runOnInit: job.runOnInit
-    }
-    const task: ScheduledTask = schedule(job.cronExpression, async () => {
-      await this.executeCronJob(job);
-    }, scheduleOptions);
+      noOverlap: true,
+    });
+    if (job.runOnInit) void run();
 
     this.activeTasks.set(job.cronId as string, task);
     logger.warn(`Added cron job: ${job.cronName} (${job.cronExpression})`);
@@ -44,15 +54,24 @@ export class CronManager {
   removeCronJob(cronId: string): void {
     const task: ScheduledTask | undefined = this.activeTasks.get(cronId);
     if (task) {
-      task.stop();
+      void task.destroy();
       this.activeTasks.delete(cronId);
       logger.warn(`Removed cron job: ${cronId}`);
     }
   }
 
   updateCronJob(job: ICronData): void {
-    if (job.isActive) this.addCronJob(job); // Will replace existing
+    if (job.isActive)
+      this.addCronJob(job); // Will replace existing
     else this.removeCronJob(job.cronId as string);
+  }
+
+  async shutdown(): Promise<void> {
+    this.stopping = true;
+    const tasks = [...this.activeTasks.values()];
+    this.activeTasks.clear();
+    await Promise.all(tasks.map((task) => task.destroy()));
+    await withTimeout(Promise.allSettled(this.running), 2_000, 'Cron drain');
   }
 
   private async executeCronJob(job: ICronData): Promise<void> {
@@ -87,7 +106,11 @@ export class CronManager {
       try {
         if (this.client.deleted_messages.delete(interaction)) {
           if (interaction instanceof Message) await interaction.delete();
-          else if (interaction instanceof CommandInteraction || interaction instanceof StringSelectMenuInteraction) await interaction.deleteReply();
+          else if (
+            interaction instanceof CommandInteraction ||
+            interaction instanceof StringSelectMenuInteraction
+          )
+            await interaction.deleteReply();
         }
       } catch (error: unknown) {
         logger.error('Error deleting interaction reply:', error);

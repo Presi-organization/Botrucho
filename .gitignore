@@ -6,6 +6,17 @@ config.json
 .idea
 .flaskenv*
 .env.keys
+.env
+.env.local
+.env.*.local
+.terraform/
+*.tfstate*
+*.tfplan
+*key*
+*.pem
+!**/*.example
+!**/*.pub
+/terraform/botrucho
 **/.terraform/*
 *.tfstate
 *.tfstate.*

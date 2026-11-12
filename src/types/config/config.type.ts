@@ -33,9 +33,9 @@ interface Integrations {
 }
 
 export interface ActivityPresence {
-  status: PresenceStatusData | undefined,
-  type: ActivityType,
-  content: string
+  status: PresenceStatusData | undefined;
+  type: ActivityType;
+  content: string;
 }
 
 export interface ConfigType {
@@ -57,6 +57,6 @@ export interface ConfigType {
   database: Database;
   isProduction: boolean;
   frisbeeHook: Hook;
-  apis: APIs,
-  integrations: Integrations
+  apis: APIs;
+  integrations: Integrations;
 }

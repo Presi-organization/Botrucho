@@ -4,9 +4,9 @@ resource "random_pet" "tag" {
 
 
 resource "docker_image" "botrucho" {
-  name = "registry-1.docker.io/presi11/botrucho:${random_pet.tag.id}"
+  name = "${var.image_repository}:${random_pet.tag.id}"
   build {
-    context    = "${path.module}/.."
+    context    = abspath("${path.module}/../../..")
     dockerfile = "docker/Dockerfile"
   }
 }

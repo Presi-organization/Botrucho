@@ -1,8 +1,10 @@
 import fsCallback from 'fs';
 import { parentPort, workerData } from 'worker_threads';
+
 import { createCanvas, loadImage } from 'canvas';
 // @ts-expect-error: No types
 import GIFEncoder from 'gif-encoder-2';
+
 import { drawCroppedImage, invertCanvasImage } from '@/utils';
 
 (async () => {
@@ -15,7 +17,7 @@ import { drawCroppedImage, invertCanvasImage } from '@/utils';
       outputSize,
       gifPath,
       invertRadar,
-      showProgress
+      showProgress,
     } = workerData;
 
     const mapImg = await loadImage(mapPath);
@@ -39,11 +41,16 @@ import { drawCroppedImage, invertCanvasImage } from '@/utils';
       drawCroppedImage(ctx, mapImg, mapCrop, { x: 0, y: 0, width: outputSize, height: outputSize });
 
       ctx.globalAlpha = 0.5;
-      drawCroppedImage(ctx, radarImg, radarCrop, { x: 0, y: 0, width: outputSize, height: outputSize });
+      drawCroppedImage(ctx, radarImg, radarCrop, {
+        x: 0,
+        y: 0,
+        width: outputSize,
+        height: outputSize,
+      });
 
       if (showProgress) {
         ctx.fillStyle = invertRadar ? '#ff0084' : '#ff6a00';
-        ctx.fillRect(0, outputSize - 10, ((outputSize * (i + 1)) / radarImages.length), 10);
+        ctx.fillRect(0, outputSize - 10, (outputSize * (i + 1)) / radarImages.length, 10);
       }
       ctx.globalAlpha = 1.0;
 
@@ -56,6 +63,9 @@ import { drawCroppedImage, invertCanvasImage } from '@/utils';
       parentPort?.postMessage({ success: true });
     });
   } catch (error) {
-    parentPort?.postMessage({ success: false, error: error instanceof Error ? error.message : 'Unknown error' });
+    parentPort?.postMessage({
+      success: false,
+      error: error instanceof Error ? error.message : 'Unknown error',
+    });
   }
 })();

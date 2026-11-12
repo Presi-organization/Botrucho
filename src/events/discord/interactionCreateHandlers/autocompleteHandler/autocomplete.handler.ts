@@ -1,7 +1,8 @@
+import { BaseInteraction } from 'discord.js';
+
 import { IIntCreateHandler } from '@/events/discord/interactionCreateHandlers';
 import { Botrucho } from '@/mongodb';
 import { ICommand } from '@/types';
-import { BaseInteraction } from 'discord.js';
 
 export class AutocompleteHandler implements IIntCreateHandler {
   private client: Botrucho;
@@ -17,5 +18,5 @@ export class AutocompleteHandler implements IIntCreateHandler {
     if (!command.autocomplete) return false;
     await command.autocomplete(interaction);
     return true;
-  }
+  };
 }

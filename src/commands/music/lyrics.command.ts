@@ -1,8 +1,21 @@
-import { EmbedBuilder, SlashCommandOptionsOnlyBuilder, SlashCommandStringOption } from 'discord.js';
 import { SlashCommandBuilder } from '@discordjs/builders';
-import { GuildQueue, GuildQueueTimeline, LrcSearchResult, useQueue, useTimeline } from 'discord-player';
+import {
+  GuildQueue,
+  GuildQueueTimeline,
+  LrcSearchResult,
+  useQueue,
+  useTimeline,
+} from 'discord-player';
+import { EmbedBuilder, SlashCommandOptionsOnlyBuilder, SlashCommandStringOption } from 'discord.js';
+
 import { IGuildData } from '@/mongodb';
-import { ICommand, CommandInteractionWithClient, LyricsKeys, PlayerType, TranslationElement } from '@/types';
+import {
+  ICommand,
+  CommandInteractionWithClient,
+  LyricsKeys,
+  PlayerType,
+  TranslationElement,
+} from '@/types';
 import { Error, Success, Warning } from '@/utils';
 
 export default class LyricsCommand extends ICommand {
@@ -11,20 +24,16 @@ export default class LyricsCommand extends ICommand {
   data: SlashCommandOptionsOnlyBuilder = new SlashCommandBuilder()
     .setName('lyrics')
     .setDescription('Get the lyrics of the current song.')
-    .addStringOption((song: SlashCommandStringOption) => song
-      .setName('song')
-      .setDescription('Enter the song name to get the lyrics.')
+    .addStringOption((song: SlashCommandStringOption) =>
+      song.setName('song').setDescription('Enter the song name to get the lyrics.'),
     );
 
   async execute(interaction: CommandInteractionWithClient, guildDB: IGuildData): Promise<void> {
     if (!interaction.inCachedGuild()) return;
     if (!interaction.isChatInputCommand()) return;
 
-    const {
-      NO_QUEUE,
-      NOT_FOUND,
-      SYNCED_LYRICS
-    }: TranslationElement<LyricsKeys> = interaction.translate('LYRICS', guildDB.lang);
+    const { NO_QUEUE, NOT_FOUND, SYNCED_LYRICS }: TranslationElement<LyricsKeys> =
+      interaction.translate('LYRICS', guildDB.lang);
 
     const { client } = interaction;
     await interaction.deferReply();
@@ -40,16 +49,25 @@ export default class LyricsCommand extends ICommand {
     }
 
     const lyrics: LrcSearchResult[] = await client.player.lyrics.search({
-      q: song_name
+      q: song_name,
     });
 
-    const filteredLyrics: LrcSearchResult | undefined = lyrics.find((lyr: LrcSearchResult) => song_name.includes(lyr.trackName));
+    const filteredLyrics: LrcSearchResult | undefined = lyrics.find((lyr: LrcSearchResult) =>
+      song_name.includes(lyr.trackName),
+    );
     if (!filteredLyrics) {
       await interaction.editReply({ embeds: [Warning({ description: NOT_FOUND })] });
       return;
     }
 
-    if (filteredLyrics.syncedLyrics && queue && timeline && timeline.timestamp && timeline.timestamp.current && timeline.timestamp.total) {
+    if (
+      filteredLyrics.syncedLyrics &&
+      queue &&
+      timeline &&
+      timeline.timestamp &&
+      timeline.timestamp.current &&
+      timeline.timestamp.total
+    ) {
       let fullLyrics = '';
       const syncedLyrics = queue.syncedLyrics(filteredLyrics);
       const currentTimestamp: number = timeline.timestamp.current.value;
@@ -63,10 +81,12 @@ export default class LyricsCommand extends ICommand {
           title: SYNCED_LYRICS,
           description: fullLyrics.length === 1997 ? `${fullLyrics}...` : fullLyrics,
           footer: {
-            text: `${percent}% [${'#'.repeat(progress)}${'-'.repeat(20 - progress)}]`
-          }
-        }
-        interaction.editReply({ embeds: [Success(embed)] });
+            text: `${percent}% [${'#'.repeat(progress)}${'-'.repeat(20 - progress)}]`,
+          },
+        };
+        void interaction
+          .editReply({ embeds: [Success(embed)] })
+          .catch(() => syncedLyrics.unsubscribe());
       });
       syncedLyrics.subscribe();
       syncedLyrics.onUnsubscribe(() => {
@@ -76,7 +96,9 @@ export default class LyricsCommand extends ICommand {
       const trimmedLyrics: string = filteredLyrics.plainLyrics.substring(0, 1997);
 
       const embed: EmbedBuilder = new EmbedBuilder()
-        .setTitle(`${filteredLyrics.trackName ? filteredLyrics.trackName + ' - ' + filteredLyrics.artistName : song_name}`)
+        .setTitle(
+          `${filteredLyrics.trackName ? filteredLyrics.trackName + ' - ' + filteredLyrics.artistName : song_name}`,
+        )
         .setAuthor({ name: filteredLyrics.artistName })
         .setDescription(trimmedLyrics.length === 1997 ? `${trimmedLyrics}...` : trimmedLyrics);
 

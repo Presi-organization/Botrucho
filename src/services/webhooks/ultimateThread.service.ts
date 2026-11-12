@@ -1,3 +1,4 @@
+import { Snowflake, ThreadAutoArchiveDuration } from 'discord-api-types/v10';
 import {
   APIMessage,
   BaseInteraction,
@@ -9,9 +10,9 @@ import {
   TextChannel,
   TextThreadChannel,
   User,
-  WebhookClient
+  WebhookClient,
 } from 'discord.js';
-import { Snowflake, ThreadAutoArchiveDuration } from 'discord-api-types/v10';
+
 import { EventAlreadyExistsError } from '@/errors';
 import { AttendanceReactionHandler } from '@/events/discord/reactionHandlers';
 import {
@@ -21,7 +22,7 @@ import {
   IAttendee,
   ICronData,
   IEventAttendance,
-  IThread
+  IThread,
 } from '@/mongodb';
 import { logger, Warning } from '@/utils';
 
@@ -29,7 +30,7 @@ import { logger, Warning } from '@/utils';
  * Retrieves the current Date + one day and + three days
  * @return { eventDate: Date, expirationDate: Date } The event and expiration dates
  */
-const getEventDates = (): { eventDate: Date, expirationDate: Date } => {
+const getEventDates = (): { eventDate: Date; expirationDate: Date } => {
   const eventDate = new Date();
   eventDate.setHours(0, 0, 0, 0);
 
@@ -42,7 +43,7 @@ const getEventDates = (): { eventDate: Date, expirationDate: Date } => {
   expirationDate.setDate(expirationDate.getDate() + 3);
 
   return { eventDate, expirationDate };
-}
+};
 
 /**
  * Retrieves the current Date + one day
@@ -54,55 +55,68 @@ const getTomorrowsDay: () => string = (): string => {
     timeZone: 'America/Bogota',
     day: '2-digit',
     month: '2-digit',
-    year: 'numeric'
+    year: 'numeric',
   });
-}
+};
 
 /**
  * Create a new webhook
  * @arg {BaseInteraction} interaction The interaction object
  */
-const createWebhook: (interaction: BaseInteraction) => Promise<void> = async (interaction: BaseInteraction): Promise<void> => {
-  (interaction.channel as TextChannel).createWebhook({
-    name: 'Botruchook',
-    avatar: 'https://images.deepai.org/art-image/5c017be32cb74260aa1471f36d539b9c/ultimate-frisbee-profile-image-86efab.jpg'
-  })
-    .then(webhook => logger.log(`Created webhook ${webhook}\n ${webhook.url}`))
+const createWebhook: (interaction: BaseInteraction) => Promise<void> = async (
+  interaction: BaseInteraction,
+): Promise<void> => {
+  (interaction.channel as TextChannel)
+    .createWebhook({
+      name: 'Botruchook',
+      avatar:
+        'https://images.deepai.org/art-image/5c017be32cb74260aa1471f36d539b9c/ultimate-frisbee-profile-image-86efab.jpg',
+    })
+    .then((webhook) => logger.log(`Created webhook ${webhook.id}`))
     .catch(logger.error);
-}
+};
 
 /**
  * Edit an existing webhook
  * @arg {WebhookClient} webhook The Webhook client
  */
-const editWebhook: (webhook: WebhookClient) => Promise<WebhookClient> = (webhook: WebhookClient): Promise<WebhookClient> => {
+const editWebhook: (webhook: WebhookClient) => Promise<WebhookClient> = (
+  webhook: WebhookClient,
+): Promise<WebhookClient> => {
   return webhook.edit({
     name: 'Botruchook',
-    avatar: 'https://images.deepai.org/art-image/5c017be32cb74260aa1471f36d539b9c/ultimate-frisbee-profile-image-86efab.jpg'
+    avatar:
+      'https://images.deepai.org/art-image/5c017be32cb74260aa1471f36d539b9c/ultimate-frisbee-profile-image-86efab.jpg',
   });
-}
+};
 
 const handleReactions = async (client: Botrucho, message: Message<true>): Promise<void> => {
-  const attendanceReactionHandler: AttendanceReactionHandler = new AttendanceReactionHandler(client);
+  const attendanceReactionHandler: AttendanceReactionHandler = new AttendanceReactionHandler(
+    client,
+  );
   for (const reaction of message.reactions.cache.values()) {
     const users: Collection<Snowflake, User> = await reaction.users.fetch();
-    users.forEach((user: User) => {
+    for (const user of users.values()) {
       if (user.id !== client.user?.id) {
-        attendanceReactionHandler.handle(reaction, user);
+        await attendanceReactionHandler.handle(reaction, user);
       }
-    });
+    }
   }
 };
 
-const deleteNonBotMessages = async (client: Botrucho, channel: TextChannel, threadId: string): Promise<void> => {
+const deleteNonBotMessages = async (
+  client: Botrucho,
+  channel: TextChannel,
+  threadId: string,
+): Promise<void> => {
   const thread: TextThreadChannel | null = await channel.threads.fetch(threadId);
   if (thread) {
     const messages: Collection<string, Message<true>> = await thread.messages.fetch();
-    const nonBotMessages: Collection<string, Message<true>> = messages.filter(message => message.author.id !== client.user?.id);
+    const nonBotMessages: Collection<string, Message<true>> = messages.filter(
+      (message) => message.author.id !== client.user?.id,
+    );
 
-    nonBotMessages.forEach((message: Message<true>) => {
-      message.delete();
-    });
+    for (const message of nonBotMessages.values()) await message.delete();
   }
 };
 
@@ -113,8 +127,11 @@ const deleteNonBotMessages = async (client: Botrucho, channel: TextChannel, thre
  */
 const cleanUnreadAttendance = async (client: Botrucho): Promise<void> => {
   try {
-    const { messageId, thread: { threadId } } = await client.eventAttendanceData.getEventAttendance({});
-    const channel = await client.channels.fetch('1231030584680251432') as TextChannel | null;
+    const {
+      messageId,
+      thread: { threadId },
+    } = await client.eventAttendanceData.getEventAttendance({});
+    const channel = (await client.channels.fetch('1231030584680251432')) as TextChannel | null;
     if (channel?.isTextBased()) {
       const message: Message<true> = await channel.messages.fetch(messageId);
 
@@ -124,25 +141,45 @@ const cleanUnreadAttendance = async (client: Botrucho): Promise<void> => {
   } catch (e) {
     logger.error('Error during client ready event:', e);
   }
-}
+};
 
 /**
  * Send a message with an existing webhook
  * @arg {WebhookClient} webhook The Webhook client
  * @arg {string} webhookTitle The title of the webhook message
  */
-const sendMessageWithWebhook: (webhook: WebhookClient, webhookTitle: string) => Promise<APIMessage> = async (webhook: WebhookClient, webhookTitle: string): Promise<APIMessage> => {
+const sendMessageWithWebhook: (
+  webhook: WebhookClient,
+  webhookTitle: string,
+) => Promise<APIMessage> = async (
+  webhook: WebhookClient,
+  webhookTitle: string,
+): Promise<APIMessage> => {
   return webhook.send({ content: webhookTitle });
-}
+};
 
-const sendAMessageAndThread: (channel: TextChannel, webhook: WebhookClient, attendanceData: AttendanceDataController, cronData: CronDataController) => Promise<void> = async (channel: TextChannel, webhook: WebhookClient, attendanceData: AttendanceDataController, cronData: CronDataController): Promise<void> => {
+const sendAMessageAndThread: (
+  channel: TextChannel,
+  webhook: WebhookClient,
+  attendanceData: AttendanceDataController,
+  cronData: CronDataController,
+) => Promise<void> = async (
+  channel: TextChannel,
+  webhook: WebhookClient,
+  attendanceData: AttendanceDataController,
+  cronData: CronDataController,
+): Promise<void> => {
   try {
     const cronId = '8ff357d5-4463-488f-90f4-7ec016457b8e';
     const ultimateData: ICronData | null = await cronData.getCronById(cronId);
-    const webhookTitle: string = (ultimateData?.metadata?.title as string).replace('${date}', getTomorrowsDay()) || `<@&540708709945311243>\n<a:WEEWOO:1329263115530928208> Asistencia ${getTomorrowsDay()} <a:frisbeeT:1309633549967556619> <a:WEEWOO:1329263115530928208>`;
+    const title = ultimateData?.metadata?.title;
+    const webhookTitle =
+      typeof title === 'string' && title.length > 0
+        ? title.replace('${date}', getTomorrowsDay())
+        : `<@&540708709945311243>\n<a:WEEWOO:1329263115530928208> Asistencia ${getTomorrowsDay()} <a:frisbeeT:1309633549967556619> <a:WEEWOO:1329263115530928208>`;
     const emojis: string[] = [
-      ultimateData?.metadata?.emojiYes as string || '<:pepe_si:1332572265677586572>',
-      ultimateData?.metadata?.emojiNo as string || '<:pepe_no:1332572291317502014>'
+      (ultimateData?.metadata?.emojiYes as string) || '<:pepe_si:1332572265677586572>',
+      (ultimateData?.metadata?.emojiNo as string) || '<:pepe_no:1332572291317502014>',
     ];
 
     const message: APIMessage = await sendMessageWithWebhook(webhook, webhookTitle);
@@ -152,56 +189,79 @@ const sendAMessageAndThread: (channel: TextChannel, webhook: WebhookClient, atte
     const thread: PublicThreadChannel<false> = await fetchedMessage.startThread({
       name: `Asistencia ${getTomorrowsDay()}`,
       autoArchiveDuration: ThreadAutoArchiveDuration.ThreeDays,
-      reason: 'Diskito en la U'
+      reason: 'Diskito en la U',
     });
 
     const { eventDate, expirationDate } = getEventDates();
-    const threadObj: IThread = { threadId: thread.id }
-    await attendanceData.createEvent(message.id, threadObj, eventDate, expirationDate).then(async (event: IEventAttendance) => {
-      const msg: Message<true> = await thread.send({
-        content: '<@&540708709945311243>'
+    const threadObj: IThread = { threadId: thread.id };
+    await attendanceData
+      .createEvent(message.id, threadObj, eventDate, expirationDate)
+      .then(async (event: IEventAttendance) => {
+        const msg: Message<true> = await thread.send({
+          content: '<@&540708709945311243>',
+        });
+        setTimeout(() => {
+          void msg
+            .delete()
+            .catch((error) => logger.error('Temporary message cleanup failed', error));
+        }, 10);
+        const threadMessage: Message<true> = await thread.send({ content: '**Sin Votos**' });
+        await thread.send({ content: '__**Logs de Asistencia**__\n' });
+        event.thread.countMessageId = threadMessage.id;
+        await event.save();
+
+        logger.log(`Event created with message ID: ${message.id} and thread ID: ${thread.id}`);
+      })
+      .catch(async (error: EventAlreadyExistsError) => {
+        logger.error('Error creating event: ', error.message);
+
+        await Promise.allSettled([fetchedMessage.delete(), thread.delete()]);
       });
-      setTimeout(() => msg.delete(), 10);
-      const threadMessage: Message<true> = await thread.send({ content: '**Sin Votos**' });
-      await thread.send({ content: '__**Logs de Asistencia**__\n' });
-      event.thread.countMessageId = threadMessage.id;
-      await event.save();
-
-      logger.log(`Event created with message ID: ${message.id} and thread ID: ${thread.id}`);
-    }).catch((error: EventAlreadyExistsError) => {
-      logger.error('Error creating event: ', error.message);
-
-      fetchedMessage.delete();
-      thread.delete();
-    });
   } catch (error) {
     logger.trace('Error trying to send: ', error);
   }
-}
+};
 
 const initializeFrisbeeEventCron = async (client: Botrucho) => {
   const webhook = new WebhookClient(client.config.frisbeeHook);
 
-  const channel = await client.channels.fetch('1231030584680251432') as TextChannel | null;
+  const channel = (await client.channels.fetch('1231030584680251432')) as TextChannel | null;
   if (channel?.isTextBased()) {
-    const users: string[] | undefined = channel.guild.roles.cache.find((role: Role) => role.id === '540708709945311243')?.members
-      .reduce((acc: string[], m: GuildMember) => !m.user.bot ? [...acc, m.user.displayName] : acc, []);
+    const users: string[] | undefined = channel.guild.roles.cache
+      .find((role: Role) => role.id === '540708709945311243')
+      ?.members.reduce(
+        (acc: string[], m: GuildMember) => (!m.user.bot ? [...acc, m.user.displayName] : acc),
+        [],
+      );
     logger.log(users);
     return sendAMessageAndThread(channel, webhook, client.eventAttendanceData, client.cronData);
   }
-}
+};
 
 const sendReminderToConfirmAttendance = async (client: Botrucho) => {
-  const channel = await client.channels.fetch('1231030584680251432') as TextChannel | null;
+  const channel = (await client.channels.fetch('1231030584680251432')) as TextChannel | null;
   const userIdToAvoid = ['772690171228848131', '175677535537987584', '359010137404342272'];
   if (channel?.isTextBased()) {
-    const { thread: { threadId }, messageId } = await client.eventAttendanceData.getEventAttendance({});
+    const {
+      thread: { threadId },
+      messageId,
+    } = await client.eventAttendanceData.getEventAttendance({});
     const attendees = await client.eventAttendanceData.getAttendees(messageId);
     const thread: TextThreadChannel | null = await channel.threads.fetch(threadId);
-    const users: string[] | undefined = channel.guild.roles.cache.find((role: Role) => role.id === '540708709945311243')?.members.reduce((acc: string[], m: GuildMember) => !m.user.bot ? [...acc, m.user.id] : acc, []);
-    const usersNotInAttendees: string[] = users?.filter((userId: string) => !attendees.some((attendee: IAttendee) => attendee.userId === userId) && !userIdToAvoid.includes(userId)) || [];
+    const users: string[] | undefined = channel.guild.roles.cache
+      .find((role: Role) => role.id === '540708709945311243')
+      ?.members.reduce(
+        (acc: string[], m: GuildMember) => (!m.user.bot ? [...acc, m.user.id] : acc),
+        [],
+      );
+    const usersNotInAttendees: string[] =
+      users?.filter(
+        (userId: string) =>
+          !attendees.some((attendee: IAttendee) => attendee.userId === userId) &&
+          !userIdToAvoid.includes(userId),
+      ) || [];
     if (thread && usersNotInAttendees.length > 0) {
-      const userMentions = usersNotInAttendees.map(userId => `<@${userId}>`).join(', ');
+      const userMentions = usersNotInAttendees.map((userId) => `<@${userId}>`).join(', ');
 
       const reminderEmbed = Warning({
         title: '⚠️ Recordatorio de Asistencia',
@@ -210,29 +270,29 @@ const sendReminderToConfirmAttendance = async (client: Botrucho) => {
           {
             name: '¿Cómo confirmar?',
             value: '¡Reacciona al mensaje de asistencia!',
-            inline: false
-          }
+            inline: false,
+          },
         ],
         timestamp: new Date().toISOString(),
         footer: {
-          text: 'Botrucho Frisbee'
-        }
+          text: 'Botrucho Frisbee',
+        },
       });
 
       await thread.send({
         content: userMentions,
-        embeds: [reminderEmbed]
+        embeds: [reminderEmbed],
       });
 
       logger.log(`Reminder sent to ${usersNotInAttendees.length} users`);
     }
   }
-}
+};
 
 export {
   cleanUnreadAttendance,
   initializeFrisbeeEventCron,
   createWebhook,
   editWebhook,
-  sendReminderToConfirmAttendance
-}
+  sendReminderToConfirmAttendance,
+};

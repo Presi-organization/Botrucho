@@ -7,7 +7,7 @@
       "dynamicImport": true,
       "decorators": false
     },
-    "target": "esnext",
+    "target": "es2024",
     "baseUrl": "./",
     "paths": {
       "@/*": ["./src/*"],
@@ -17,8 +17,8 @@
   "module": {
     "type": "commonjs",
     "strictMode": false,
-    "lazy": true
+    "lazy": false
   },
-  "minify": true,
+  "minify": false,
   "sourceMaps": true,
 }

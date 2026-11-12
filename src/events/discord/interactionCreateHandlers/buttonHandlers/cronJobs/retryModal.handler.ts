@@ -1,4 +1,5 @@
 import { BaseInteraction } from 'discord.js';
+
 import { IIntCreateHandler } from '@/events/discord/interactionCreateHandlers';
 import { Botrucho, ICronData } from '@/mongodb';
 import { showEditCronModal } from '@/utils';
@@ -19,5 +20,5 @@ export class RetryModalHandler implements IIntCreateHandler {
     if (!cronJob) return false;
     await showEditCronModal(interaction, cronJob);
     return true;
-  }
+  };
 }

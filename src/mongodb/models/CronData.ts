@@ -1,4 +1,5 @@
 import { randomUUID } from 'crypto';
+
 import mongoose, { Schema } from 'mongoose';
 
 export interface ICronData {
@@ -18,7 +19,7 @@ const CronDataSchema = new Schema<ICronData>({
   lastRun: { type: Date, default: null },
   isActive: { type: Boolean, default: true },
   runOnInit: { type: Boolean, default: false },
-  metadata: { type: Object, default: {} } // Ensure metadata is an object
+  metadata: { type: Object, default: {} }, // Ensure metadata is an object
 });
 
 export const CronDataModel = mongoose.model<ICronData>('CronData', CronDataSchema);

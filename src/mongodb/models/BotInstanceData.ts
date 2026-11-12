@@ -12,4 +12,7 @@ const BotInstanceSchema = new Schema<IBotInstance>({
   uptime: { type: Number, required: true },
 });
 
-export const BotInstanceDataModel = mongoose.model<IBotInstance>('BotInstanceData', BotInstanceSchema);
+export const BotInstanceDataModel = mongoose.model<IBotInstance>(
+  'BotInstanceData',
+  BotInstanceSchema,
+);

@@ -1,0 +1,99 @@
+#!/bin/bash
+set -euo pipefail
+export DEBIAN_FRONTEND=noninteractive
+
+if [ ! -f /swapfile ]; then
+  fallocate -l 1G /swapfile
+  chmod 600 /swapfile
+  mkswap /swapfile
+fi
+chmod 600 /swapfile
+if ! swapon --show=NAME --noheadings | grep -Fxq /swapfile; then
+  swapon /swapfile
+fi
+if ! grep -Eq '^/swapfile[[:space:]]' /etc/fstab; then
+  printf '/swapfile none swap sw 0 0\n' >> /etc/fstab
+fi
+
+if [ ! -f /var/lib/discord-bot/node26-runtime.ready ] || ! command -v node >/dev/null 2>&1 || [ "$(node -p 'process.versions.node.split(".")[0]')" != 26 ]; then
+  apt-get update
+  apt-get install -y --no-install-recommends ca-certificates curl rsync libatomic1 sudo \
+  ffmpeg python3 libcairo2 libpango-1.0-0 libpangocairo-1.0-0 libjpeg62-turbo \
+  libgif7 librsvg2-2 fonts-dejavu-core
+  curl --fail --show-error --silent --location https://deb.nodesource.com/setup_26.x -o /tmp/nodesource-26.sh
+  bash /tmp/nodesource-26.sh
+  apt-get install -y nodejs
+  install -d /var/lib/discord-bot
+  touch /var/lib/discord-bot/node26-runtime.ready
+fi
+
+if ! id botuser >/dev/null 2>&1; then
+  useradd --create-home --shell /bin/bash botuser
+fi
+install -d -m 755 -o botuser -g botuser /opt/discord-bot
+
+# Guest Agent adds metadata SSH accounts to google-sudoers, even if the user
+# already exists. Exclude botuser from that blanket grant; the agent creates
+# this file only when absent, so group re-additions cannot restore root access.
+cat > /etc/sudoers.d/google_sudoers <<'GOOGLE_SUDOERS'
+%google-sudoers, !botuser ALL=(ALL:ALL) NOPASSWD:ALL
+GOOGLE_SUDOERS
+chmod 440 /etc/sudoers.d/google_sudoers
+visudo -cf /etc/sudoers.d/google_sudoers
+
+cat > /etc/sudoers.d/discord-bot <<'SUDOERS'
+botuser ALL=(root) NOPASSWD: /usr/bin/systemctl restart discord-bot
+botuser ALL=(root) NOPASSWD: NOEXEC: /usr/bin/systemctl status discord-bot
+SUDOERS
+chmod 440 /etc/sudoers.d/discord-bot
+visudo -cf /etc/sudoers.d/discord-bot
+
+cat > /etc/systemd/system/discord-bot.service <<'UNIT'
+[Unit]
+Description=Bot Discord Node.js 26
+Wants=network-online.target
+After=network-online.target
+ConditionPathExists=/opt/discord-bot/dist/src/sharder.js
+ConditionPathExists=/opt/discord-bot/node_modules/.bin/dotenvx
+ConditionPathExists=/opt/discord-bot/.env.production
+ConditionPathExists=/opt/discord-bot/.env.keys
+StartLimitIntervalSec=0
+
+[Service]
+Type=simple
+User=botuser
+Group=botuser
+WorkingDirectory=/opt/discord-bot/dist
+EnvironmentFile=/opt/discord-bot/.env.keys
+Environment=TZ=America/Bogota
+Environment=FFMPEG_PATH=/usr/bin/ffmpeg
+Environment=NODE_ENV=production
+Environment=SHARDS=1
+ExecStart=/opt/discord-bot/node_modules/.bin/dotenvx run --strict -f /opt/discord-bot/.env.production -- /usr/bin/node --max-old-space-size=512 /opt/discord-bot/dist/src/sharder.js
+Restart=always
+RestartSec=10
+KillMode=control-group
+TimeoutStopSec=15
+MemoryHigh=700M
+MemoryMax=850M
+MemorySwapMax=512M
+TasksMax=128
+UMask=0077
+NoNewPrivileges=true
+PrivateTmp=true
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=discord-bot
+LogRateLimitIntervalSec=30s
+LogRateLimitBurst=1000
+
+[Install]
+WantedBy=multi-user.target
+UNIT
+systemctl daemon-reload
+systemctl enable discord-bot.service
+if [ -f /etc/ssh/ssh_host_ed25519_key.pub ]; then
+  printf 'HOST_KEY_ED25519='
+  cat /etc/ssh/ssh_host_ed25519_key.pub
+fi
+# CI starts the service after uploading the compiled files and encrypted config.
