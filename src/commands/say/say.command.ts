@@ -65,7 +65,7 @@ export default class SayCommand extends ICommand {
     }
 
     const key: string = client.config.integrations.aispeech;
-    const region = 'eastus';
+    const region = 'northcentralus';
     const audioFile: string = join(__dirname, 'voice_speech.wav');
 
     const speechConfig: SpeechConfig = SpeechConfig.fromSubscription(key, region);
