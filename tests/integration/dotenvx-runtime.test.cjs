@@ -10,24 +10,52 @@ const cli = path.resolve('node_modules/@dotenvx/dotenvx/src/cli/dotenvx.js');
 const signalProbe = path.resolve('tests/fixtures/signal-probe.cjs');
 const isolatedOptions = ['--no-armor', '--no-native', '--no-1password', '--no-bitwarden'];
 
-function fixture(t) {
+function fixture(t, filename = '.env.production') {
   const cwd = fs.mkdtempSync(path.join(os.tmpdir(), 'botrucho-dotenvx-'));
   t.after(() => fs.rmSync(cwd, { recursive: true, force: true }));
   const env = { ...process.env };
   for (const name of Object.keys(env)) if (name.startsWith('DOTENV_')) delete env[name];
-  fs.writeFileSync(path.join(cwd, '.env.production'), 'TEST_VALUE=synthetic-only\nSHARDS=auto\n');
-  execFileSync(process.execPath, [cli, 'encrypt', '-f', '.env.production', ...isolatedOptions], {
+  fs.writeFileSync(path.join(cwd, filename), 'TEST_VALUE=synthetic-only\nSHARDS=auto\n');
+  execFileSync(process.execPath, [cli, 'encrypt', '-f', filename, ...isolatedOptions], {
     cwd,
     env,
   });
   const keysFile = path.join(cwd, '.env.keys');
+  const keyName = `DOTENV_PRIVATE_KEY_${filename.slice('.env.'.length).toUpperCase()}`;
   const key = fs
     .readFileSync(keysFile, 'utf8')
-    .match(/^DOTENV_PRIVATE_KEY_PRODUCTION=["']?([a-f0-9]{64})["']?\s*$/m)?.[1];
+    .match(new RegExp(`^${keyName}=["']?([a-f0-9]{64})["']?\\s*$`, 'm'))?.[1];
   assert.ok(key, 'Encryption should generate an isolated test key');
   fs.unlinkSync(keysFile); // Decryption must use the environment key, like systemd.
-  return { cwd, env: { ...env, DOTENV_PRIVATE_KEY_PRODUCTION: key, SHARDS: '1' } };
+  return { cwd, env: { ...env, [keyName]: key, SHARDS: '1' } };
 }
+
+test('npm start runtime decrypts development config and enters dist without plaintext .env', (t) => {
+  const start = JSON.parse(fs.readFileSync('package.json', 'utf8')).scripts.start;
+  const prefix = 'npm run build && ';
+  assert.ok(start.startsWith(prefix), 'Start must build before running the compiled bot');
+  // CI verifies the actual build separately. Run its unchanged runtime portion
+  // against an isolated stub, never the real Discord/Mongo entrypoint.
+  const runtime = start.slice(prefix.length);
+  const options = fixture(t, '.env.development');
+  delete options.env.SHARDS;
+  const pathKey = Object.keys(options.env).find((name) => name.toUpperCase() === 'PATH') ?? 'PATH';
+  options.env[pathKey] = [
+    path.dirname(process.execPath),
+    path.resolve('node_modules/.bin'),
+    options.env[pathKey] ?? '',
+  ].join(path.delimiter);
+  fs.mkdirSync(path.join(options.cwd, 'dist/src'), { recursive: true });
+  fs.writeFileSync(
+    path.join(options.cwd, 'dist/src/sharder.js'),
+    'console.log(JSON.stringify({value:process.env.TEST_VALUE,shards:process.env.SHARDS,directory:require("node:path").basename(process.cwd())}))',
+  );
+  const result = spawnSync(runtime, { ...options, shell: true, encoding: 'utf8' });
+  assert.equal(result.status, 0, result.stderr);
+  assert.equal(fs.existsSync(path.join(options.cwd, '.env')), false);
+  const data = JSON.parse(result.stdout.split('\n').find((line) => line.startsWith('{')));
+  assert.deepEqual(data, { value: 'synthetic-only', shards: '1', directory: 'dist' });
+});
 
 test('one dotenvx key decrypts config and preserves the explicit single-shard override', (t) => {
   const options = fixture(t);

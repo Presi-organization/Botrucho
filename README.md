@@ -76,6 +76,8 @@ npm test
 npm run build
 ```
 
+To run outside Docker, `npm start` rebuilds and loads encrypted `.env.development` through dotenvx, then starts the compiled bot from `dist/`. Provide its matching `DOTENV_PRIVATE_KEY_DEVELOPMENT` locally (or an ignored local `.env.keys`); do not create an additional GitHub Secret for development. If you only have the production key, use the Compose workflow above instead.
+
 Tests use Node's built-in runner and are organized by purpose:
 
 | Command                    | Scope                                                             |

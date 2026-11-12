@@ -3,6 +3,29 @@ const { test } = require('node:test');
 const assert = require('node:assert/strict');
 const { EventEmitter } = require('node:events');
 
+test('a stopping shard cannot regain readiness from gateway or late application events', () => {
+  const { watchShard } = require('@/runtime/supervisor');
+  const shard = new EventEmitter();
+  shard.id = 0;
+  const ready = new Set();
+  watchShard(
+    shard,
+    ready,
+    () => {},
+    () => {},
+  );
+  shard.emit('message', 'botrucho:ready');
+  assert.equal(ready.has(0), true);
+  shard.emit('message', 'botrucho:stopping');
+  assert.equal(ready.has(0), false);
+  for (const event of ['resume', 'ready']) {
+    shard.emit(event);
+    assert.equal(ready.has(0), false, event);
+  }
+  shard.emit('message', 'botrucho:ready');
+  assert.equal(ready.has(0), false, 'late application readiness');
+});
+
 test('supervisor tolerates disconnect, reports recovery, and fails on shard death', () => {
   const { watchShard } = require('@/runtime/supervisor');
   const shard = new EventEmitter();

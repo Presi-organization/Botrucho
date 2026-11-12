@@ -5,6 +5,7 @@ Tests use **Node 26's built-in runner**, not Jest or Vitest. Files end in `.test
 ## Where to look
 
 - **`unit/`** — functions with in-memory dependencies: leases, shutdown/timers, interaction errors and shard supervision.
+- Cron tests also cover startup/scheduled overlap, schedule replacement, failure cleanup and draining independent jobs during shutdown.
 - **`integration/`** — HTTP on loopback, startup/attendance with mocked APIs, and the real dotenvx CLI with synthetic encrypted configuration and process shutdown probes.
 - **`contracts/`** — aliases/build settings, environment variables, workflow requirements, Terraform layout, documentation and ignored secrets. Some invoke the compiler; none provision cloud resources.
 - **`platform/`** — isolated Linux checks for Git checkout ownership, sudo policy and systemd validation.

@@ -8,6 +8,7 @@ resource "null_resource" "deploy_botrucho" {
     bind        = var.bind_address
     environment = sha256(var.dotenv)
     env_path    = var.runtime_env_path
+    shards      = var.shards
   }
 
   connection {
@@ -35,7 +36,7 @@ resource "null_resource" "deploy_botrucho" {
       "set -eu",
       "docker pull ${docker_registry_image.push_image.name}",
       "if docker ps -a --filter \"name=botrucho\" --format '{{.Names}}' | grep -q \"^botrucho$\"; then docker stop --time 15 botrucho; docker rm botrucho; fi",
-      "docker run --env-file '${var.runtime_env_path}' --name botrucho -p ${var.bind_address}:3000:3000 --memory=${var.memory_mb}m --memory-swap=${var.memory_mb}m --cpus=${var.cpu_limit} --log-opt max-size=10m --log-opt max-file=3 --stop-timeout 15 -d --restart unless-stopped --init ${docker_registry_image.push_image.name}"
+      "docker run --env-file '${var.runtime_env_path}' -e SHARDS=${var.shards} --name botrucho -p ${var.bind_address}:3000:3000 --memory=${var.memory_mb}m --memory-swap=${var.memory_mb}m --cpus=${var.cpu_limit} --log-opt max-size=10m --log-opt max-file=3 --stop-timeout 15 -d --restart unless-stopped --init ${docker_registry_image.push_image.name}"
     ]
   }
 }

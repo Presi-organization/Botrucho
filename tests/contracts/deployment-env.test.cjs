@@ -52,6 +52,19 @@ test('predefined transfer and restart actions retain explicit host verification'
   );
 });
 
+test('rsync receives the known-hosts path from the container preparation step', () => {
+  const workflow = fs.readFileSync('.github/workflows/deploy.yml', 'utf8');
+  assert.ok(
+    workflow.includes('echo "known_hosts_file=$RUNNER_TEMP/bot_known_hosts" >> "$GITHUB_OUTPUT"'),
+  );
+  const sshArgs = workflow.split('\n').find((line) => line.includes('SSH_CMD_ARGS:'));
+  assert.ok(sshArgs.includes('UserKnownHostsFile=${{ steps.ssh.outputs.known_hosts_file }}'));
+  assert.ok(
+    !sshArgs.includes('runner.temp'),
+    'Host-side runner paths are not container filesystem paths',
+  );
+});
+
 test('Docker and systemd share a pinned core dotenvx CLI and encrypted config', () => {
   const pkg = JSON.parse(fs.readFileSync('package.json', 'utf8'));
   assert.equal(pkg.dependencies['@dotenvx/dotenvx'], '2.38.2');
