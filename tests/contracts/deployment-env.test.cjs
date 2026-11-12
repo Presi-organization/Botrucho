@@ -2,6 +2,14 @@ const { test } = require('node:test');
 const assert = require('node:assert/strict');
 const fs = require('node:fs');
 
+test('container job trusts only its checkout before running Git-dependent tests', () => {
+  const workflow = fs.readFileSync('.github/workflows/deploy.yml', 'utf8');
+  const trust = 'git config --global --add safe.directory "$GITHUB_WORKSPACE"';
+  assert.ok(workflow.includes(trust));
+  assert.ok(workflow.indexOf(trust) < workflow.indexOf('npm ci'));
+  assert.doesNotMatch(workflow, /safe\.directory\s+["']?\*["']?/);
+});
+
 test('deployment runs on pushes to master rather than main', () => {
   const workflow = fs.readFileSync('.github/workflows/deploy.yml', 'utf8');
   assert.match(workflow, /push:\s*\n\s+branches:\s*\[master\]/);
