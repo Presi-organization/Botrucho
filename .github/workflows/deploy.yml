@@ -31,6 +31,7 @@ jobs:
           apt-get install -y --no-install-recommends rsync openssh-client curl python3 make g++ pkg-config libatomic1 libcairo2-dev libpango1.0-dev libjpeg-dev libgif-dev librsvg2-dev
       - name: Test and build in GitHub, not on the VM
         run: |
+          git config --global --add safe.directory "$GITHUB_WORKSPACE"
           npm ci
           npm run lint
           npm test

@@ -7,7 +7,7 @@ Tests use **Node 26's built-in runner**, not Jest or Vitest. Files end in `.test
 - **`unit/`** — functions with in-memory dependencies: leases, shutdown/timers, interaction errors and shard supervision.
 - **`integration/`** — HTTP on loopback, startup/attendance with mocked APIs, and the real dotenvx CLI with synthetic encrypted configuration and process shutdown probes.
 - **`contracts/`** — aliases/build settings, environment variables, workflow requirements, Terraform layout, documentation and ignored secrets. Some invoke the compiler; none provision cloud resources.
-- **`platform/`** — real sudo policy and systemd validation inside a disposable Linux container.
+- **`platform/`** — isolated Linux checks for Git checkout ownership, sudo policy and systemd validation.
 - **`helpers/`** — test-only TypeScript/alias loading. Not a suite.
 - **`fixtures/`** — supporting subprocess programs launched by integration tests, not independently discovered test files.
 
@@ -37,6 +37,8 @@ Native quoted globs discover nested tests on Windows and Linux without a custom 
 Configuration contracts verify the encrypted artifact, single application key and pinned transfer/SSH actions. Integration tests create temporary encrypted files and keys, prove decryption/fail-closed behavior with the actual CLI, and check signal forwarding without loading Discord or MongoDB.
 
 ## Linux checks and safety
+
+- The Git ownership regression runs as root in Linux, using temporary repositories with another UID. It verifies that the workflow trusts only its checkout; it does not change the host's Git configuration.
 
 - The two POSIX signal-forwarding tests are skipped on Windows. Encryption/decryption tests run on both platforms and never read the project's real `.env.keys` or decrypt real application settings.
 - The OpenSSH fingerprint integration check also runs on Linux with freshly generated temporary test keys; it never connects to a server.
