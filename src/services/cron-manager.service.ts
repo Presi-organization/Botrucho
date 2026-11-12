@@ -10,7 +10,7 @@ import { workerRadarProcess } from '@/workers/radar.process';
 export class CronManager {
   private readonly client: Botrucho;
   private activeTasks: Map<string, ScheduledTask> = new Map<string, ScheduledTask>();
-  private running = new Set<Promise<void>>();
+  private running = new Map<string, Promise<void>>();
   private stopping = false;
 
   constructor(client: Botrucho) {
@@ -33,12 +33,18 @@ export class CronManager {
     if (this.stopping) return;
     // Remove existing task if it exists
     this.removeCronJob(job.cronId as string);
+    const cronId = job.cronId as string;
 
     const run = () => {
       if (this.stopping) return Promise.resolve();
+      const current = this.running.get(cronId);
+      if (current) return current;
       const pending = this.executeCronJob(job);
-      this.running.add(pending);
-      void pending.finally(() => this.running.delete(pending));
+      this.running.set(cronId, pending);
+      const release = () => {
+        if (this.running.get(cronId) === pending) this.running.delete(cronId);
+      };
+      void pending.then(release, release);
       return pending;
     };
     const task: ScheduledTask = schedule(job.cronExpression, run, {
@@ -71,7 +77,7 @@ export class CronManager {
     const tasks = [...this.activeTasks.values()];
     this.activeTasks.clear();
     await Promise.all(tasks.map((task) => task.destroy()));
-    await withTimeout(Promise.allSettled(this.running), 2_000, 'Cron drain');
+    await withTimeout(Promise.allSettled(this.running.values()), 2_000, 'Cron drain');
   }
 
   private async executeCronJob(job: ICronData): Promise<void> {

@@ -2,6 +2,17 @@ const { test } = require('node:test');
 const assert = require('node:assert/strict');
 const { readFileSync } = require('node:fs');
 
+test('optional Portainer deployment validates and passes a single-shard default', () => {
+  const variables = readFileSync('terraform/modules/portainer/variables.tf', 'utf8');
+  const deployment = readFileSync('terraform/modules/portainer/ssh-connect.tf', 'utf8');
+  assert.match(variables, /variable "shards"/);
+  assert.match(variables, /var\.shards >= 1/);
+  assert.match(variables, /floor\(var\.shards\) == var\.shards/);
+  assert.match(variables, /variable "shards"[\s\S]*?default\s*=\s*1/);
+  assert.match(deployment, /-e SHARDS=\$\{var\.shards\}/);
+  assert.match(deployment, /shards\s*=\s*var\.shards/);
+});
+
 test('local Compose provides an explicit positive shard default over encrypted legacy config', () => {
   const compose = readFileSync('docker-compose.yml', 'utf8');
   assert.match(compose, /SHARDS=\$\{SHARDS:-1\}/);

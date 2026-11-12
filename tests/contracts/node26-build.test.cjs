@@ -2,6 +2,15 @@ const { test } = require('node:test');
 const assert = require('node:assert/strict');
 const fs = require('node:fs');
 
+test('npm start builds and loads the encrypted development configuration', () => {
+  const pkg = JSON.parse(fs.readFileSync('package.json', 'utf8'));
+  assert.match(pkg.scripts.start, /^npm run build && dotenvx run --strict/);
+  assert.match(pkg.scripts.start, /-f \.env\.development/);
+  assert.match(pkg.scripts.start, /-e SHARDS=1/);
+  assert.match(pkg.scripts.start, /process\.chdir\('dist'\)/);
+  assert.doesNotMatch(pkg.scripts.start, /--env-file=\.env/);
+});
+
 test('runtime and toolchain declare Node26 and independent TypeScript7 checking', () => {
   const pkg = JSON.parse(fs.readFileSync('package.json', 'utf8'));
   assert.equal(pkg.engines.node, '>=26.0.0');

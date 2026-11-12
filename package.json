@@ -9,7 +9,7 @@
     "lint:fix": "eslint src --fix && prettier --write src tests eslint.config.mjs tsconfig.json package.json",
     "typecheck": "tsc --noEmit",
     "build": "npm run typecheck && npm run clean && swc src -d dist -s -D && node -e \"for(const name of ['assets','languages']) require('node:fs').cpSync(name,'dist/'+name,{recursive:true})\"",
-    "start": "node --env-file=.env -e \"process.chdir('dist');require(process.cwd()+'/src/sharder.js')\"",
+    "start": "npm run build && dotenvx run --strict -e SHARDS=1 -f .env.development -- node -e \"process.chdir('dist');require(process.cwd()+'/src/sharder.js')\"",
     "test": "node --test \"tests/**/*.test.cjs\"",
     "test:unit": "node --test \"tests/unit/**/*.test.cjs\"",
     "test:integration": "node --test \"tests/integration/**/*.test.cjs\"",

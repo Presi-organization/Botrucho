@@ -1,5 +1,5 @@
 variable "dotenv" {
-  description = "DOTENV KEY for decrypt env.vault"
+  description = "dotenvx production private key for encrypted .env.production"
   type        = string
   sensitive   = true
   validation {
@@ -34,6 +34,16 @@ variable "ssh_port" {
 variable "image_repository" {
   description = "Repositorio Docker de destino, configurado explícitamente por quien active este módulo."
   type        = string
+}
+
+variable "shards" {
+  description = "Positive shard count; defaults to one rather than legacy encrypted SHARDS=auto."
+  type        = number
+  default     = 1
+  validation {
+    condition     = var.shards >= 1 && floor(var.shards) == var.shards
+    error_message = "shards must be a positive integer."
+  }
 }
 
 variable "memory_mb" {

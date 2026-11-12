@@ -9,12 +9,17 @@ export function watchShard(
   report: (error: unknown) => void,
 ): void {
   let initialized = false;
+  let stopping = false;
   shard.on('message', (message) => {
-    if (message === 'botrucho:ready') {
+    if (message === 'botrucho:ready' && !stopping) {
       initialized = true;
       ready.add(shard.id);
     }
-    if (message === 'botrucho:stopping') ready.delete(shard.id);
+    if (message === 'botrucho:stopping') {
+      stopping = true;
+      initialized = false;
+      ready.delete(shard.id);
+    }
   });
   shard.on('disconnect', () => ready.delete(shard.id));
   shard.on('resume', () => {
