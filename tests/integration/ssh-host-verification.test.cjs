@@ -6,6 +6,45 @@ const path = require('node:path');
 const { execFileSync } = require('node:child_process');
 
 test(
+  'rsync can read the prepared known-hosts file when runner and container temp paths differ',
+  { skip: process.platform === 'win32' },
+  (t) => {
+    const root = fs.mkdtempSync(path.join(os.tmpdir(), 'botrucho-container-hosts-'));
+    t.after(() => fs.rmSync(root, { recursive: true, force: true }));
+    const containerTemp = path.join(root, 'container-temp');
+    fs.mkdirSync(containerTemp);
+    const host = '203.0.113.1';
+    const key = path.join(root, 'host-key');
+    execFileSync('ssh-keygen', ['-q', '-t', 'ed25519', '-N', '', '-f', key]);
+    const knownHosts = path.join(containerTemp, 'bot_known_hosts');
+    fs.writeFileSync(knownHosts, `${host} ${fs.readFileSync(`${key}.pub`, 'utf8')}`);
+
+    const workflow = fs.readFileSync('.github/workflows/deploy.yml', 'utf8');
+    const outputCommand = workflow
+      .split(/\r?\n/)
+      .find((line) => line.includes('echo "known_hosts_file='));
+    assert.ok(outputCommand, 'Preparation must emit its actual container-side file path');
+    const output = path.join(root, 'step-output');
+    execFileSync('bash', ['-c', outputCommand.trim()], {
+      env: { ...process.env, RUNNER_TEMP: containerTemp, GITHUB_OUTPUT: output },
+    });
+    const emitted = fs
+      .readFileSync(output, 'utf8')
+      .trim()
+      .replace(/^known_hosts_file=/, '');
+    assert.equal(emitted, knownHosts);
+
+    const template = workflow.split(/\r?\n/).find((line) => line.includes('SSH_CMD_ARGS:'));
+    const rendered = template
+      .replace(/\$\{\{\s*steps\.ssh\.outputs\.known_hosts_file\s*\}\}/g, emitted)
+      .replace(/\$\{\{\s*runner\.temp\s*\}\}/g, path.join(root, 'unmounted-host-temp'));
+    const sshFile = rendered.match(/UserKnownHostsFile=([^,]+)/)?.[1];
+    assert.equal(sshFile, knownHosts);
+    execFileSync('ssh-keygen', ['-F', host, '-f', sshFile]);
+  },
+);
+
+test(
   'workflow fingerprints the requested VM rather than the first known host',
   { skip: process.platform === 'win32' },
   (t) => {

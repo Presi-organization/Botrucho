@@ -56,6 +56,7 @@ jobs:
           fingerprint="$(ssh-keygen -F "$VM_HOST" -f "$RUNNER_TEMP/bot_known_hosts" -l -E sha256 | awk '$3 ~ /^SHA256:/ {print $3; exit}')"
           [[ "$fingerprint" == SHA256:* ]]
           echo "fingerprint=$fingerprint" >> "$GITHUB_OUTPUT"
+          echo "known_hosts_file=$RUNNER_TEMP/bot_known_hosts" >> "$GITHUB_OUTPUT"
       - name: Upload compiled files and encrypted configuration
         uses: easingthemes/ssh-deploy@5d8aeab1a56041e269567e67a08ce00df324a617 # v6.0.1
         with:
@@ -65,7 +66,7 @@ jobs:
           SOURCE: 'dist node_modules package.json .env.production .env.keys'
           TARGET: /opt/discord-bot/
           ARGS: '-az --delete'
-          SSH_CMD_ARGS: '-o StrictHostKeyChecking=yes, -o UserKnownHostsFile=${{ runner.temp }}/bot_known_hosts, -o GlobalKnownHostsFile=/dev/null, -o BatchMode=yes, -o IdentitiesOnly=yes'
+          SSH_CMD_ARGS: '-o StrictHostKeyChecking=yes, -o UserKnownHostsFile=${{ steps.ssh.outputs.known_hosts_file }}, -o GlobalKnownHostsFile=/dev/null, -o BatchMode=yes, -o IdentitiesOnly=yes'
       - name: Restart systemd and check status
         uses: appleboy/ssh-action@0ff4204d59e8e51228ff73bce53f80d53301dee2 # v1.2.5
         with:
