@@ -10,6 +10,7 @@ import { Botrucho } from '@/mongodb';
 import { InstanceLeaseModel } from '@/mongodb/models/InstanceLease';
 import { acquireLease, InstanceLease } from '@/runtime/instance-lease';
 import { createShutdown, startPeriodic } from '@/runtime/lifecycle';
+import { installVoiceDiagnostics } from '@/runtime/voice-diagnostics';
 import { cleanUnreadAttendance } from '@/services';
 import { ActivityPresence } from '@/types';
 import { logger } from '@/utils';
@@ -25,6 +26,12 @@ const client: Botrucho = new Botrucho({
   ],
   partials: [Partials.Message, Partials.Channel, Partials.Reaction],
 } as ClientOptions);
+
+const stopVoiceDiagnostics = installVoiceDiagnostics(
+  client.player,
+  (record) => logger.log('[VoiceDiagnostics]', record),
+  process.env?.VOICE_DIAGNOSTICS === '1',
+);
 
 if (!client.config.isProduction) {
   client.player.on('debug', (message: string): void => logger.log(`[Player] ${message}`));
@@ -52,6 +59,7 @@ const shutdown = createShutdown({
   steps: [
     () => {
       startup.abort();
+      stopVoiceDiagnostics();
       clearInterval(presenceTimer);
       if (process.connected)
         process.send?.('botrucho:stopping', () => {

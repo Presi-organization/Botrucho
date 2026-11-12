@@ -11,9 +11,13 @@ function boot({
   loginFailure = false,
   waitForDatabase = false,
   waitForClaim = false,
+  voiceDiagnostics,
 } = {}) {
   const calls = [];
+  const diagnostics = [];
+  const playerEvents = new EventEmitter();
   const process = new EventEmitter();
+  process.env = { VOICE_DIAGNOSTICS: voiceDiagnostics };
   let exited;
   const exit = new Promise((resolve) => {
     exited = resolve;
@@ -53,6 +57,7 @@ function boot({
     };
     shard = { ids: [0] };
     player = {
+      events: playerEvents,
       extractors: {
         loadMulti: async () => calls.push('extractors'),
         register: async () => {},
@@ -76,7 +81,14 @@ function boot({
     'discord-player-youtubei': { YoutubeExtractor: class {} },
     '@/mongodb': { Botrucho },
     '@/services': { cleanUnreadAttendance: async () => {} },
-    '@/utils': { logger: { error() {}, log() {} } },
+    '@/utils': {
+      logger: {
+        error() {},
+        log(prefix, record) {
+          if (prefix === '[VoiceDiagnostics]') diagnostics.push(record);
+        },
+      },
+    },
     '@/utils/extenders.util': {},
     '@/mongodb/models/InstanceLease': {
       InstanceLeaseModel: {
@@ -106,7 +118,33 @@ function boot({
     setInterval,
     clearInterval,
   });
-  return { calls, process, exit, connected, claimed, claimStarted };
+  return { calls, process, exit, connected, claimed, claimStarted, playerEvents, diagnostics };
+}
+
+test('production voice diagnostics require VOICE_DIAGNOSTICS=1 and detach during shutdown', async () => {
+  const bot = boot({ waitForDatabase: true, voiceDiagnostics: '1' });
+  assert.ok(bot.playerEvents.listenerCount('playerStart') > 0);
+  bot.playerEvents.emit('playerStart', {
+    guild: { id: 'guild-1', members: {} },
+    node: { volume: 60 },
+  });
+  assert.equal(bot.diagnostics.length, 1);
+  assert.equal(bot.diagnostics[0].event, 'playerStart');
+  bot.process.emit('SIGTERM');
+  bot.connected();
+  await bot.exit;
+  assert.deepEqual(bot.playerEvents.eventNames(), []);
+});
+
+for (const voiceDiagnostics of [undefined, '0', 'true']) {
+  test(`production voice diagnostics stay off for ${voiceDiagnostics}`, async () => {
+    const bot = boot({ waitForDatabase: true, voiceDiagnostics });
+    assert.deepEqual(bot.playerEvents.eventNames(), []);
+    bot.process.emit('SIGTERM');
+    bot.connected();
+    await bot.exit;
+    assert.deepEqual(bot.diagnostics, []);
+  });
 }
 
 test('database startup failure cleans up and exits nonzero without login', async () => {
