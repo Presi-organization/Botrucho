@@ -62,6 +62,17 @@ Changing a runtime environment variable requires container recreation, not just 
 docker compose up -d --force-recreate
 ```
 
+### AI mentions (Gemini)
+
+Mentioning the bot (`@Botrucho ¿qué jugamos hoy?`) in a server with AI enabled sends the text to Gemini on Vertex AI and replies with an embed. Only direct mentions trigger it; `@everyone`, role mentions and reply pings are ignored, and replies never ping anyone. No privileged Message Content intent is needed for messages that mention the bot.
+
+The only environment variable is the secret `VERTEX_API_KEY` (`npx dotenvx set VERTEX_API_KEY "key" -f .env.production`): a Google Cloud API key bound to a service account with the **Vertex AI User** role, in a project with billing enabled. Usage is billed postpaid to that project. Everything else is managed from Discord with `/ai settings`, stored in MongoDB, and picked up by every shard within 30 seconds:
+
+- Only **bot owners** (`config.owners`) can use it. The panel has buttons for **Limits** (cooldown, per-user/per-server/global daily requests, daily token budget; `0` disables a scope), **Model** (model ID, thinking level, Google Search on/off, max question length, max answer tokens) and **Instructions** (the system prompt).
+- **Enable here / Disable here** turns AI on for the current server. AI is off in every server until an owner enables it. Discord shows `/ai` only to members with Manage Server.
+
+`assets/ai/system-instruction.md` is the default prompt until it is edited from the panel. Usage is counted per UTC day in MongoDB (`aiusages`), so caps hold across restarts and shards. Google Search grounding is billed per search query. As a second safety net, restrict the API key to the Vertex AI API and set a billing budget alert in Google Cloud.
+
 ## Development and tests
 
 For development outside Docker, install **Node.js 26+** using your preferred version manager (`.nvmrc` contains `26`). Native dependencies such as canvas may need platform build tools; the Docker verification image provides a controlled Linux environment.

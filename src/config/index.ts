@@ -63,6 +63,7 @@ const config: ConfigType = {
   },
   integrations: {
     aispeech: process.env.AISPEECH_TOKEN as string,
+    vertexAi: process.env.VERTEX_API_KEY ?? '',
   },
 };
 

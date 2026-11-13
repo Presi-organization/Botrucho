@@ -1,3 +1,6 @@
+import { readFileSync } from 'node:fs';
+import { join } from 'node:path';
+
 import { Player } from 'discord-player';
 import { Client, ClientOptions, Collection, Interaction, Message } from 'discord.js';
 
@@ -10,8 +13,15 @@ import {
   EventDataController,
   GuildDataController,
 } from '@/mongodb';
+import { AiSettingsModel } from '@/mongodb/models/AiSettings';
+import { AiUsageModel } from '@/mongodb/models/AiUsage';
+import { AiUsageLimiter } from '@/runtime/ai-limits';
+import { AiSettingsStore, defaultAiSettings } from '@/runtime/ai-settings';
 import { CronManager } from '@/services';
 import { ConfigType, ICommand } from '@/types';
+
+const AI_SETTINGS_ID = 'global';
+const DEFAULT_INSTRUCTION_PATH = join(process.cwd(), '/assets/ai/system-instruction.md');
 
 export class Botrucho extends Client {
   config: ConfigType;
@@ -32,6 +42,8 @@ export class Botrucho extends Client {
   eventAttendanceData: AttendanceDataController;
   botInstance: BotInstanceDataController;
   cronData: CronDataController;
+  aiLimiter: AiUsageLimiter;
+  aiSettings: AiSettingsStore;
 
   constructor(options: ClientOptions) {
     super(options);
@@ -53,5 +65,19 @@ export class Botrucho extends Client {
     this.eventAttendanceData = new AttendanceDataController();
     this.botInstance = new BotInstanceDataController();
     this.cronData = new CronDataController();
+    this.aiLimiter = new AiUsageLimiter(AiUsageModel);
+    this.aiSettings = new AiSettingsStore(
+      {
+        load: () => AiSettingsModel.findById(AI_SETTINGS_ID).lean().exec(),
+        save: (settings) =>
+          AiSettingsModel.updateOne(
+            { _id: AI_SETTINGS_ID },
+            { $set: settings },
+            { upsert: true },
+          ).exec(),
+      },
+      // The repo's instruction file is the default until edited from /ai settings.
+      () => defaultAiSettings(readFileSync(DEFAULT_INSTRUCTION_PATH, 'utf8').trim()),
+    );
   }
 }

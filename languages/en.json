@@ -149,6 +149,13 @@
     "FRESH_BLOOD": "Fresh Blood",
     "INACTIVE": "Inactive"
   },
+  "AI": {
+    "EMPTY_PROMPT": "Mention me with a question, e.g. `@Botrucho what should we play tonight?`",
+    "USER_LIMIT": "You have reached your daily limit of AI questions. Try again tomorrow.",
+    "GUILD_LIMIT": "This server has reached its daily limit of AI questions. Try again tomorrow.",
+    "GLOBAL_LIMIT": "I have used up my AI budget for today. Try again tomorrow.",
+    "ERROR": "I could not answer right now. Please try again later."
+  },
   "_EVENTS": "EVENTS TRANSLATIONS",
   "DELETE": {
     "LEAVE": ":broken_heart: | I'm sad to see that you no longer need me in your server"

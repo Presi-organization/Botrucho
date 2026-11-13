@@ -1,5 +1,6 @@
 import { CoinCommand, DiceCommand } from '@/commands/games';
 import {
+  AiCommand,
   AvatarCommand,
   CronsCommand,
   EventCommand,
@@ -24,6 +25,7 @@ import { FootballCommand, MultasCommand, SiataCommand, TFTEloCommand } from '@/c
 import { ICommand } from '@/types';
 
 export const commandRegistry: (new () => ICommand)[] = [
+  AiCommand,
   AvatarCommand,
   CronsCommand,
   CoinCommand,

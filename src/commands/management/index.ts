@@ -1,3 +1,4 @@
+export { default as AiCommand } from './ai.command';
 export { default as AvatarCommand } from './avatar.command';
 export { default as CronsCommand } from './crons.command';
 export { default as EventCommand } from './event.command';

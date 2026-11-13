@@ -11,6 +11,7 @@ export interface IGuildData extends Document {
   audioEffects?: AudioEffectSettings;
   color?: string;
   disabledCommands: string[];
+  aiEnabled?: boolean;
   defaultSpamChannelID?: string | null;
   plugins?: {
     welcome?: {
@@ -76,6 +77,7 @@ const GuildDataSchema = new Schema<IGuildData>({
   },
   color: { type: String, default: config.color },
   disabledCommands: { type: [String], default: [] },
+  aiEnabled: { type: Boolean, default: false },
   defaultSpamChannelID: { type: String, default: null },
   plugins: {
     type: Object,

@@ -149,6 +149,13 @@
     "FRESH_BLOOD": "Sangre Nueva",
     "INACTIVE": "Inactivo"
   },
+  "AI": {
+    "EMPTY_PROMPT": "Mencióname con una pregunta, por ejemplo `@Botrucho ¿qué jugamos esta noche?`",
+    "USER_LIMIT": "Llegaste a tu límite diario de preguntas a la IA. Intenta de nuevo mañana.",
+    "GUILD_LIMIT": "Este servidor llegó a su límite diario de preguntas a la IA. Intenta de nuevo mañana.",
+    "GLOBAL_LIMIT": "Ya gasté mi presupuesto de IA por hoy. Intenta de nuevo mañana.",
+    "ERROR": "No pude responder en este momento. Intenta de nuevo más tarde."
+  },
   "_EVENTS": "TRADUCCIONES DE EVENTOS",
   "DELETE": {
     "LEAVE": ":broken_heart: | Me entristece ver que no me necesitas más en tu server"

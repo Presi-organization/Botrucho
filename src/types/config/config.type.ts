@@ -30,6 +30,7 @@ interface APIs {
 
 interface Integrations {
   aispeech: string;
+  vertexAi: string;
 }
 
 export interface ActivityPresence {

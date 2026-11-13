@@ -24,6 +24,14 @@ export class GuildDataController {
     ).exec();
   }
 
+  async setAiEnabled(guildId: string, aiEnabled: boolean): Promise<IGuildData | null> {
+    return GuildDataModel.findOneAndUpdate(
+      { serverID: guildId },
+      { aiEnabled },
+      { returnDocument: 'after', upsert: true },
+    ).exec();
+  }
+
   async setLanguage({
     guildId,
     newLanguage,

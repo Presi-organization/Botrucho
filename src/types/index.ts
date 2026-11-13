@@ -1,3 +1,4 @@
+export * from './ai';
 export * from './API';
 export * from './commands';
 export * from './config';

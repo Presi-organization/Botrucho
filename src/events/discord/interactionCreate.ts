@@ -1,6 +1,8 @@
 import { Interaction } from 'discord.js';
 
 import {
+  AiSettingsButtonHandler,
+  AiSettingsModalHandler,
   AutocompleteHandler,
   CalendarEventHandler,
   CommandHandler,
@@ -25,9 +27,11 @@ module.exports = {
 
       // Button handlers
       new RetryModalHandler(client),
+      new AiSettingsButtonHandler(client),
 
       // Edit handlers
       new EditCronHandler(client),
+      new AiSettingsModalHandler(client),
 
       // Selection handlers
       new CronEditSelectHandler(client),

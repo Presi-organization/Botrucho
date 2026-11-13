@@ -26,6 +26,7 @@ export interface TranslationsType {
   FINES: TranslationElement<FinesKeys>;
   SIATA: TranslationElement<SiataKeys>;
   TFT_ELO: TranslationElement<TftEloKeys>;
+  AI: TranslationElement<AiKeys>;
   _EVENTS: string;
   DELETE: TranslationElement<DeleteKeys>;
   PLAYER: TranslationElement<PlayerKeys>;
@@ -100,3 +101,4 @@ export type TftEloKeys =
   | 'INACTIVE';
 export type DeleteKeys = 'LEAVE';
 export type PlayerKeys = 'NOW_PLAYING' | 'SONG' | 'REQUESTED_BY' | 'TRACKS_LEFT';
+export type AiKeys = 'EMPTY_PROMPT' | 'USER_LIMIT' | 'GUILD_LIMIT' | 'GLOBAL_LIMIT' | 'ERROR';
