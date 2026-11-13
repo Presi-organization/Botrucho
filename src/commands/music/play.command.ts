@@ -1,5 +1,5 @@
 import { SlashCommandBuilder } from '@discordjs/builders';
-import { Player, QueueRepeatMode, SearchResult, useMainPlayer } from 'discord-player';
+import { Player, QueryType, QueueRepeatMode, SearchResult, useMainPlayer } from 'discord-player';
 import {
   MessageFlags,
   SlashCommandOptionsOnlyBuilder,
@@ -55,7 +55,10 @@ export default class PlayCommand extends ICommand {
 
     await interaction.deferReply({ flags: MessageFlags.Ephemeral });
 
-    const searchResult: SearchResult = await player.search(name, { requestedBy: interaction.user });
+    const searchResult: SearchResult = await player.search(name, {
+      requestedBy: interaction.user,
+      fallbackSearchEngine: QueryType.YOUTUBE_SEARCH,
+    });
 
     if (!searchResult.hasTracks()) {
       const embed = {

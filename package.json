@@ -1,6 +1,6 @@
 {
   "name": "botrucho",
-  "version": "2.0.1",
+  "version": "2.1.0",
   "description": "",
   "main": "dist/src/sharder.js",
   "scripts": {
@@ -26,7 +26,7 @@
     "@discordjs/builders": "1.15.0",
     "@discordjs/rest": "2.6.3",
     "@dotenvx/dotenvx": "2.38.2",
-    "@snazzah/davey": "0.2.0",
+    "@snazzah/davey": "0.1.12",
     "canvas": "3.2.3",
     "discord-api-types": "0.38.58",
     "discord-player": "7.2.0",
