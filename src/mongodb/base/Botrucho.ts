@@ -8,7 +8,6 @@ import CommandLoader from '@/commands/CommandLoader';
 import config from '@/config';
 import {
   AttendanceDataController,
-  BotInstanceDataController,
   CronDataController,
   EventDataController,
   GuildDataController,
@@ -40,7 +39,6 @@ export class Botrucho extends Client {
   guildData: GuildDataController;
   eventData: EventDataController;
   eventAttendanceData: AttendanceDataController;
-  botInstance: BotInstanceDataController;
   cronData: CronDataController;
   aiLimiter: AiUsageLimiter;
   aiSettings: AiSettingsStore;
@@ -63,7 +61,6 @@ export class Botrucho extends Client {
     this.guildData = new GuildDataController();
     this.eventData = new EventDataController();
     this.eventAttendanceData = new AttendanceDataController();
-    this.botInstance = new BotInstanceDataController();
     this.cronData = new CronDataController();
     this.aiLimiter = new AiUsageLimiter(AiUsageModel);
     this.aiSettings = new AiSettingsStore(
