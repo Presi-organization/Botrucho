@@ -16,6 +16,7 @@ import {
 } from 'discord.js';
 
 import { Botrucho, IGuildData } from '@/mongodb';
+import { audioEffectOptions } from '@/runtime/audio-effects';
 import { PlayerKeys, TranslationElement, TranslationsType } from '@/types';
 import { deleteMessagesFromChannel, Info, logger } from '@/utils';
 import en from '@languages/en.json';
@@ -124,7 +125,7 @@ const _sendClanInvitationAudioChannel = async (
             leaveOnEndCooldown: 30000,
             pauseOnEmpty: true,
             preferBridgedMetadata: true,
-            disableBiquad: true,
+            ...audioEffectOptions(guildDB?.audioEffects),
           },
           requestedBy: member?.user,
           connectionOptions: {

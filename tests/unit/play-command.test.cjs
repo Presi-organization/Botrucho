@@ -74,8 +74,10 @@ async function executePlay(query) {
   const player = new Player(client);
   const replies = [];
   let played;
-  player.play = async (_channel, result) => {
+  let playOptions;
+  player.play = async (_channel, result, options) => {
     played = result;
+    playOptions = options;
   };
   try {
     await player.extractors.register(AppleFixture, {});
@@ -116,7 +118,7 @@ async function executePlay(query) {
       defaultVolume: 60,
       loopMode: 'OFF',
     });
-    return { played, replies };
+    return { played, playOptions, replies };
   } finally {
     await player.destroy();
     client.destroy();
@@ -162,4 +164,21 @@ test('an empty YouTube result replies with no results without attempting playbac
   const { played, replies } = await executePlay('no matching song');
   assert.equal(played, undefined);
   assert.equal(replies[0].title, 'No results');
+});
+
+test('music effects stay disabled by default while volume keeps the guild default', async () => {
+  const { playOptions } = await executePlay('Daft Punk One More Time');
+  const node = playOptions.nodeOptions;
+  assert.equal(node.volume, 60);
+  for (const flag of [
+    'disableEqualizer',
+    'disableResampler',
+    'disableBiquad',
+    'disableCompressor',
+    'disableReverb',
+  ]) {
+    assert.equal(node[flag], true, flag);
+  }
+  assert.equal(node.disableVolume, undefined);
+  assert.equal(node.disableFilterer, undefined);
 });

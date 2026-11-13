@@ -20,6 +20,7 @@ import {
 } from 'microsoft-cognitiveservices-speech-sdk';
 
 import { IGuildData } from '@/mongodb';
+import { audioEffectOptions } from '@/runtime/audio-effects';
 import { safeHandler } from '@/runtime/handlers';
 import {
   ICommand,
@@ -113,7 +114,7 @@ export default class SayCommand extends ICommand {
                   leaveOnEndCooldown: 30000,
                   pauseOnEmpty: true,
                   preferBridgedMetadata: true,
-                  disableBiquad: true,
+                  ...audioEffectOptions(guildDB.audioEffects),
                 },
                 requestedBy: interaction.user,
                 connectionOptions: {
