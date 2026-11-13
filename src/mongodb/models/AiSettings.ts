@@ -2,7 +2,6 @@ import { model, Schema } from 'mongoose';
 
 import type { AiSettings } from '@/types';
 
-// Singleton document (_id 'global'); defaults live in runtime/ai-settings.
 const schema = new Schema<AiSettings & { _id: string }>(
   {
     _id: { type: String, required: true },

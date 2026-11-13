@@ -14,10 +14,8 @@ const LIMIT_KEYS: Partial<Record<AiRefusal, AiKeys>> = {
   global: 'GLOBAL_LIMIT',
 };
 
-/** Answers direct @mentions with Gemini. Returns true when the message was handled here. */
 export async function handleAiMention(client: Botrucho, message: Message): Promise<boolean> {
   if (!config.integrations.vertexAi || !client.user || !message.inGuild()) return false;
-  // Direct user mention only: @everyone, role mentions and reply pings don't count.
   if (!message.mentions.users.has(client.user.id)) return false;
   const guildDB = await message.guild.fetchDB(client.guildData);
   if (!guildDB.aiEnabled) return false;

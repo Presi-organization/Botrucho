@@ -76,7 +76,6 @@ export class Botrucho extends Client {
             { upsert: true },
           ).exec(),
       },
-      // The repo's instruction file is the default until edited from /ai settings.
       () => defaultAiSettings(readFileSync(DEFAULT_INSTRUCTION_PATH, 'utf8').trim()),
     );
   }

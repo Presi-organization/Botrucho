@@ -10,7 +10,6 @@ export type AiRefusal = 'cooldown' | 'busy' | 'user' | 'guild' | 'global';
 
 export interface AiPermit {
   ok: true;
-  /** Records billed tokens; refunds the request counters when nothing was billed. */
   release(result: { tokens: number; refund: boolean }): Promise<void>;
 }
 
@@ -85,7 +84,6 @@ export class AiUsageLimiter {
     }
   }
 
-  /** Today's (UTC) request and token totals, globally and for one guild. */
   async usage(
     guildId: string,
   ): Promise<{ requests: number; tokens: number; guildRequests: number }> {

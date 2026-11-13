@@ -88,7 +88,7 @@ export class AiSettingsModalHandler implements IIntCreateHandler {
 
     await this.client.aiSettings.update(result.value);
     logger.log(`[AI] ${interaction.user.tag} updated AI ${section} settings`);
-    const panel = await buildAiSettingsPanel(this.client, interaction.guildId);
+    const panel = await buildAiSettingsPanel(this.client, interaction.guildId, true);
     if (interaction.isFromMessage()) await interaction.update(panel);
     else await interaction.reply({ ...panel, flags: MessageFlags.Ephemeral });
     return true;

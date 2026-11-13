@@ -47,7 +47,7 @@ export class AiSettingsButtonHandler implements IIntCreateHandler {
       logger.log(
         `[AI] ${interaction.user.tag} ${aiEnabled ? 'enabled' : 'disabled'} AI in ${interaction.guild.name}`,
       );
-      await interaction.update(await buildAiSettingsPanel(this.client, interaction.guildId));
+      await interaction.update(await buildAiSettingsPanel(this.client, interaction.guildId, true));
       return true;
     }
 

@@ -9,7 +9,6 @@ export class GeminiError extends Error {
   constructor(
     message: string,
     readonly reason: 'quota' | 'blocked' | 'empty' | 'request',
-    // Tokens billed even though no usable reply came back.
     readonly totalTokens = 0,
   ) {
     super(message);
@@ -23,7 +22,6 @@ export interface GeminiReply {
 
 let client: GoogleGenAI | undefined;
 
-// Vertex AI with a Cloud API key bound to a service account: billed postpaid to the key's project.
 // No SDK retries: each attempt can be billed and backoff would outlast Discord's typing window.
 const _getClient = (): GoogleGenAI =>
   (client ??= new GoogleGenAI({
@@ -48,7 +46,6 @@ export const generateReply = async (prompt: string, settings: AiSettings): Promi
       config: requestConfig,
     });
   } catch (error) {
-    // 429: rate limit; 402: prepaid credits depleted.
     if (error instanceof ApiError && (error.status === 429 || error.status === 402))
       throw new GeminiError(`Gemini quota or billing limit: ${error.message}`, 'quota');
     throw new GeminiError(`Request failed: ${(error as Error).message}`, 'request');

@@ -7,7 +7,6 @@ interface IAiUsage {
   expiresAt: Date;
 }
 
-// One counter per scope and UTC day; TTL drops old days.
 const schema = new Schema<IAiUsage>(
   {
     _id: { type: String, required: true },

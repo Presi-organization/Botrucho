@@ -13,10 +13,8 @@ export const defaultAiSettings = (systemInstruction: string): AiSettings => ({
   thinkingLevel: 'low',
   googleSearch: false,
   maxInputChars: 500,
-  // ~400-token answers plus low thinking; output is the expensive side.
   maxOutputTokens: 512,
   systemInstruction,
-  // Worst case at the token budget is a few USD per month on Flash-Lite.
   limits: {
     userCooldownSec: 20,
     userDaily: 15,
@@ -26,7 +24,6 @@ export const defaultAiSettings = (systemInstruction: string): AiSettings => ({
   },
 });
 
-/** Global AI settings with a short cache, so edits from one shard reach the others quickly. */
 export class AiSettingsStore {
   private cached?: { settings: AiSettings; at: number };
 

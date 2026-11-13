@@ -15,7 +15,6 @@ import { Info } from './message-builder.util';
 export const AI_SETTINGS_BUTTON = 'ai-settings';
 export type AiSettingsAction = 'limits' | 'model' | 'instructions' | 'toggle';
 
-/** AI settings, including enabling it per server, are reserved to bot owners (cost control). */
 export const isAiOwner = (interaction: BaseInteraction): boolean =>
   config.owners.includes(interaction.user.id);
 
@@ -24,6 +23,7 @@ const number = (value: number): string => value.toLocaleString('en-US');
 export const buildAiSettingsPanel = async (
   client: Botrucho,
   guildId: string,
+  canEdit: boolean,
 ): Promise<{ embeds: EmbedBuilder[]; components: ActionRowBuilder<ButtonBuilder>[] }> => {
   const [settings, usage, guildDB] = await Promise.all([
     client.aiSettings.get(),
@@ -84,6 +84,6 @@ export const buildAiSettingsPanel = async (
 
   return {
     embeds: [embed],
-    components: [new ActionRowBuilder<ButtonBuilder>().addComponents(buttons)],
+    components: canEdit ? [new ActionRowBuilder<ButtonBuilder>().addComponents(buttons)] : [],
   };
 };
