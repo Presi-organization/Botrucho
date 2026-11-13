@@ -130,3 +130,13 @@ test("reports today's global and per-guild usage", async () => {
   assert.deepEqual(await limiter.usage('g1'), { requests: 2, tokens: 150, guildRequests: 1 });
   assert.deepEqual(await limiter.usage('g3'), { requests: 2, tokens: 150, guildRequests: 0 });
 });
+
+test('records billed tokens on the user, guild and global counters', async () => {
+  const { usage, limiter } = setup({ userCooldownSec: 0 });
+  await use(limiter, 'u1', 'g1', { tokens: 120, refund: false });
+  await use(limiter, 'u1', 'g2', { tokens: 30, refund: false });
+  assert.equal(usage.rows.get('user:u1:2026-11-13').tokens, 150);
+  assert.equal(usage.rows.get('guild:g1:2026-11-13').tokens, 120);
+  assert.equal(usage.rows.get('guild:g2:2026-11-13').tokens, 30);
+  assert.equal(usage.rows.get('global:2026-11-13').tokens, 150);
+});

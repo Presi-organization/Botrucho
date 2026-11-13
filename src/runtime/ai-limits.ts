@@ -74,7 +74,8 @@ export class AiUsageLimiter {
         ok: true,
         release: async ({ tokens, refund }) => {
           this.inFlight.delete(userId);
-          if (tokens > 0) await this.store.updateOne({ _id: globalKey }, { $inc: { tokens } });
+          if (tokens > 0)
+            for (const key of taken) await this.store.updateOne({ _id: key }, { $inc: { tokens } });
           if (refund) await this.refund(taken);
         },
       };
