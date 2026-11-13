@@ -30,9 +30,25 @@ const _getClient = (): GoogleGenAI =>
     httpOptions: { timeout: TIMEOUT_MS, retryOptions: { attempts: 1 } },
   }));
 
-export const generateReply = async (prompt: string, settings: AiSettings): Promise<GeminiReply> => {
+const _currentDateTime = (now: Date): string => {
+  const timeZone = process.env.TZ || 'America/Bogota';
+  const formatted = new Intl.DateTimeFormat('es-CO', {
+    dateStyle: 'full',
+    timeStyle: 'short',
+    timeZone,
+  }).format(now);
+  return `Current date and time: ${formatted} (${timeZone}).`;
+};
+
+export const generateReply = async (
+  prompt: string,
+  settings: AiSettings,
+  now: Date = new Date(),
+): Promise<GeminiReply> => {
   const requestConfig: GenerateContentConfig = {
-    systemInstruction: settings.systemInstruction,
+    systemInstruction: `${settings.systemInstruction}
+
+${_currentDateTime(now)}`,
     maxOutputTokens: settings.maxOutputTokens,
     thinkingConfig: { thinkingLevel: settings.thinkingLevel.toUpperCase() as ThinkingLevel },
     ...(settings.googleSearch && { tools: [{ googleSearch: {} }] }),

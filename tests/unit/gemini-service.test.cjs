@@ -83,11 +83,12 @@ test('sends the system instruction, prompt and output caps with retries disabled
       httpOptions: { timeout: 20000, retryOptions: { attempts: 1 } },
     },
   ]);
-  assert.deepEqual(plain(calls[0]), {
+  const { systemInstruction, ...config } = calls[0].config;
+  assert.match(systemInstruction, /^System prompt\n\nCurrent date and time: /);
+  assert.deepEqual(plain({ ...calls[0], config }), {
     model: 'test-model',
     contents: '¿Qué tal?',
     config: {
-      systemInstruction: 'System prompt',
       maxOutputTokens: 256,
       thinkingConfig: { thinkingLevel: 'LOW' },
     },
@@ -131,4 +132,20 @@ test('an empty answer still reports the tokens that were billed', async () => {
     assert.match(error.message, /MAX_TOKENS/);
     return true;
   });
+});
+
+test('tells the model the current date and time in the configured timezone', async () => {
+  const { generateReply, calls } = load(() => reply('ok'));
+  const previous = process.env.TZ;
+  process.env.TZ = 'America/Bogota';
+  try {
+    await generateReply('¿qué hora es?', settings, new Date('2026-11-13T20:45:00Z'));
+  } finally {
+    if (previous === undefined) delete process.env.TZ;
+    else process.env.TZ = previous;
+  }
+  const { systemInstruction } = calls[0].config;
+  assert.match(systemInstruction, /viernes, 13 de noviembre de 2026/);
+  assert.match(systemInstruction, /3:45/);
+  assert.ok(systemInstruction.endsWith('(America/Bogota).'), systemInstruction);
 });
