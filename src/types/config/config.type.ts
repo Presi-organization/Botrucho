@@ -1,4 +1,4 @@
-import { ActivityType, PresenceStatusData } from 'discord.js';
+import { ActivityType } from 'discord.js';
 
 interface Category {
   enabled: boolean;
@@ -34,7 +34,6 @@ interface Integrations {
 }
 
 export interface ActivityPresence {
-  status: PresenceStatusData | undefined;
   type: ActivityType;
   content: string;
 }

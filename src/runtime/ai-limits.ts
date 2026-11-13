@@ -85,12 +85,12 @@ export class AiUsageLimiter {
   }
 
   async usage(
-    guildId: string,
+    guildId?: string,
   ): Promise<{ requests: number; tokens: number; guildRequests: number }> {
     const day = dayKey(this.now());
     const [global, guild] = await Promise.all([
       this.store.findOne({ _id: `global:${day}` }),
-      this.store.findOne({ _id: `guild:${guildId}:${day}` }),
+      guildId ? this.store.findOne({ _id: `guild:${guildId}:${day}` }) : null,
     ]);
     return {
       requests: global?.count ?? 0,

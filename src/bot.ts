@@ -11,9 +11,9 @@ import { InstanceLeaseModel } from '@/mongodb/models/InstanceLease';
 import { installDisabledStageGuard } from '@/runtime/dsp-stages';
 import { acquireLease, InstanceLease } from '@/runtime/instance-lease';
 import { createShutdown, startPeriodic } from '@/runtime/lifecycle';
+import { PresenceRotation, statusFor, toActivity } from '@/runtime/presence';
 import { installVoiceDiagnostics } from '@/runtime/voice-diagnostics';
-import { cleanUnreadAttendance } from '@/services';
-import { ActivityPresence } from '@/types';
+import { buildPresenceSources, cleanUnreadAttendance } from '@/services';
 import { logger } from '@/utils';
 import '@/utils/extenders.util';
 
@@ -52,7 +52,8 @@ const leaseKey = `${client.config.discord_client}:${shardId}`;
 let pendingClaim: Promise<boolean> | undefined;
 let cronDrained = true;
 let heartbeat: ReturnType<typeof startPeriodic> | undefined;
-let presenceTimer: ReturnType<typeof setInterval> | undefined;
+let presenceTimer: ReturnType<typeof setTimeout> | undefined;
+const DEFAULT_PRESENCE_MS = 60_000;
 
 const shutdown = createShutdown({
   timeoutMs: 8_000,
@@ -63,7 +64,7 @@ const shutdown = createShutdown({
       startup.abort();
       stopVoiceDiagnostics();
       stopDisabledStageGuard();
-      clearInterval(presenceTimer);
+      clearTimeout(presenceTimer);
       if (process.connected)
         process.send?.('botrucho:stopping', () => {
           /* Best effort during teardown. */
@@ -161,19 +162,22 @@ const setupClientEvents: () => void = (): void => {
       cleanUnreadAttendance(client).catch((error) =>
         logger.error('Error cleaning unread attendance:', error),
       );
-      const statusArray: ActivityPresence[] = client.config.presence;
+      const rotation = new PresenceRotation(buildPresenceSources(client));
       const pickPresence = async (): Promise<void> => {
-        const option: number = Math.floor(Math.random() * statusArray.length);
+        let durationMs = DEFAULT_PRESENCE_MS;
         try {
+          const line = await rotation.next();
+          durationMs = line?.durationMs ?? durationMs;
           client.user?.setPresence({
-            status: statusArray[option].status,
-            activities: [{ name: statusArray[option].content, type: statusArray[option].type }],
+            status: statusFor(new Date()),
+            activities: line ? [toActivity(line)] : [],
           });
         } catch (error: unknown) {
           logger.error(error);
         }
+        if (!startup.signal.aborted) presenceTimer = setTimeout(pickPresence, durationMs);
       };
-      presenceTimer = setInterval(pickPresence, 5000);
+      void pickPresence();
       logger.log('Ready!');
       await client.cronManager.initializeCronJobs();
       startup.signal.throwIfAborted();
