@@ -31,7 +31,7 @@ test('uses defaults, with the repo instruction, when nothing is stored', async (
   const settings = await store.get();
   assert.equal(settings.model, 'gemini-3.1-flash-lite');
   assert.equal(settings.systemInstruction, 'Default prompt');
-  assert.equal(settings.limits.globalDaily, 150);
+  assert.equal(settings.limits.globalDaily, 200);
 });
 
 test('stored values override defaults, including partial limits', async () => {
@@ -39,7 +39,7 @@ test('stored values override defaults, including partial limits', async () => {
   const settings = await store.get();
   assert.equal(settings.model, 'custom');
   assert.equal(settings.limits.userDaily, 3);
-  assert.equal(settings.limits.guildDaily, 60);
+  assert.equal(settings.limits.guildDaily, 160);
 });
 
 test('caches reads for the TTL so other shards see edits shortly after', async () => {

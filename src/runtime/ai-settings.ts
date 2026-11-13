@@ -17,10 +17,10 @@ export const defaultAiSettings = (systemInstruction: string): AiSettings => ({
   systemInstruction,
   limits: {
     userCooldownSec: 20,
-    userDaily: 15,
-    guildDaily: 60,
-    globalDaily: 150,
-    globalDailyTokens: 75_000,
+    userDaily: 20,
+    guildDaily: 160,
+    globalDaily: 200,
+    globalDailyTokens: 150_000,
   },
 });
 
