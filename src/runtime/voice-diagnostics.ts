@@ -1,12 +1,150 @@
+import { monitorEventLoopDelay, performance } from 'node:perf_hooks';
+
 import type { GuildQueue, Player, StreamDispatcher } from 'discord-player';
 import type { AudioPlayerState, VoiceConnectionState } from 'discord-voip';
 
 type DiagnosticRecord = Record<string, string | number | boolean | undefined>;
 
+interface DelayHistogram {
+  enable(): unknown;
+  disable(): unknown;
+  reset(): void;
+  percentile(percentile: number): number;
+  readonly max: number;
+}
+
+export interface ProfileProbes {
+  now(): number;
+  cpuUsage(): { user: number; system: number };
+  memoryUsage(): { rss: number; heapUsed: number };
+  eventLoopUtilization(): { idle: number; active: number };
+  createDelayHistogram(): DelayHistogram;
+}
+
+const nodeProbes: ProfileProbes = {
+  now: () => performance.now(),
+  cpuUsage: () => process.cpuUsage(),
+  memoryUsage: () => process.memoryUsage(),
+  eventLoopUtilization: () => performance.eventLoopUtilization(),
+  createDelayHistogram: () => monitorEventLoopDelay({ resolution: 10 }),
+};
+
+const MiB = 1024 * 1024;
+const round = (value: number, digits = 1) => Number(value.toFixed(digits));
+
+// Read-only view of FiltersChain stages; the profiler never toggles them.
+const DSP_STAGES = {
+  dspEqualizer: 'equalizer',
+  dspVolume: 'volume',
+  dspCompressor: 'compressor',
+  dspReverb: 'reverb',
+  dspFilters: 'filters',
+  dspBiquad: 'biquad',
+  dspResampler: 'resampler',
+  dspSeeker: 'seeker',
+} as const;
+type DspStages = Partial<
+  Record<(typeof DSP_STAGES)[keyof typeof DSP_STAGES], { disabled?: boolean } | null>
+>;
+
+interface ProfileSampler {
+  sample(): DiagnosticRecord;
+  stop(): void;
+}
+
+// CPU and event-loop figures are process-wide: they include every guild, the
+// gateway, cron jobs and the DSP/Opus pipeline, not only this voice connection.
+function createProfileSampler(probes: ProfileProbes): ProfileSampler {
+  let histogram: DelayHistogram | undefined;
+  let previous: ReturnType<typeof read> | undefined;
+  function read() {
+    return { at: probes.now(), cpu: probes.cpuUsage(), elu: probes.eventLoopUtilization() };
+  }
+  try {
+    histogram = probes.createDelayHistogram();
+    histogram.enable();
+    previous = read();
+  } catch {
+    // Samples report profileError; stop() still disables a partially started histogram.
+  }
+  return {
+    sample() {
+      try {
+        if (!histogram || !previous) return { profileError: true };
+        const current = read();
+        const intervalMs = current.at - previous.at;
+        const userMs = (current.cpu.user - previous.cpu.user) / 1000;
+        const systemMs = (current.cpu.system - previous.cpu.system) / 1000;
+        const active = current.elu.active - previous.elu.active;
+        const idle = current.elu.idle - previous.elu.idle;
+        const memory = probes.memoryUsage();
+        const record: DiagnosticRecord = {
+          sampleIntervalMs: round(intervalMs),
+          processCpuUserMs: round(userMs),
+          processCpuSystemMs: round(systemMs),
+          processCpuPct:
+            intervalMs > 0 ? round(((userMs + systemMs) / intervalMs) * 100) : undefined,
+          eventLoopUtilization: active + idle > 0 ? round(active / (active + idle), 2) : undefined,
+          eventLoopDelayP50Ms: round(histogram.percentile(50) / 1e6),
+          eventLoopDelayP99Ms: round(histogram.percentile(99) / 1e6),
+          eventLoopDelayMaxMs: round(histogram.max / 1e6),
+          rssMiB: Math.round(memory.rss / MiB),
+          heapUsedMiB: Math.round(memory.heapUsed / MiB),
+        };
+        histogram.reset();
+        previous = current;
+        return record;
+      } catch {
+        return { profileError: true };
+      }
+    },
+    stop() {
+      const active = histogram;
+      histogram = undefined;
+      try {
+        active?.disable();
+      } catch {
+        // Nothing else to release.
+      }
+    },
+  };
+}
+
+function audioFields(dispatcher: StreamDispatcher): DiagnosticRecord {
+  try {
+    const resource = dispatcher.audioResource;
+    const stream = resource?.playStream;
+    const state = dispatcher.audioPlayer.state;
+    // The player adds 20ms per frame sent, including silence substituted on
+    // underrun; the resource adds 20ms only per real packet read.
+    const playerMs = 'playbackDuration' in state ? state.playbackDuration : undefined;
+    const resourceMs = resource?.playbackDuration;
+    const record: DiagnosticRecord = {
+      playStreamBuffered: stream?.readableLength,
+      playStreamUnits: stream ? (stream.readableObjectMode ? 'packets' : 'bytes') : undefined,
+      // Resets to zero on every real packet, so it is not cumulative.
+      missedFrames: 'missedFrames' in state ? state.missedFrames : undefined,
+      injectedSilenceMs:
+        typeof playerMs === 'number' && typeof resourceMs === 'number'
+          ? playerMs - resourceMs
+          : undefined,
+    };
+    const dsp = (dispatcher as unknown as { dsp?: DspStages }).dsp;
+    for (const [field, name] of Object.entries(DSP_STAGES)) {
+      const stage = dsp?.[name];
+      record[field] = !stage ? 'absent' : stage.disabled ? 'disabled' : 'active';
+    }
+    return record;
+  } catch {
+    return { audioProfileError: true };
+  }
+}
+
 export function installVoiceDiagnostics(
   player: Player,
   report: (record: DiagnosticRecord) => void,
   enabled = false,
+  probes: ProfileProbes = nodeProbes,
 ): () => void {
   if (!enabled) return () => {};
 
@@ -54,14 +192,22 @@ export function installVoiceDiagnostics(
     const connection = queue.connection;
     if (!dispatcher || !connection || connections.has(dispatcher)) return;
     let timer: ReturnType<typeof setInterval> | undefined;
+    let profiler: ProfileSampler | undefined;
     const clearTimer = () => {
       clearInterval(timer);
       timer = undefined;
+      profiler?.stop();
+      profiler = undefined;
     };
     const sampleWhilePlaying = () => {
       clearTimer();
       if (dispatcher.audioPlayer.state.status === 'playing') {
-        timer = setInterval(() => write('progress', queue), 1000);
+        const sampler = createProfileSampler(probes);
+        profiler = sampler;
+        timer = setInterval(
+          () => write('progress', queue, { ...sampler.sample(), ...audioFields(dispatcher) }),
+          1000,
+        );
         timer.unref();
       }
     };
