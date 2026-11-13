@@ -139,11 +139,14 @@ test('production voice diagnostics require VOICE_DIAGNOSTICS=1 and detach during
 for (const voiceDiagnostics of [undefined, '0', 'true']) {
   test(`production voice diagnostics stay off for ${voiceDiagnostics}`, async () => {
     const bot = boot({ waitForDatabase: true, voiceDiagnostics });
-    assert.deepEqual(bot.playerEvents.eventNames(), []);
+    // Only the always-on DSP stage guard listens; no diagnostic listeners.
+    assert.deepEqual(bot.playerEvents.eventNames(), ['connection']);
+    assert.equal(bot.playerEvents.listenerCount('connection'), 1);
     bot.process.emit('SIGTERM');
     bot.connected();
     await bot.exit;
     assert.deepEqual(bot.diagnostics, []);
+    assert.deepEqual(bot.playerEvents.eventNames(), []);
   });
 }
 

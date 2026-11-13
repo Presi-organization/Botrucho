@@ -1,12 +1,14 @@
 import mongoose, { Document, Schema } from 'mongoose';
 
 import config from '@/config';
+import type { AudioEffectSettings } from '@/types';
 
 export interface IGuildData extends Document {
   serverID: string;
   lang?: string;
   defaultVolume?: number;
   loopMode?: 'OFF' | 'AUTOPLAY' | 'TRACK' | 'QUEUE';
+  audioEffects?: AudioEffectSettings;
   color?: string;
   disabledCommands: string[];
   defaultSpamChannelID?: string | null;
@@ -65,6 +67,13 @@ const GuildDataSchema = new Schema<IGuildData>({
   lang: { type: String, default: config.defaultLanguage.toLowerCase() },
   defaultVolume: { type: Number, default: 60 },
   loopMode: { type: String, enum: ['OFF', 'AUTOPLAY', 'TRACK', 'QUEUE'], default: 'OFF' },
+  audioEffects: {
+    equalizer: { type: Boolean, default: false },
+    resampler: { type: Boolean, default: false },
+    biquad: { type: Boolean, default: false },
+    compressor: { type: Boolean, default: false },
+    reverb: { type: Boolean, default: false },
+  },
   color: { type: String, default: config.color },
   disabledCommands: { type: [String], default: [] },
   defaultSpamChannelID: { type: String, default: null },

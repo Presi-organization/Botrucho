@@ -8,6 +8,7 @@ import mongoose from 'mongoose';
 
 import { Botrucho } from '@/mongodb';
 import { InstanceLeaseModel } from '@/mongodb/models/InstanceLease';
+import { installDisabledStageGuard } from '@/runtime/dsp-stages';
 import { acquireLease, InstanceLease } from '@/runtime/instance-lease';
 import { createShutdown, startPeriodic } from '@/runtime/lifecycle';
 import { installVoiceDiagnostics } from '@/runtime/voice-diagnostics';
@@ -27,6 +28,7 @@ const client: Botrucho = new Botrucho({
   partials: [Partials.Message, Partials.Channel, Partials.Reaction],
 } as ClientOptions);
 
+const stopDisabledStageGuard = installDisabledStageGuard(client.player);
 const stopVoiceDiagnostics = installVoiceDiagnostics(
   client.player,
   (record) => logger.log('[VoiceDiagnostics]', record),
@@ -60,6 +62,7 @@ const shutdown = createShutdown({
     () => {
       startup.abort();
       stopVoiceDiagnostics();
+      stopDisabledStageGuard();
       clearInterval(presenceTimer);
       if (process.connected)
         process.send?.('botrucho:stopping', () => {

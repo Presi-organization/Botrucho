@@ -8,6 +8,7 @@ import {
 } from 'discord.js';
 
 import { IGuildData } from '@/mongodb';
+import { audioEffectOptions } from '@/runtime/audio-effects';
 import {
   ICommand,
   CommandInteractionWithClient,
@@ -121,7 +122,7 @@ export default class PlayCommand extends ICommand {
           leaveOnEndCooldown: 30000,
           pauseOnEmpty: true,
           preferBridgedMetadata: true,
-          disableBiquad: true,
+          ...audioEffectOptions(guildDB.audioEffects),
         },
         requestedBy: interaction.user,
         connectionOptions: {
