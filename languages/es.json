@@ -108,11 +108,21 @@
     "NOT_FOUND": "No se encontraron letras",
     "SYNCED_LYRICS": "Letras sincronizadas"
   },
+  "PAUSE": {
+    "PAUSED_TITLE": "¡Pista pausada!",
+    "PAUSED_DESC": "He pausado la pista actual. Usa /resume para continuar.",
+    "ALREADY_PAUSED": "La pista ya está pausada."
+  },
   "PLAY": {
     "NO_RESULTS_TITLE": "No se encontraron resultados",
     "NO_RESULTS_DESC": "No se encontraron resultados para ${songName}",
     "ADDED_2_QUEUE_TITLE": "Canción añadida a la cola",
     "ADDED_2_QUEUE_DESC": "[${songName}](${songUrl}) ha sido añadida a la cola"
+  },
+  "RESUME": {
+    "RESUMED_TITLE": "¡Pista reanudada!",
+    "RESUMED_DESC": "He reanudado la pista actual.",
+    "NOT_PAUSED": "La pista no está pausada."
   },
   "SHUFFLE": {
     "SHUFFLED": "¡La cola ha sido mezclada!"

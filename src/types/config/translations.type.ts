@@ -18,7 +18,9 @@ export interface TranslationsType {
   USER_INFO: TranslationElement<UserInfoKeys>;
   LEAVE: TranslationElement<LeaveKeys>;
   LYRICS: TranslationElement<LyricsKeys>;
+  PAUSE: TranslationElement<PauseKeys>;
   PLAY: TranslationElement<PlayKeys>;
+  RESUME: TranslationElement<ResumeKeys>;
   SHUFFLE: TranslationElement<ShuffleKeys>;
   SKIP: TranslationElement<SkipKeys>;
   VOLUME: TranslationElement<VolumeKeys>;
@@ -81,8 +83,10 @@ export type ToggleCommandKeys = 'ENABLED' | 'DISABLED' | 'NOT_FOUND' | 'NOT_ALLO
 export type UserInfoKeys = 'USERNAME' | 'ID';
 export type LeaveKeys = 'DISCONNECTED' | 'SUCCESS';
 export type LyricsKeys = 'NO_QUEUE' | 'NOT_FOUND' | 'SYNCED_LYRICS';
+export type PauseKeys = 'PAUSED_TITLE' | 'PAUSED_DESC' | 'ALREADY_PAUSED';
 export type PlayKeys =
   'NO_RESULTS_TITLE' | 'NO_RESULTS_DESC' | 'ADDED_2_QUEUE_TITLE' | 'ADDED_2_QUEUE_DESC';
+export type ResumeKeys = 'RESUMED_TITLE' | 'RESUMED_DESC' | 'NOT_PAUSED';
 export type ShuffleKeys = 'SHUFFLED';
 export type SkipKeys = 'SKIPPED_TITLE' | 'SKIPPED_DESC';
 export type VolumeKeys =

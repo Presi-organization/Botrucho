@@ -108,11 +108,21 @@
     "NOT_FOUND": "No lyrics found",
     "SYNCED_LYRICS": "Synced Lyrics"
   },
+  "PAUSE": {
+    "PAUSED_TITLE": "Track Paused!",
+    "PAUSED_DESC": "I have paused the current track. Use /resume to continue.",
+    "ALREADY_PAUSED": "The track is already paused."
+  },
   "PLAY": {
     "NO_RESULTS_TITLE": "No results found",
     "NO_RESULTS_DESC": "No results found for ${songName}",
     "ADDED_2_QUEUE_TITLE": "Song added to Queue",
     "ADDED_2_QUEUE_DESC": "[${songName}](${songUrl}) has been added to Queue"
+  },
+  "RESUME": {
+    "RESUMED_TITLE": "Track Resumed!",
+    "RESUMED_DESC": "I have resumed the current track.",
+    "NOT_PAUSED": "The track is not paused."
   },
   "SHUFFLE": {
     "SHUFFLED": "The queue has been shuffled!"
