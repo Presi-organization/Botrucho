@@ -8,7 +8,7 @@ import { initializeFrisbeeEventCron, sendReminderToConfirmAttendance } from '@/s
 import { logger } from '@/utils';
 import { workerRadarProcess } from '@/workers/radar.process';
 
-const FOOTBALL_DAILY = { cronName: 'footballDaily', cronExpression: '0 8 * * *' };
+const FOOTBALL_DAILY = { cronName: 'footballDaily', cronExpression: '0 11 * * *' };
 
 export class CronManager {
   private readonly client: Botrucho;
