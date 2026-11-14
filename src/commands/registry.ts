@@ -15,10 +15,14 @@ import {
 } from '@/commands/management';
 import {
   LeaveCommand,
+  LoopCommand,
   LyricsCommand,
+  PauseCommand,
   PlayCommand,
+  ResumeCommand,
   ShuffleCommand,
   SkipCommand,
+  SongInfoCommand,
   VolumeCommand,
 } from '@/commands/music';
 import { SayCommand } from '@/commands/say';
@@ -36,19 +40,23 @@ export const commandRegistry: (new () => ICommand)[] = [
   FootballDailyCommand,
   LangCommand,
   LeaveCommand,
+  LoopCommand,
   LyricsCommand,
   MoveCommand,
   MultasCommand,
   TFTEloCommand,
   ToggleCommandCommand,
+  PauseCommand,
   PingCommand,
   PlayCommand,
   PruneCommand,
+  ResumeCommand,
   SayCommand,
   ServerCommand,
   SiataCommand,
   ShuffleCommand,
   SkipCommand,
+  SongInfoCommand,
   UserInfoCommand,
   VolumeCommand,
 ];

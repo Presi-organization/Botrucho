@@ -103,10 +103,21 @@
     "DISCONNECTED": "¡Desconectado!",
     "SUCCESS": "He salido del canal de voz exitosamente."
   },
+  "LOOP": {
+    "LOOP_TITLE": "¡Repetición actualizada!",
+    "LOOP_OFF": "La repetición está desactivada.",
+    "LOOP_TRACK": "La pista actual se repetirá.",
+    "LOOP_QUEUE": "Toda la cola se repetirá."
+  },
   "LYRICS": {
     "NO_QUEUE": "No hay cola",
     "NOT_FOUND": "No se encontraron letras",
     "SYNCED_LYRICS": "Letras sincronizadas"
+  },
+  "PAUSE": {
+    "PAUSED_TITLE": "¡Pista pausada!",
+    "PAUSED_DESC": "He pausado la pista actual. Usa /resume para continuar.",
+    "ALREADY_PAUSED": "La pista ya está pausada."
   },
   "PLAY": {
     "NO_RESULTS_TITLE": "No se encontraron resultados",
@@ -114,12 +125,34 @@
     "ADDED_2_QUEUE_TITLE": "Canción añadida a la cola",
     "ADDED_2_QUEUE_DESC": "[${songName}](${songUrl}) ha sido añadida a la cola"
   },
+  "RESUME": {
+    "RESUMED_TITLE": "¡Pista reanudada!",
+    "RESUMED_DESC": "He reanudado la pista actual.",
+    "NOT_PAUSED": "La pista no está pausada."
+  },
   "SHUFFLE": {
     "SHUFFLED": "¡La cola ha sido mezclada!"
   },
   "SKIP": {
     "SKIPPED_TITLE": "¡Pista saltada!",
     "SKIPPED_DESC": "He saltado a la siguiente pista exitosamente."
+  },
+  "SONG_INFO": {
+    "ARTIST": "Artista",
+    "DURATION": "Duración",
+    "PROGRESS": "Progreso",
+    "SOURCE": "Fuente",
+    "VIEWS": "Reproducciones",
+    "REQUESTED_BY": "Pedida por ${username}",
+    "STATUS": "Estado",
+    "PLAYING": "Reproduciendo",
+    "PAUSED": "Pausada",
+    "LOOP": "Repetición",
+    "LOOP_OFF": "Desactivada",
+    "LOOP_TRACK": "Pista",
+    "LOOP_QUEUE": "Cola",
+    "LOOP_AUTOPLAY": "Reproducción automática",
+    "TRACKS_LEFT": "Pistas restantes en la cola"
   },
   "VOLUME": {
     "VOLUME_CHANGED_TITLE": "Volumen cambiado",

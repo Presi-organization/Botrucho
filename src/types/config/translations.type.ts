@@ -17,10 +17,14 @@ export interface TranslationsType {
   TOGGLE_COMMAND: TranslationElement<ToggleCommandKeys>;
   USER_INFO: TranslationElement<UserInfoKeys>;
   LEAVE: TranslationElement<LeaveKeys>;
+  LOOP: TranslationElement<LoopKeys>;
   LYRICS: TranslationElement<LyricsKeys>;
+  PAUSE: TranslationElement<PauseKeys>;
   PLAY: TranslationElement<PlayKeys>;
+  RESUME: TranslationElement<ResumeKeys>;
   SHUFFLE: TranslationElement<ShuffleKeys>;
   SKIP: TranslationElement<SkipKeys>;
+  SONG_INFO: TranslationElement<SongInfoKeys>;
   VOLUME: TranslationElement<VolumeKeys>;
   SAY: TranslationElement<SayKeys>;
   FINES: TranslationElement<FinesKeys>;
@@ -80,11 +84,30 @@ export type ServerInfoKeys = 'TITLE' | 'ONLY_SERVER' | 'a' | 'b' | 'c' | 'd' | '
 export type ToggleCommandKeys = 'ENABLED' | 'DISABLED' | 'NOT_FOUND' | 'NOT_ALLOWED';
 export type UserInfoKeys = 'USERNAME' | 'ID';
 export type LeaveKeys = 'DISCONNECTED' | 'SUCCESS';
+export type LoopKeys = 'LOOP_TITLE' | 'LOOP_OFF' | 'LOOP_TRACK' | 'LOOP_QUEUE';
 export type LyricsKeys = 'NO_QUEUE' | 'NOT_FOUND' | 'SYNCED_LYRICS';
+export type PauseKeys = 'PAUSED_TITLE' | 'PAUSED_DESC' | 'ALREADY_PAUSED';
 export type PlayKeys =
   'NO_RESULTS_TITLE' | 'NO_RESULTS_DESC' | 'ADDED_2_QUEUE_TITLE' | 'ADDED_2_QUEUE_DESC';
+export type ResumeKeys = 'RESUMED_TITLE' | 'RESUMED_DESC' | 'NOT_PAUSED';
 export type ShuffleKeys = 'SHUFFLED';
 export type SkipKeys = 'SKIPPED_TITLE' | 'SKIPPED_DESC';
+export type SongInfoKeys =
+  | 'ARTIST'
+  | 'DURATION'
+  | 'PROGRESS'
+  | 'SOURCE'
+  | 'VIEWS'
+  | 'REQUESTED_BY'
+  | 'STATUS'
+  | 'PLAYING'
+  | 'PAUSED'
+  | 'LOOP'
+  | 'LOOP_OFF'
+  | 'LOOP_TRACK'
+  | 'LOOP_QUEUE'
+  | 'LOOP_AUTOPLAY'
+  | 'TRACKS_LEFT';
 export type VolumeKeys =
   'VOLUME_CHANGED_TITLE' | 'VOLUME_CHANGED_DESC' | 'CURRENT_VOLUME_TITLE' | 'CURRENT_VOLUME_DESC';
 export type SayKeys = 'SYNTHESIZING';
