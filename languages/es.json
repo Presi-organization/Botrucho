@@ -137,6 +137,22 @@
     "SKIPPED_TITLE": "¡Pista saltada!",
     "SKIPPED_DESC": "He saltado a la siguiente pista exitosamente."
   },
+  "SONG_INFO": {
+    "ARTIST": "Artista",
+    "DURATION": "Duración",
+    "PROGRESS": "Progreso",
+    "SOURCE": "Fuente",
+    "VIEWS": "Reproducciones",
+    "REQUESTED_BY": "Pedida por ${username}",
+    "STATUS": "Estado",
+    "PLAYING": "Reproduciendo",
+    "PAUSED": "Pausada",
+    "LOOP": "Repetición",
+    "LOOP_OFF": "Desactivada",
+    "LOOP_TRACK": "Pista",
+    "LOOP_QUEUE": "Cola",
+    "TRACKS_LEFT": "Pistas restantes en la cola"
+  },
   "VOLUME": {
     "VOLUME_CHANGED_TITLE": "Volumen cambiado",
     "VOLUME_CHANGED_DESC": "He cambiado el volumen a ${gain}% exitosamente",

@@ -137,6 +137,22 @@
     "SKIPPED_TITLE": "Track Skipped!",
     "SKIPPED_DESC": "I have successfully skipped to the next track."
   },
+  "SONG_INFO": {
+    "ARTIST": "Artist",
+    "DURATION": "Duration",
+    "PROGRESS": "Progress",
+    "SOURCE": "Source",
+    "VIEWS": "Views",
+    "REQUESTED_BY": "Requested by ${username}",
+    "STATUS": "Status",
+    "PLAYING": "Playing",
+    "PAUSED": "Paused",
+    "LOOP": "Loop",
+    "LOOP_OFF": "Off",
+    "LOOP_TRACK": "Track",
+    "LOOP_QUEUE": "Queue",
+    "TRACKS_LEFT": "Tracks left in queue"
+  },
   "VOLUME": {
     "VOLUME_CHANGED_TITLE": "Volume changed",
     "VOLUME_CHANGED_DESC": "I have successfully changed the volume to ${gain}%",

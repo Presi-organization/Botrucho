@@ -6,4 +6,5 @@ export { default as PlayCommand } from './play.command';
 export { default as ResumeCommand } from './resume.command';
 export { default as ShuffleCommand } from './shuffle.command';
 export { default as SkipCommand } from './skip.command';
+export { default as SongInfoCommand } from './song-info.command';
 export { default as VolumeCommand } from './volume.command';

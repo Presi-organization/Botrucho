@@ -22,6 +22,7 @@ import {
   ResumeCommand,
   ShuffleCommand,
   SkipCommand,
+  SongInfoCommand,
   VolumeCommand,
 } from '@/commands/music';
 import { SayCommand } from '@/commands/say';
@@ -55,6 +56,7 @@ export const commandRegistry: (new () => ICommand)[] = [
   SiataCommand,
   ShuffleCommand,
   SkipCommand,
+  SongInfoCommand,
   UserInfoCommand,
   VolumeCommand,
 ];
