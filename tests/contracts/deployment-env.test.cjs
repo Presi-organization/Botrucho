@@ -87,7 +87,6 @@ test('application secrets remain encrypted in the committed production config', 
     'AISPEECH_TOKEN',
     'WEBOOK_TOKEN',
     'RIOT_TOKEN',
-    'FOOTBALL_TOKEN',
   ]) {
     const value = config.match(new RegExp(`^${name}=(.*)$`, 'm'))?.[1]?.replace(/^["']|["']$/g, '');
     assert.ok(value?.startsWith('encrypted:'), `${name} must remain encrypted`);

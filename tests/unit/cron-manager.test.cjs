@@ -20,6 +20,7 @@ function fixture(execute) {
       initializeFrisbeeEventCron: execute,
       sendReminderToConfirmAttendance: execute,
     },
+    '@/services/football': { postDailyFootball: execute },
     '@/runtime/lifecycle': require('@/runtime/lifecycle'),
     '@/workers/radar.process': { workerRadarProcess: execute },
     '@/utils': { logger: { log() {}, warn() {}, error: (...args) => errors.push(args) } },
@@ -132,5 +133,16 @@ test('a failed execution releases its in-flight slot for the next run', async ()
   await callbacks[0]();
   assert.equal(calls, 2);
   assert.equal(errors.length, 2);
+  await manager.shutdown();
+});
+
+test('footballDaily jobs run the daily football post', async () => {
+  let calls = 0;
+  const { manager } = fixture(async () => {
+    calls++;
+  });
+  manager.addCronJob({ ...job, cronName: 'footballDaily' });
+  await settle();
+  assert.equal(calls, 1);
   await manager.shutdown();
 });

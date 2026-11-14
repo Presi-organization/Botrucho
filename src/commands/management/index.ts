@@ -2,6 +2,7 @@ export { default as AiCommand } from './ai.command';
 export { default as AvatarCommand } from './avatar.command';
 export { default as CronsCommand } from './crons.command';
 export { default as EventCommand } from './event.command';
+export { default as FootballDailyCommand } from './football-daily.command';
 export { default as LangCommand } from './lang.command';
 export { default as MoveCommand } from './move.command';
 export { default as PingCommand } from './ping.command';

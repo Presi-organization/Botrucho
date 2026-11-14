@@ -3,9 +3,12 @@ import { schedule, ScheduledTask } from 'node-cron';
 
 import { Botrucho, ICronData } from '@/mongodb';
 import { withTimeout } from '@/runtime/lifecycle';
+import { postDailyFootball } from '@/services/football';
 import { initializeFrisbeeEventCron, sendReminderToConfirmAttendance } from '@/services/webhooks';
 import { logger } from '@/utils';
 import { workerRadarProcess } from '@/workers/radar.process';
+
+const FOOTBALL_DAILY = { cronName: 'footballDaily', cronExpression: '0 8 * * *' };
 
 export class CronManager {
   private readonly client: Botrucho;
@@ -19,6 +22,12 @@ export class CronManager {
 
   async initializeCronJobs(): Promise<void> {
     const cronJobs: ICronData[] = await this.client.cronData.getAllCrones();
+
+    if (!cronJobs.some((job) => job.cronName === FOOTBALL_DAILY.cronName)) {
+      cronJobs.push(
+        await this.client.cronData.createOrUpdateCron({ ...FOOTBALL_DAILY, isActive: true }),
+      );
+    }
 
     for (const job of cronJobs) {
       if (job.isActive) {
@@ -98,6 +107,9 @@ export class CronManager {
           break;
         case 'reminderUltimateFrisbeeConfirmAttendance':
           await sendReminderToConfirmAttendance(this.client);
+          break;
+        case 'footballDaily':
+          await postDailyFootball(this.client);
           break;
         default:
           logger.warn(`Unknown cron job: ${job.cronName}`);

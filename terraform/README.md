@@ -157,7 +157,7 @@ This is the VM's host key, **not** your deployment user's public key. Verify its
 | `VM_SSH_PRIVATE_KEY`            | Complete new deployment SSH private key, including headers.                                                                                               |
 | `VM_SSH_KNOWN_HOSTS`            | The single verified host-key line from step 3.                                                                                                            |
 
-Application settings—including `DISCORD_TOKEN`, `CLIENT_ID`, `MONGO_URI`, `AISPEECH_TOKEN`, `RIOT_TOKEN`, `FOOTBALL_TOKEN`, `WEBHOOK_ID` and historical `WEBOOK_TOKEN`—come from encrypted `.env.production`. Update it with dotenvx and commit only encrypted configuration, never decrypted values/private keys.
+Application settings—including `DISCORD_TOKEN`, `CLIENT_ID`, `MONGO_URI`, `AISPEECH_TOKEN`, `RIOT_TOKEN`, `WEBHOOK_ID` and historical `WEBOOK_TOKEN`—come from encrypted `.env.production`. Update it with dotenvx and commit only encrypted configuration, never decrypted values/private keys.
 
 The runner creates `.env.keys` containing **only** the private key, mode 600, and removes it afterward. It is transferred over verified SSH, not uploaded as an artifact, committed, embedded in Terraform state or baked into an image. The VM copy remains mode 600 for startup. Root, the service account or a compromised VM can still recover runtime secrets; encryption is not a defense against machine compromise.
 

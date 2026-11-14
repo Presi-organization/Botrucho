@@ -13,6 +13,8 @@ export interface IGuildData extends Document {
   disabledCommands: string[];
   aiEnabled?: boolean;
   defaultSpamChannelID?: string | null;
+  footballChannelID?: string | null;
+  footballLastPostDate?: string | null;
   plugins?: {
     welcome?: {
       status: boolean;
@@ -79,6 +81,8 @@ const GuildDataSchema = new Schema<IGuildData>({
   disabledCommands: { type: [String], default: [] },
   aiEnabled: { type: Boolean, default: false },
   defaultSpamChannelID: { type: String, default: null },
+  footballChannelID: { type: String, default: null },
+  footballLastPostDate: { type: String, default: null },
   plugins: {
     type: Object,
     default: {

@@ -24,7 +24,6 @@ interface Database {
 }
 
 interface APIs {
-  football: string;
   riot: string;
 }
 

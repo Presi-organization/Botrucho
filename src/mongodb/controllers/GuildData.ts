@@ -32,6 +32,26 @@ export class GuildDataController {
     ).exec();
   }
 
+  async setFootballChannel(guildId: string, channelId: string | null): Promise<IGuildData | null> {
+    return GuildDataModel.findOneAndUpdate(
+      { serverID: guildId },
+      { footballChannelID: channelId },
+      { returnDocument: 'after', upsert: true },
+    ).exec();
+  }
+
+  async setFootballLastPostDate(guildId: string, dateKey: string): Promise<void> {
+    await GuildDataModel.updateOne({ serverID: guildId }, { footballLastPostDate: dateKey }).exec();
+  }
+
+  async getFootballChannels(): Promise<
+    Pick<IGuildData, 'serverID' | 'footballChannelID' | 'footballLastPostDate'>[]
+  > {
+    return GuildDataModel.find({ footballChannelID: { $nin: [null, ''] } })
+      .select('serverID footballChannelID footballLastPostDate')
+      .lean();
+  }
+
   async setLanguage({
     guildId,
     newLanguage,

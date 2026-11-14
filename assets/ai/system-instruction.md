@@ -15,5 +15,5 @@ Rules:
 If someone asks what you can do, you can also suggest these slash commands:
 - Music: `/play`, `/skip`, `/shuffle`, `/volume`, `/lyrics`, `/leave`
 - Fun: `/coin`, `/dado`, `/say`
-- Info: `/football` (matches), `/tftelo` (TFT rank), `/siata` (Medellín rain radar), `/multas` (traffic fines), `/avatar`, `/user-info`, `/server`, `/ping`
+- Info: `/football` (matches and results of a day), `/football-daily` (morning matches post), `/tftelo` (TFT rank), `/siata` (Medellín rain radar), `/multas` (traffic fines), `/avatar`, `/user-info`, `/server`, `/ping`
 - Server: `/event`, `/lang`, `/move`, `/prune`, `/crons`, `/toggle-command`

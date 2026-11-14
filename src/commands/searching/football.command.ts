@@ -1,103 +1,91 @@
-import { SlashCommandBuilder } from '@discordjs/builders';
 import {
-  CommandInteraction,
-  EmbedBuilder,
-  SlashCommandSubcommandGroupBuilder,
-  SlashCommandSubcommandsOnlyBuilder,
+  SlashCommandBooleanOption,
+  SlashCommandBuilder,
+  SlashCommandOptionsOnlyBuilder,
+  SlashCommandStringOption,
 } from 'discord.js';
 
-import { getCompetitions } from '@/services';
+import { footballCompetitions } from '@/config/football-competitions';
 import {
-  competitionNames,
-  Competitions,
-  FootballResult,
-  ICommand,
-  isMatches,
-  isResults,
-  Match,
-  Result,
-  subcommandToCompetition,
-} from '@/types';
+  addDays,
+  bogotaDate,
+  buildFootballPages,
+  filterByDate,
+  formatLongDate,
+  getEspnMatches,
+  isDateKey,
+} from '@/services';
+import { CommandInteractionWithClient, FootballMatch, FootballPage, ICommand } from '@/types';
 import { Error, Info } from '@/utils';
 
-const competitions = [
-  { name: 'champions', description: 'Champions League' },
-  { name: 'europaleague', description: 'Europa League' },
-  { name: 'premier', description: 'Premier League' },
-  { name: 'laliga', description: 'La Liga' },
-  { name: 'seriea', description: 'Serie A' },
-  { name: 'ligue1', description: 'Ligue 1' },
-  { name: 'bundesliga', description: 'Bundesliga' },
-  { name: 'fpc', description: 'Fútbol Profesional Colombiano' },
-];
+const MAX_PAGES = 5;
 
 export default class FootballCommand extends ICommand {
   name = 'football';
-  description = 'Display matches and results.';
-  data: SlashCommandSubcommandsOnlyBuilder = new SlashCommandBuilder()
+  description = 'Display the matches of a day.';
+  data: SlashCommandOptionsOnlyBuilder = new SlashCommandBuilder()
     .setName('football')
-    .setDescription('Display matches.')
-    .addSubcommandGroup(this._createSubcommandGroup('matches', 'Future matches'))
-    .addSubcommandGroup(this._createSubcommandGroup('results', 'Results of matches'));
+    .setDescription('Display the matches of a day (default: today).')
+    .addStringOption((option: SlashCommandStringOption) =>
+      option
+        .setName('competition')
+        .setDescription('Only this competition')
+        .addChoices(
+          ...footballCompetitions.map((competition) => ({
+            name: competition.name,
+            value: competition.key,
+          })),
+        ),
+    )
+    .addStringOption((option: SlashCommandStringOption) =>
+      option.setName('date').setDescription('Day to show, as YYYY-MM-DD (Bogota time)'),
+    )
+    .addBooleanOption((option: SlashCommandBooleanOption) =>
+      option.setName('finished').setDescription('Only finished matches (default day: yesterday)'),
+    );
 
-  async execute(interaction: CommandInteraction): Promise<void> {
+  async execute(interaction: CommandInteractionWithClient): Promise<void> {
     if (!interaction.isChatInputCommand()) return;
 
     await interaction.deferReply();
 
-    const group: string = interaction.options.getSubcommandGroup(true);
-    const subcommand: string = interaction.options.getSubcommand();
-    const competition: Competitions = subcommandToCompetition[subcommand];
+    const competitionKey = interaction.options.getString('competition');
+    const finished = interaction.options.getBoolean('finished') ?? false;
+    const dateKey =
+      interaction.options.getString('date') ?? addDays(bogotaDate(), finished ? -1 : 0);
 
-    try {
-      const response: FootballResult = await getCompetitions(
-        competition,
-        group === 'matches' ? 'SCHEDULED' : 'FINISHED',
-      );
-      if (!response) {
-        await interaction.editReply({ embeds: [Error({ description: 'No matches found' })] });
-        return;
-      }
-
-      const embed: EmbedBuilder = new EmbedBuilder().setTitle(
-        `⚽ ${competitionNames[competition]}`,
-      );
-
-      if (isMatches(response)) {
-        const fields = response.matches.map((match: Match) => ({
-          name: `> ***${match.homeTeam}*** ᴠs ***${match.awayTeam}***`,
-          value: `⤳ 🗓️ ${match.localDate}`,
-          inline: false,
-        }));
-        embed.setDescription(`📌 Next matches for ${response?.stage}`).setFields(fields);
-      } else if (isResults(response)) {
-        const fields = response.results.map((result: Result) => ({
-          name: `> ***${result.homeTeam}*** ᴠs ***${result.awayTeam}***`,
-          value: `⤳ 🏆 ${result.homeResult} - ${result.awayResult}`,
-          inline: false,
-        }));
-        embed.setDescription(`📌 Last matches for ${response?.stage}`).setFields(fields);
-      }
-      await interaction.editReply({ embeds: [Info(embed.toJSON())] });
-    } catch {
-      await interaction.editReply({ embeds: [Error({ description: 'error' })] });
+    if (!isDateKey(dateKey)) {
+      await interaction.editReply({
+        embeds: [Error({ description: 'Invalid date. Use the format YYYY-MM-DD.' })],
+      });
+      return;
     }
-  }
 
-  private _createSubcommandGroup(
-    name: string,
-    description: string,
-  ): SlashCommandSubcommandGroupBuilder {
-    const group = new SlashCommandSubcommandGroupBuilder()
-      .setName(name)
-      .setDescription(description);
+    const matches: FootballMatch[] | undefined = await getEspnMatches(dateKey, addDays(dateKey, 1));
+    if (!matches) {
+      await interaction.editReply({
+        embeds: [Error({ description: 'Could not fetch matches right now. Try again later.' })],
+      });
+      return;
+    }
 
-    competitions.forEach((comp) => {
-      group.addSubcommand((subcommand) =>
-        subcommand.setName(comp.name).setDescription(comp.description),
-      );
+    const pages: FootballPage[] = buildFootballPages({
+      title: `⚽ ${finished ? 'Resultados' : 'Partidos'} · ${formatLongDate(dateKey)}`,
+      matches: filterByDate(matches, dateKey).filter(
+        (match) => !finished || match.state === 'post',
+      ),
+      competitionKeys: competitionKey ? [competitionKey] : undefined,
+      maxPages: MAX_PAGES,
+      moreHint: competitionKey ? '' : 'Filtra por competición para ver el resto.',
     });
 
-    return group;
+    if (!pages.length) {
+      await interaction.editReply({ embeds: [Info({ description: 'No matches found.' })] });
+      return;
+    }
+
+    const [first, ...rest] = pages.map((page) => Info(page));
+    await interaction.editReply({ embeds: [first] });
+    for (const embed of rest) await interaction.followUp({ embeds: [embed] });
   }
 }

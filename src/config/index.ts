@@ -65,7 +65,6 @@ const config: ConfigType = {
     token: process.env.WEBOOK_TOKEN as string,
   },
   apis: {
-    football: process.env.FOOTBALL_TOKEN as string,
     riot: process.env.RIOT_TOKEN as string,
   },
   integrations: {
