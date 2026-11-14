@@ -26,6 +26,7 @@ export interface TranslationsType {
   FINES: TranslationElement<FinesKeys>;
   SIATA: TranslationElement<SiataKeys>;
   TFT_ELO: TranslationElement<TftEloKeys>;
+  FOOTBALL: TranslationElement<FootballKeys>;
   AI: TranslationElement<AiKeys>;
   _EVENTS: string;
   DELETE: TranslationElement<DeleteKeys>;
@@ -101,4 +102,22 @@ export type TftEloKeys =
   | 'INACTIVE';
 export type DeleteKeys = 'LEAVE';
 export type PlayerKeys = 'NOW_PLAYING' | 'SONG' | 'REQUESTED_BY' | 'TRACKS_LEFT';
+export type FootballKeys =
+  | 'LOCALE'
+  | 'TITLE_MATCHES'
+  | 'TITLE_RESULTS'
+  | 'TITLE_TODAY'
+  | 'LIVE'
+  | 'FINISHED'
+  | 'CONT'
+  | 'MORE_ONE'
+  | 'MORE_MANY'
+  | 'HINT_FILTER'
+  | 'HINT_COMMAND'
+  | 'INVALID_DATE'
+  | 'FETCH_ERROR'
+  | 'NO_MATCHES'
+  | 'DAILY_OFF'
+  | 'DAILY_SET'
+  | 'DAILY_NO_PERMS';
 export type AiKeys = 'EMPTY_PROMPT' | 'USER_LIMIT' | 'GUILD_LIMIT' | 'GLOBAL_LIMIT' | 'ERROR';

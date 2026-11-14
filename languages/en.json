@@ -149,6 +149,25 @@
     "FRESH_BLOOD": "Fresh Blood",
     "INACTIVE": "Inactive"
   },
+  "FOOTBALL": {
+    "LOCALE": "en-US",
+    "TITLE_MATCHES": "⚽ Matches · ${date}",
+    "TITLE_RESULTS": "⚽ Results · ${date}",
+    "TITLE_TODAY": "⚽ Today's matches · ${date}",
+    "LIVE": "LIVE",
+    "FINISHED": "FT",
+    "CONT": "cont.",
+    "MORE_ONE": "… and 1 more match.",
+    "MORE_MANY": "… and ${count} more matches.",
+    "HINT_FILTER": "Filter by competition to see the rest.",
+    "HINT_COMMAND": "Use `/football` to see them all.",
+    "INVALID_DATE": "Invalid date. Use the format YYYY-MM-DD.",
+    "FETCH_ERROR": "Could not fetch matches right now. Try again later.",
+    "NO_MATCHES": "No matches found.",
+    "DAILY_OFF": "The daily matches post is now off.",
+    "DAILY_SET": "Today's matches will be posted in ${channel} every morning.",
+    "DAILY_NO_PERMS": "I can't send embeds in ${channel}. Give me View Channel, Send Messages and Embed Links there and try again."
+  },
   "AI": {
     "EMPTY_PROMPT": "Mention me with a question, e.g. `@Botrucho what should we play tonight?`",
     "USER_LIMIT": "You have reached your daily limit of AI questions. Try again tomorrow.",

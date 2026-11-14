@@ -2,24 +2,10 @@ import type { Botrucho } from '@/mongodb';
 import { addDays, bogotaDate, formatLongDate } from '@/services/football/date.util';
 import { buildFootballPages, filterByDate } from '@/services/football/football-embed';
 import { getEspnMatches } from '@/services/REST';
-import type { FootballPage } from '@/types';
+import type { FootballKeys, TranslationElement } from '@/types';
 import { Info, logger } from '@/utils';
 
 const UNREACHABLE_CHANNEL_CODES = [10003, 50001];
-
-export const buildDailyPages = async (
-  dateKey: string = bogotaDate(),
-): Promise<FootballPage[] | undefined> => {
-  const matches = await getEspnMatches(dateKey, addDays(dateKey, 1));
-  if (!matches) return undefined;
-  const pages = buildFootballPages({
-    title: `⚽ Partidos de hoy · ${formatLongDate(dateKey)}`,
-    matches: filterByDate(matches, dateKey),
-    maxPages: 1,
-    moreHint: 'Usa `/football` para ver todos.',
-  });
-  return pages.length ? pages : undefined;
-};
 
 export const postDailyFootball = async (client: Botrucho): Promise<void> => {
   const dateKey = bogotaDate();
@@ -30,8 +16,9 @@ export const postDailyFootball = async (client: Botrucho): Promise<void> => {
   );
   if (!pending.length) return;
 
-  const pages = await buildDailyPages(dateKey);
-  if (!pages) {
+  const matches = await getEspnMatches(dateKey, addDays(dateKey, 1));
+  const todayMatches = matches ? filterByDate(matches, dateKey) : [];
+  if (!todayMatches.length) {
     logger.log('No football matches to post today');
     return;
   }
@@ -43,6 +30,17 @@ export const postDailyFootball = async (client: Botrucho): Promise<void> => {
         await client.guildData.setFootballChannel(serverID, null);
         continue;
       }
+
+      const texts = (await client.guilds.cache
+        .get(serverID)
+        ?.translate('FOOTBALL', client.guildData)) as TranslationElement<FootballKeys>;
+      const pages = buildFootballPages({
+        title: texts.TITLE_TODAY.replace('${date}', formatLongDate(dateKey, texts.LOCALE)),
+        matches: todayMatches,
+        maxPages: 1,
+        moreHint: texts.HINT_COMMAND,
+        texts,
+      });
       for (const page of pages) await channel.send({ embeds: [Info(page)] });
       await client.guildData.setFootballLastPostDate(serverID, dateKey);
     } catch (error: unknown) {

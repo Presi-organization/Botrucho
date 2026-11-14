@@ -6,6 +6,7 @@ import {
 } from 'discord.js';
 
 import { footballCompetitions } from '@/config/football-competitions';
+import { IGuildData } from '@/mongodb';
 import {
   addDays,
   bogotaDate,
@@ -15,7 +16,14 @@ import {
   getEspnMatches,
   isDateKey,
 } from '@/services';
-import { CommandInteractionWithClient, FootballMatch, FootballPage, ICommand } from '@/types';
+import {
+  CommandInteractionWithClient,
+  FootballKeys,
+  FootballMatch,
+  FootballPage,
+  ICommand,
+  TranslationElement,
+} from '@/types';
 import { Error, Info } from '@/utils';
 
 const MAX_PAGES = 5;
@@ -44,11 +52,12 @@ export default class FootballCommand extends ICommand {
       option.setName('finished').setDescription('Only finished matches (default day: yesterday)'),
     );
 
-  async execute(interaction: CommandInteractionWithClient): Promise<void> {
+  async execute(interaction: CommandInteractionWithClient, guildDB: IGuildData): Promise<void> {
     if (!interaction.isChatInputCommand()) return;
 
     await interaction.deferReply();
 
+    const texts: TranslationElement<FootballKeys> = interaction.translate('FOOTBALL', guildDB.lang);
     const competitionKey = interaction.options.getString('competition');
     const finished = interaction.options.getBoolean('finished') ?? false;
     const dateKey =
@@ -56,7 +65,7 @@ export default class FootballCommand extends ICommand {
 
     if (!isDateKey(dateKey)) {
       await interaction.editReply({
-        embeds: [Error({ description: 'Invalid date. Use the format YYYY-MM-DD.' })],
+        embeds: [Error({ description: texts.INVALID_DATE })],
       });
       return;
     }
@@ -64,23 +73,27 @@ export default class FootballCommand extends ICommand {
     const matches: FootballMatch[] | undefined = await getEspnMatches(dateKey, addDays(dateKey, 1));
     if (!matches) {
       await interaction.editReply({
-        embeds: [Error({ description: 'Could not fetch matches right now. Try again later.' })],
+        embeds: [Error({ description: texts.FETCH_ERROR })],
       });
       return;
     }
 
     const pages: FootballPage[] = buildFootballPages({
-      title: `⚽ ${finished ? 'Resultados' : 'Partidos'} · ${formatLongDate(dateKey)}`,
+      title: (finished ? texts.TITLE_RESULTS : texts.TITLE_MATCHES).replace(
+        '${date}',
+        formatLongDate(dateKey, texts.LOCALE),
+      ),
       matches: filterByDate(matches, dateKey).filter(
         (match) => !finished || match.state === 'post',
       ),
       competitionKeys: competitionKey ? [competitionKey] : undefined,
       maxPages: MAX_PAGES,
-      moreHint: competitionKey ? '' : 'Filtra por competición para ver el resto.',
+      moreHint: competitionKey ? '' : texts.HINT_FILTER,
+      texts,
     });
 
     if (!pages.length) {
-      await interaction.editReply({ embeds: [Info({ description: 'No matches found.' })] });
+      await interaction.editReply({ embeds: [Info({ description: texts.NO_MATCHES })] });
       return;
     }
 

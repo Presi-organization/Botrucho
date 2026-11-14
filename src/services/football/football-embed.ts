@@ -1,6 +1,6 @@
 import { footballCompetitions } from '@/config/football-competitions';
 import { bogotaDate, bogotaTime } from '@/services/football/date.util';
-import type { FootballMatch, FootballPage } from '@/types';
+import type { FootballKeys, FootballMatch, FootballPage, TranslationElement } from '@/types';
 
 const MAX_DESCRIPTION = 3800;
 
@@ -9,12 +9,12 @@ export const filterByDate = (matches: FootballMatch[], dateKey: string): Footbal
 
 const winner = (name: string, won: boolean): string => (won ? `**${name}**` : name);
 
-const matchLine = (match: FootballMatch): string => {
+const matchLine = (match: FootballMatch, texts: TranslationElement<FootballKeys>): string => {
   const { home, away, homeScore, awayScore } = match;
   if (match.state === 'pre' || homeScore === undefined || awayScore === undefined) {
     return `\`${bogotaTime(match.kickoff)}\` ${home} vs ${away}`;
   }
-  const tag = match.state === 'in' ? 'EN VIVO' : 'FT';
+  const tag = match.state === 'in' ? texts.LIVE : texts.FINISHED;
   const finished = match.state === 'post';
   const homeName = winner(home, finished && homeScore > awayScore);
   const awayName = winner(away, finished && awayScore > homeScore);
@@ -30,12 +30,14 @@ export const buildFootballPages = ({
   competitionKeys,
   maxPages = Infinity,
   moreHint = '',
+  texts,
 }: {
   title: string;
   matches: FootballMatch[];
   competitionKeys?: string[];
   maxPages?: number;
   moreHint?: string;
+  texts: TranslationElement<FootballKeys>;
 }): FootballPage[] => {
   const pages: { description: string; count: number }[] = [];
   let current = '';
@@ -63,10 +65,10 @@ export const buildFootballPages = ({
     append(current ? `\n${header}` : header);
 
     for (const match of group) {
-      const line = matchLine(match);
+      const line = matchLine(match, texts);
       if (current.length + line.length + 1 > MAX_DESCRIPTION) {
         flush();
-        append(`${header} (cont.)`);
+        append(`${header} (${texts.CONT})`);
       }
       append(line);
       currentCount++;
@@ -77,8 +79,8 @@ export const buildFootballPages = ({
   const kept = pages.slice(0, maxPages);
   const omitted = pages.slice(maxPages).reduce((total, page) => total + page.count, 0);
   if (omitted > 0) {
-    const note =
-      `… y ${omitted} ${omitted === 1 ? 'partido más' : 'partidos más'}. ${moreHint}`.trim();
+    const more = omitted === 1 ? texts.MORE_ONE : texts.MORE_MANY.replace('${count}', `${omitted}`);
+    const note = `${more} ${moreHint}`.trim();
     kept[kept.length - 1].description += `\n\n*${note}*`;
   }
 

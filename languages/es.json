@@ -149,6 +149,25 @@
     "FRESH_BLOOD": "Sangre Nueva",
     "INACTIVE": "Inactivo"
   },
+  "FOOTBALL": {
+    "LOCALE": "es-CO",
+    "TITLE_MATCHES": "⚽ Partidos · ${date}",
+    "TITLE_RESULTS": "⚽ Resultados · ${date}",
+    "TITLE_TODAY": "⚽ Partidos de hoy · ${date}",
+    "LIVE": "EN VIVO",
+    "FINISHED": "FT",
+    "CONT": "cont.",
+    "MORE_ONE": "… y 1 partido más.",
+    "MORE_MANY": "… y ${count} partidos más.",
+    "HINT_FILTER": "Filtra por competición para ver el resto.",
+    "HINT_COMMAND": "Usa `/football` para ver todos.",
+    "INVALID_DATE": "Fecha inválida. Usa el formato AAAA-MM-DD.",
+    "FETCH_ERROR": "No pude traer los partidos ahora. Inténtalo más tarde.",
+    "NO_MATCHES": "No se encontraron partidos.",
+    "DAILY_OFF": "El post diario de partidos quedó desactivado.",
+    "DAILY_SET": "Los partidos de hoy se publicarán en ${channel} cada mañana.",
+    "DAILY_NO_PERMS": "No puedo enviar embeds en ${channel}. Dame Ver canal, Enviar mensajes e Insertar enlaces ahí e inténtalo de nuevo."
+  },
   "AI": {
     "EMPTY_PROMPT": "Mencióname con una pregunta, por ejemplo `@Botrucho ¿qué jugamos esta noche?`",
     "USER_LIMIT": "Llegaste a tu límite diario de preguntas a la IA. Intenta de nuevo mañana.",

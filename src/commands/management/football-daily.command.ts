@@ -7,7 +7,8 @@ import {
   SlashCommandSubcommandsOnlyBuilder,
 } from 'discord.js';
 
-import { CommandInteractionWithClient, ICommand } from '@/types';
+import { IGuildData } from '@/mongodb';
+import { CommandInteractionWithClient, FootballKeys, ICommand, TranslationElement } from '@/types';
 import { Success, Warning } from '@/utils';
 
 export default class FootballDailyCommand extends ICommand {
@@ -32,13 +33,15 @@ export default class FootballDailyCommand extends ICommand {
       subcommand.setName('off').setDescription('Stop the daily matches post'),
     );
 
-  async execute(interaction: CommandInteractionWithClient): Promise<void> {
+  async execute(interaction: CommandInteractionWithClient, guildDB: IGuildData): Promise<void> {
     if (!interaction.inCachedGuild() || !interaction.isChatInputCommand()) return;
+
+    const texts: TranslationElement<FootballKeys> = interaction.translate('FOOTBALL', guildDB.lang);
 
     if (interaction.options.getSubcommand() === 'off') {
       await interaction.client.guildData.setFootballChannel(interaction.guildId, null);
       await interaction.reply({
-        embeds: [Success({ description: 'The daily matches post is now off.' })],
+        embeds: [Success({ description: texts.DAILY_OFF })],
         flags: MessageFlags.Ephemeral,
       });
       return;
@@ -63,7 +66,7 @@ export default class FootballDailyCommand extends ICommand {
       await interaction.reply({
         embeds: [
           Warning({
-            description: `I can't send embeds in ${channel}. Give me View Channel, Send Messages and Embed Links there and try again.`,
+            description: texts.DAILY_NO_PERMS.replace('${channel}', `${channel}`),
           }),
         ],
         flags: MessageFlags.Ephemeral,
@@ -73,9 +76,7 @@ export default class FootballDailyCommand extends ICommand {
 
     await interaction.client.guildData.setFootballChannel(interaction.guildId, channel.id);
     await interaction.reply({
-      embeds: [
-        Success({ description: `Today's matches will be posted in ${channel} every morning.` }),
-      ],
+      embeds: [Success({ description: texts.DAILY_SET.replace('${channel}', `${channel}`) })],
       flags: MessageFlags.Ephemeral,
     });
   }

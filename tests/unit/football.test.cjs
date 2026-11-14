@@ -7,7 +7,10 @@ const { transformSync } = require('@swc/core');
 
 const { normalizeEvents } = require('@/services/REST/espn.normalizer');
 const { buildFootballPages, filterByDate } = require('@/services/football/football-embed');
-const { addDays, bogotaDate, isDateKey } = require('@/services/football/date.util');
+const { addDays, bogotaDate, formatLongDate, isDateKey } = require('@/services/football/date.util');
+
+const texts = require('../../languages/en.json').FOOTBALL;
+const textsEs = require('../../languages/es.json').FOOTBALL;
 
 const event = (leagueId, home, away, date, state = 'pre', scores = ['0', '0']) => ({
   uid: `s:600~l:${leagueId}~e:${Math.random()}`,
@@ -67,7 +70,7 @@ test('pages group by competition and show Bogota kickoff', () => {
     event('650', 'Santa Fe', 'Nacional', '2026-11-15T01:30Z'),
     event('775', 'Bodo/Glimt', 'LASK Linz', '2026-11-14T17:45Z'),
   ]);
-  const [page, ...rest] = buildFootballPages({ title: 'T', matches });
+  const [page, ...rest] = buildFootballPages({ texts, title: 'T', matches });
   assert.equal(rest.length, 0);
   assert.ok(
     page.description.indexOf('Champions League') < page.description.indexOf('Liga BetPlay'),
@@ -77,19 +80,21 @@ test('pages group by competition and show Bogota kickoff', () => {
 
 test('live and finished matches show the score', () => {
   const [page] = buildFootballPages({
+    texts,
     title: 'T',
     matches: normalizeEvents([
       event('775', 'A', 'B', '2026-11-14T17:45Z', 'in', ['1', '0']),
       event('775', 'C', 'D', '2026-11-14T17:45Z', 'post', ['3', '2']),
     ]),
   });
-  assert.match(page.description, /`EN VIVO` A 1 - 0 B/);
+  assert.match(page.description, /`LIVE` A 1 - 0 B/);
   assert.match(page.description, /`FT` \*\*C\*\* 3 - 2 D/);
   assert.doesNotMatch(page.description, /🔴|✅/);
 });
 
 test('live matches are listed first within their competition', () => {
   const [page] = buildFootballPages({
+    texts,
     title: 'T',
     matches: normalizeEvents([
       event('775', 'Early', 'Game', '2026-11-14T15:00Z'),
@@ -101,6 +106,7 @@ test('live matches are listed first within their competition', () => {
 
 test('a draw bolds neither team', () => {
   const [page] = buildFootballPages({
+    texts,
     title: 'T',
     matches: normalizeEvents([event('775', 'E', 'F', '2026-11-14T17:45Z', 'post', ['2', '2'])]),
   });
@@ -114,7 +120,7 @@ test('a heavy day is split into valid pages instead of overflowing the embed', (
       event('650', `Home team number ${i}`, `Away team number ${i}`, '2026-11-14T20:00Z'),
     );
   }
-  const pages = buildFootballPages({ title: 'T', matches: normalizeEvents(events) });
+  const pages = buildFootballPages({ texts, title: 'T', matches: normalizeEvents(events) });
   assert.ok(pages.length > 1);
   for (const page of pages) assert.ok(page.description.length <= 4096);
   assert.match(pages[1].title, /\(2\/\d+\)/);
@@ -126,9 +132,9 @@ test('competition filter and empty input', () => {
     event('650', 'A', 'B', '2026-11-14T20:00Z'),
     event('775', 'C', 'D', '2026-11-14T20:00Z'),
   ]);
-  const [page] = buildFootballPages({ title: 'T', matches, competitionKeys: ['champions'] });
+  const [page] = buildFootballPages({ texts, title: 'T', matches, competitionKeys: ['champions'] });
   assert.doesNotMatch(page.description, /BetPlay/);
-  assert.deepEqual(buildFootballPages({ title: 'T', matches: [] }), []);
+  assert.deepEqual(buildFootballPages({ texts, title: 'T', matches: [] }), []);
 });
 
 function dailyFixture({ matches, guilds, channelFor }) {
@@ -173,7 +179,14 @@ function dailyFixture({ matches, guilds, channelFor }) {
       setFootballChannel: async (id, value) => cleared.push([id, value]),
       setFootballLastPostDate: async (id, dateKey) => marked.push([id, dateKey]),
     },
-    guilds: { cache: { has: (id) => id !== 'foreign' } },
+    guilds: {
+      cache: {
+        has: (id) => id !== 'foreign',
+        get: (id) => ({
+          translate: async () => (id.startsWith('es') ? textsEs : texts),
+        }),
+      },
+    },
     channels: {
       fetch: async (id) => {
         const channel = channelFor(id);
@@ -255,6 +268,7 @@ test('maxPages cuts the output and adds a note with the omitted match count', ()
   }
   const matches = normalizeEvents(events);
   const pages = buildFootballPages({
+    texts,
     title: 'T',
     matches,
     maxPages: 1,
@@ -263,13 +277,16 @@ test('maxPages cuts the output and adds a note with the omitted match count', ()
   assert.equal(pages.length, 1);
   assert.ok(pages[0].description.length <= 4096);
   const shown = (pages[0].description.match(/ vs /g) ?? []).length;
-  assert.match(pages[0].description, new RegExp(`y ${200 - shown} partidos más\. Usa /football\.`));
+  assert.match(
+    pages[0].description,
+    new RegExp(`and ${200 - shown} more matches\. Usa /football\.`),
+  );
   assert.doesNotMatch(pages[0].title, /\(1\/1\)/);
 });
 
 test('no note when everything fits within maxPages', () => {
   const matches = normalizeEvents([event('650', 'A', 'B', '2026-11-14T20:00Z')]);
-  const [page] = buildFootballPages({ title: 'T', matches, maxPages: 1 });
+  const [page] = buildFootballPages({ texts, title: 'T', matches, maxPages: 1 });
   assert.doesNotMatch(page.description, /más/);
 });
 
@@ -309,4 +326,40 @@ test('daily post does not fetch matches when every guild already got today’s p
   await f.exports.postDailyFootball(f.client);
   assert.equal(f.marked.length, 0);
   assert.equal(f.fetches.count, 0);
+});
+
+test('long dates and labels follow the language', () => {
+  assert.match(formatLongDate('2026-11-13', 'es-CO'), /viernes.*13.*noviembre/);
+  assert.match(formatLongDate('2026-11-13', 'en-US'), /Friday.*November.*13/);
+  const [page] = buildFootballPages({
+    texts: textsEs,
+    title: 'T',
+    matches: normalizeEvents([event('775', 'A', 'B', '2026-11-14T17:45Z', 'in', ['1', '0'])]),
+  });
+  assert.match(page.description, /`EN VIVO` A 1 - 0 B/);
+});
+
+test('English and Spanish football translations define the same keys', () => {
+  assert.deepEqual(Object.keys(textsEs).sort(), Object.keys(texts).sort());
+  for (const value of [...Object.values(texts), ...Object.values(textsEs)]) {
+    assert.ok(typeof value === 'string' && value.length > 0);
+  }
+});
+
+test('daily post is written in each server’s language', async () => {
+  const matches = normalizeEvents([event('650', 'A', 'B', new Date().toISOString())]);
+  const posted = [];
+  const f = dailyFixture({
+    matches,
+    guilds: [
+      { serverID: 'en-guild', footballChannelID: 'c1' },
+      { serverID: 'es-guild', footballChannelID: 'c2' },
+    ],
+    channelFor: (id) => sendable(posted, id),
+  });
+  await f.exports.postDailyFootball(f.client);
+  const titles = Object.fromEntries(posted.map(([id, payload]) => [id, payload.embeds[0].title]));
+  assert.match(titles.c1, /Today's matches/);
+  assert.match(titles.c2, /Partidos de hoy/);
+  assert.equal(f.fetches.count, 1);
 });
