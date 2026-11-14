@@ -106,6 +106,7 @@ export type SongInfoKeys =
   | 'LOOP_OFF'
   | 'LOOP_TRACK'
   | 'LOOP_QUEUE'
+  | 'LOOP_AUTOPLAY'
   | 'TRACKS_LEFT';
 export type VolumeKeys =
   'VOLUME_CHANGED_TITLE' | 'VOLUME_CHANGED_DESC' | 'CURRENT_VOLUME_TITLE' | 'CURRENT_VOLUME_DESC';

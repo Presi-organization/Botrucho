@@ -151,6 +151,7 @@
     "LOOP_OFF": "Off",
     "LOOP_TRACK": "Track",
     "LOOP_QUEUE": "Queue",
+    "LOOP_AUTOPLAY": "Autoplay",
     "TRACKS_LEFT": "Tracks left in queue"
   },
   "VOLUME": {

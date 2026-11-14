@@ -30,6 +30,7 @@ const strings = {
   LOOP_OFF: 'Off',
   LOOP_TRACK: 'Track',
   LOOP_QUEUE: 'Queue',
+  LOOP_AUTOPLAY: 'Autoplay',
   TRACKS_LEFT: 'Left',
 };
 
@@ -113,6 +114,17 @@ test('song-info reflects paused state and loop mode', async () => {
   const embed = await run(queue);
   assert.equal(field(embed, 'Status'), 'Paused');
   assert.equal(field(embed, 'Loop'), 'Queue');
+});
+
+test('song-info labels autoplay instead of reporting the loop as off', async () => {
+  const embed = await run(fakeQueue({ repeatMode: QueueRepeatMode.AUTOPLAY }));
+  assert.equal(field(embed, 'Loop'), 'Autoplay');
+});
+
+test('song-info truncates titles beyond the embed title limit', async () => {
+  const embed = await run(fakeQueue({ currentTrack: { ...fullTrack, title: 'a'.repeat(300) } }));
+  assert.equal(embed.title.length, 256);
+  assert.ok(embed.title.endsWith('…'));
 });
 
 test('song-info omits missing optional data without throwing', async () => {

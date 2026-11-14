@@ -13,6 +13,8 @@ import {
 } from '@/types';
 import { Error, Info } from '@/utils';
 
+const EMBED_TITLE_LIMIT = 256;
+
 export default class SongInfoCommand extends ICommand {
   name = 'song-info';
   description = 'Show detailed information about the current track.';
@@ -55,6 +57,7 @@ export default class SongInfoCommand extends ICommand {
     const loopLabels: Record<number, string> = {
       [QueueRepeatMode.TRACK]: t.LOOP_TRACK,
       [QueueRepeatMode.QUEUE]: t.LOOP_QUEUE,
+      [QueueRepeatMode.AUTOPLAY]: t.LOOP_AUTOPLAY,
     };
     const timestamp = queue.node.getTimestamp();
     const progressBar = queue.node.createProgressBar();
@@ -81,7 +84,10 @@ export default class SongInfoCommand extends ICommand {
     }
 
     const embed: EmbedBuilder = Info({
-      title: track.title,
+      title:
+        track.title.length > EMBED_TITLE_LIMIT
+          ? `${track.title.slice(0, EMBED_TITLE_LIMIT - 1)}…`
+          : track.title,
       url: track.url,
       fields,
       author,

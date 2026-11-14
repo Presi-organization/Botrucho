@@ -151,6 +151,7 @@
     "LOOP_OFF": "Desactivada",
     "LOOP_TRACK": "Pista",
     "LOOP_QUEUE": "Cola",
+    "LOOP_AUTOPLAY": "Reproducción automática",
     "TRACKS_LEFT": "Pistas restantes en la cola"
   },
   "VOLUME": {
