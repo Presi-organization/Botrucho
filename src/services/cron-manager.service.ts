@@ -8,8 +8,6 @@ import { initializeFrisbeeEventCron, sendReminderToConfirmAttendance } from '@/s
 import { logger } from '@/utils';
 import { workerRadarProcess } from '@/workers/radar.process';
 
-const FOOTBALL_DAILY = { cronName: 'footballDaily', cronExpression: '0 11 * * *' };
-
 export class CronManager {
   private readonly client: Botrucho;
   private activeTasks: Map<string, ScheduledTask> = new Map<string, ScheduledTask>();
@@ -22,12 +20,6 @@ export class CronManager {
 
   async initializeCronJobs(): Promise<void> {
     const cronJobs: ICronData[] = await this.client.cronData.getAllCrones();
-
-    if (!cronJobs.some((job) => job.cronName === FOOTBALL_DAILY.cronName)) {
-      cronJobs.push(
-        await this.client.cronData.createOrUpdateCron({ ...FOOTBALL_DAILY, isActive: true }),
-      );
-    }
 
     for (const job of cronJobs) {
       if (job.isActive) {
