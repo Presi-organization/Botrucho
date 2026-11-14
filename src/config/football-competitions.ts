@@ -18,6 +18,7 @@ export const footballCompetitions: FootballCompetition[] = [
   { key: 'euro', espnId: '781', name: 'UEFA Euro', emoji: '🌍' },
   { key: 'euroq', espnId: '3947', name: 'UEFA Euro Qualifying', emoji: '🌍' },
   { key: 'conmebolq', espnId: '787', name: 'CONMEBOL World Cup Qualifying', emoji: '🌎' },
+  { key: 'friendly', espnId: '3922', name: 'International Friendly', emoji: '🤝' },
 ];
 
 export const findCompetitionByEspnId = (espnId: string): FootballCompetition | undefined =>

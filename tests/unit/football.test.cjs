@@ -47,6 +47,17 @@ test('normalizer keeps mapped leagues, sorts by kickoff and drops malformed even
   assert.deepEqual(normalizeEvents(undefined), []);
 });
 
+test('normalizer keeps senior international friendlies but not youth ones', () => {
+  const matches = normalizeEvents([
+    event('3922', 'Japan', 'Brazil', '2026-11-14T10:15Z', 'post', ['3', '2']),
+    event('20132', 'Japan U21', 'Spain U21', '2026-11-13T18:00Z'),
+  ]);
+  assert.deepEqual(
+    matches.map((match) => [match.competitionKey, match.home]),
+    [['friendly', 'Japan']],
+  );
+});
+
 test('date helpers use Bogota time', () => {
   assert.equal(bogotaDate(new Date('2026-11-15T03:00:00Z')), '2026-11-14');
   assert.equal(addDays('2026-11-30', 1), '2026-12-01');
