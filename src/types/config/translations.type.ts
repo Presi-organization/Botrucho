@@ -17,6 +17,7 @@ export interface TranslationsType {
   TOGGLE_COMMAND: TranslationElement<ToggleCommandKeys>;
   USER_INFO: TranslationElement<UserInfoKeys>;
   LEAVE: TranslationElement<LeaveKeys>;
+  LOOP: TranslationElement<LoopKeys>;
   LYRICS: TranslationElement<LyricsKeys>;
   PAUSE: TranslationElement<PauseKeys>;
   PLAY: TranslationElement<PlayKeys>;
@@ -82,6 +83,7 @@ export type ServerInfoKeys = 'TITLE' | 'ONLY_SERVER' | 'a' | 'b' | 'c' | 'd' | '
 export type ToggleCommandKeys = 'ENABLED' | 'DISABLED' | 'NOT_FOUND' | 'NOT_ALLOWED';
 export type UserInfoKeys = 'USERNAME' | 'ID';
 export type LeaveKeys = 'DISCONNECTED' | 'SUCCESS';
+export type LoopKeys = 'LOOP_TITLE' | 'LOOP_OFF' | 'LOOP_TRACK' | 'LOOP_QUEUE';
 export type LyricsKeys = 'NO_QUEUE' | 'NOT_FOUND' | 'SYNCED_LYRICS';
 export type PauseKeys = 'PAUSED_TITLE' | 'PAUSED_DESC' | 'ALREADY_PAUSED';
 export type PlayKeys =

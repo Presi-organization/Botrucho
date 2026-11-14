@@ -15,6 +15,7 @@ import {
 } from '@/commands/management';
 import {
   LeaveCommand,
+  LoopCommand,
   LyricsCommand,
   PauseCommand,
   PlayCommand,
@@ -38,6 +39,7 @@ export const commandRegistry: (new () => ICommand)[] = [
   FootballDailyCommand,
   LangCommand,
   LeaveCommand,
+  LoopCommand,
   LyricsCommand,
   MoveCommand,
   MultasCommand,

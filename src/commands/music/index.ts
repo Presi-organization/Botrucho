@@ -1,4 +1,5 @@
 export { default as LeaveCommand } from './leave.command';
+export { default as LoopCommand } from './loop.command';
 export { default as LyricsCommand } from './lyrics.command';
 export { default as PauseCommand } from './pause.command';
 export { default as PlayCommand } from './play.command';

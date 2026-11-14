@@ -103,6 +103,12 @@
     "DISCONNECTED": "¡Desconectado!",
     "SUCCESS": "He salido del canal de voz exitosamente."
   },
+  "LOOP": {
+    "LOOP_TITLE": "¡Repetición actualizada!",
+    "LOOP_OFF": "La repetición está desactivada.",
+    "LOOP_TRACK": "La pista actual se repetirá.",
+    "LOOP_QUEUE": "Toda la cola se repetirá."
+  },
   "LYRICS": {
     "NO_QUEUE": "No hay cola",
     "NOT_FOUND": "No se encontraron letras",

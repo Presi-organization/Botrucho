@@ -103,6 +103,12 @@
     "DISCONNECTED": "Disconnected!",
     "SUCCESS": "I have successfully left the voice channel."
   },
+  "LOOP": {
+    "LOOP_TITLE": "Loop updated!",
+    "LOOP_OFF": "Looping is now off.",
+    "LOOP_TRACK": "The current track will repeat.",
+    "LOOP_QUEUE": "The whole queue will repeat."
+  },
   "LYRICS": {
     "NO_QUEUE": "No queue",
     "NOT_FOUND": "No lyrics found",
