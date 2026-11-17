@@ -1,10 +1,12 @@
 import { GuildMember, Role, TextChannel, TextThreadChannel } from 'discord.js';
 
 import { Botrucho, IAttendee } from '@/mongodb';
+import {
+  ATTENDANCE_CHANNEL_ID,
+  FRISBEE_ROLE_ID,
+} from '@/services/webhooks/ultimate-thread/constants';
+import { getTomorrowsDay } from '@/services/webhooks/ultimate-thread/event-dates';
 import { logger, Warning } from '@/utils';
-
-import { ATTENDANCE_CHANNEL_ID, FRISBEE_ROLE_ID } from './constants';
-import { getTomorrowsDay } from './event-dates';
 
 export const sendReminderToConfirmAttendance = async (client: Botrucho) => {
   const channel = (await client.channels.fetch(ATTENDANCE_CHANNEL_ID)) as TextChannel | null;

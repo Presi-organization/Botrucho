@@ -18,11 +18,13 @@ import {
   IEventAttendance,
   IThread,
 } from '@/mongodb';
+import {
+  ATTENDANCE_CHANNEL_ID,
+  FRISBEE_ROLE_ID,
+} from '@/services/webhooks/ultimate-thread/constants';
+import { getEventDates, getTomorrowsDay } from '@/services/webhooks/ultimate-thread/event-dates';
+import { sendMessageWithWebhook } from '@/services/webhooks/ultimate-thread/webhook';
 import { logger } from '@/utils';
-
-import { ATTENDANCE_CHANNEL_ID, FRISBEE_ROLE_ID } from './constants';
-import { getEventDates, getTomorrowsDay } from './event-dates';
-import { sendMessageWithWebhook } from './webhook';
 
 const sendAMessageAndThread = async (
   channel: TextChannel,

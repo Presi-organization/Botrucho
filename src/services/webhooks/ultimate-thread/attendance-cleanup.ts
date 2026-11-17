@@ -3,9 +3,8 @@ import { Collection, Message, TextChannel, TextThreadChannel, User } from 'disco
 
 import { AttendanceReactionHandler } from '@/events/discord/reactionHandlers';
 import { Botrucho } from '@/mongodb';
+import { ATTENDANCE_CHANNEL_ID } from '@/services/webhooks/ultimate-thread/constants';
 import { logger } from '@/utils';
-
-import { ATTENDANCE_CHANNEL_ID } from './constants';
 
 const handleReactions = async (client: Botrucho, message: Message<true>): Promise<void> => {
   const attendanceReactionHandler: AttendanceReactionHandler = new AttendanceReactionHandler(

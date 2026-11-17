@@ -1,1 +1,1 @@
-export * from './ultimateThread.service';
+export * from './ultimate-thread';
