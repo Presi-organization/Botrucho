@@ -123,7 +123,7 @@ export type TftEloKeys =
   | 'STREAK'
   | 'FRESH_BLOOD'
   | 'INACTIVE';
-export type DeleteKeys = 'LEAVE';
+export type DeleteKeys = 'LEAVE' | 'UNAUTHORIZED';
 export type PlayerKeys = 'NOW_PLAYING' | 'SONG' | 'REQUESTED_BY' | 'TRACKS_LEFT';
 export type FootballKeys =
   | 'LOCALE'

@@ -1,11 +1,14 @@
 import { Guild } from 'discord.js';
 
+import { allowedGuildIds } from '@/config/allowed-guilds';
 import { Botrucho } from '@/mongodb';
 import { DeleteKeys, TranslationElement } from '@/types';
 import { logger } from '@/utils';
 
 export async function execute(client: Botrucho, guild: Guild) {
-  logger.log('\x1b[32m%s\x1b[0m', 'OLD GUILD ', '\x1b[0m', `${guild.name}`);
+  logger.log(`Left guild: ${guild.name} (${guild.id})`);
+  if (!allowedGuildIds.includes(guild.id)) return;
+
   const { LEAVE }: TranslationElement<DeleteKeys> = await guild.translate(
     'DELETE',
     client.guildData,

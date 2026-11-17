@@ -210,7 +210,8 @@
   },
   "_EVENTS": "EVENTS TRANSLATIONS",
   "DELETE": {
-    "LEAVE": ":broken_heart: | I'm sad to see that you no longer need me in your server"
+    "LEAVE": ":broken_heart: | I'm sad to see that you no longer need me in your server",
+    "UNAUTHORIZED": ":lock: | This bot is private and only works in authorized servers, so I'm leaving your server"
   },
   "PLAYER": {
     "NOW_PLAYING": "Now Playing",
