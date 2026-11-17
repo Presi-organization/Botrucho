@@ -21,18 +21,18 @@ test('parses runOnInit case-insensitively', () => {
 });
 
 test('rejects an invalid runOnInit value', () => {
-  assert.equal(validateCronEdit({ ...valid, runOnInit: 'yes' }).ok, false);
+  assert.equal(validateCronEdit({ ...valid, runOnInit: 'yes' }).error, 'INVALID_RUN_ON_INIT');
 });
 
 test('rejects an invalid cron expression', () => {
-  assert.equal(validateCronEdit({ ...valid, cronExpression: 'nope' }).ok, false);
+  assert.equal(validateCronEdit({ ...valid, cronExpression: 'nope' }).error, 'INVALID_CRON');
 });
 
 for (const metadata of ['{broken', '[1,2]', '"text"', 'null']) {
   test(`rejects non-object metadata ${metadata}`, () => {
     const result = validateCronEdit({ ...valid, metadata });
     assert.equal(result.ok, false);
-    assert.match(result.message, /Invalid JSON format in metadata/);
+    assert.equal(result.error, 'INVALID_METADATA');
   });
 }
 
@@ -47,9 +47,9 @@ test('accepts unicode and custom discord emojis in emoji fields', () => {
 });
 
 test('rejects text in emoji fields and names the field', () => {
-  const result = validateCronEdit({ ...valid, metadata: '{"emojis":"abc"}' });
-  assert.equal(result.ok, false);
-  assert.match(result.message, /Field "emojis"/);
+  const result = validateCronEdit({ ...valid, metadata: '{"emojis":"abc","title":"x"}' });
+  assert.equal(result.error, 'INVALID_EMOJI');
+  assert.deepEqual(result.fields, ['emojis']);
 });
 
 test('ignores non-string values and non-emoji fields', () => {

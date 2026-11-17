@@ -23,7 +23,10 @@ export class CronEditSelectHandler implements IIntCreateHandler {
     const selectedValue: string = interaction.values[0];
     const cronJob: ICronData | null = await this.client.cronData.getCronById(selectedValue);
     if (!cronJob) return false;
-    await showEditCronModal(interaction, cronJob);
+    const lang = interaction.guild
+      ? (await interaction.guild.fetchDB(this.client.guildData)).lang
+      : undefined;
+    await showEditCronModal(interaction, cronJob, lang);
     return true;
   };
 }

@@ -18,7 +18,10 @@ export class RetryModalHandler implements IIntCreateHandler {
     if (!cronId) return false;
     const cronJob: ICronData | null = await this.client.cronData.getCronById(cronId);
     if (!cronJob) return false;
-    await showEditCronModal(interaction, cronJob);
+    const lang = interaction.guild
+      ? (await interaction.guild.fetchDB(this.client.guildData)).lang
+      : undefined;
+    await showEditCronModal(interaction, cronJob, lang);
     return true;
   };
 }

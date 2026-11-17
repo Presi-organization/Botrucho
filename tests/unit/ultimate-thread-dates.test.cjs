@@ -1,5 +1,5 @@
 require('../helpers/register-typescript.cjs');
-const { test } = require('node:test');
+const { test, mock } = require('node:test');
 const assert = require('node:assert/strict');
 
 const {
@@ -7,18 +7,12 @@ const {
   getTomorrowsDay,
 } = require('@/services/webhooks/ultimate-thread/event-dates');
 
-const RealDate = Date;
-
 const withFixedNow = (iso, run) => {
-  global.Date = class extends RealDate {
-    constructor(...args) {
-      super(...(args.length ? args : [iso]));
-    }
-  };
+  mock.timers.enable({ apis: ['Date'], now: new Date(iso) });
   try {
     run();
   } finally {
-    global.Date = RealDate;
+    mock.timers.reset();
   }
 };
 

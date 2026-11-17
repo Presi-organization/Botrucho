@@ -48,7 +48,20 @@
     "SELECT_PLACEHOLDER": "Selecciona una tarea para ${action}",
     "ACTION_EDIT": "editar",
     "LAST_RUN": "Última ejecución:",
-    "NEVER": "Nunca"
+    "NEVER": "Nunca",
+    "JOB_NOT_FOUND": "No se encontró la tarea programada",
+    "INVALID_METADATA": "Formato JSON inválido en metadata. Asegúrate de que sea un objeto JSON válido.",
+    "INVALID_CRON": "Expresión cron inválida. Usa el formato: `* * * * *`",
+    "INVALID_RUN_ON_INIT": "Valor inválido para \"Run on Init\". Escribe `true` o `false`.",
+    "INVALID_EMOJI": "Contenido de emoji inválido en: ${fields}. Usa solo emojis válidos o emojis personalizados de Discord.",
+    "TRY_AGAIN": "Intentar de nuevo",
+    "UPDATED_TITLE": "Tarea programada actualizada",
+    "UPDATED_DESCRIPTION": "¡La tarea programada se actualizó correctamente!\n\n**Nombre:** ${name}\n**Cron:** ${cron}\n**Run-On-Init:** ${runOnInit}\n**Metadata:** ${metadata}",
+    "MODAL_TITLE": "Editar tarea programada",
+    "LABEL_NAME": "Nombre de la tarea",
+    "LABEL_CRON": "Expresión cron",
+    "LABEL_RUN_ON_INIT": "Ejecutar al iniciar (true/false)",
+    "LABEL_METADATA": "Metadata"
   },
   "EVENT": {
     "MODAL_TITLE": "Se viene evento, gente 🥵",

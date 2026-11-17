@@ -63,7 +63,20 @@ export type CronsKeys =
   | 'SELECT_PLACEHOLDER'
   | 'ACTION_EDIT'
   | 'LAST_RUN'
-  | 'NEVER';
+  | 'NEVER'
+  | 'JOB_NOT_FOUND'
+  | 'INVALID_METADATA'
+  | 'INVALID_CRON'
+  | 'INVALID_RUN_ON_INIT'
+  | 'INVALID_EMOJI'
+  | 'TRY_AGAIN'
+  | 'UPDATED_TITLE'
+  | 'UPDATED_DESCRIPTION'
+  | 'MODAL_TITLE'
+  | 'LABEL_NAME'
+  | 'LABEL_CRON'
+  | 'LABEL_RUN_ON_INIT'
+  | 'LABEL_METADATA';
 export type EventKeys =
   | 'MODAL_TITLE'
   | 'NAME'

@@ -48,7 +48,20 @@
     "SELECT_PLACEHOLDER": "Select a job to ${action}",
     "ACTION_EDIT": "edit",
     "LAST_RUN": "Last run:",
-    "NEVER": "Never"
+    "NEVER": "Never",
+    "JOB_NOT_FOUND": "Cron job not found",
+    "INVALID_METADATA": "Invalid JSON format in metadata. Please ensure it is a valid JSON object.",
+    "INVALID_CRON": "Invalid cron expression. Please use the format: `* * * * *`",
+    "INVALID_RUN_ON_INIT": "Invalid input for \"Run on Init\". Please enter either `true` or `false`.",
+    "INVALID_EMOJI": "Invalid emoji content in: ${fields}. Please use only valid emoji characters or Discord custom emojis.",
+    "TRY_AGAIN": "Try Again",
+    "UPDATED_TITLE": "Cron Job Updated",
+    "UPDATED_DESCRIPTION": "The cron job has been updated successfully!\n\n**Name:** ${name}\n**Cron:** ${cron}\n**Run-On-Init:** ${runOnInit}\n**Metadata:** ${metadata}",
+    "MODAL_TITLE": "Edit Cron Job",
+    "LABEL_NAME": "Cron Job Name",
+    "LABEL_CRON": "Cron Expression",
+    "LABEL_RUN_ON_INIT": "Run on Init (true/false)",
+    "LABEL_METADATA": "Metadata"
   },
   "EVENT": {
     "MODAL_TITLE": "Incoming event fellas 🥵",

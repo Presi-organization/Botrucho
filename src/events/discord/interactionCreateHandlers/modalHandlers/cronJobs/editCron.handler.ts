@@ -3,6 +3,7 @@ import {
   BaseInteraction,
   ButtonBuilder,
   ButtonStyle,
+  EmbedBuilder,
   inlineCode,
   MessageFlags,
   ModalSubmitInteraction,
@@ -11,7 +12,8 @@ import {
 import { IIntCreateHandler } from '@/events/discord/interactionCreateHandlers';
 import { validateCronEdit } from '@/events/discord/interactionCreateHandlers/modalHandlers/cronJobs/cron-edit.validation';
 import { Botrucho, ICronData } from '@/mongodb';
-import { Success } from '@/utils';
+import { CronsKeys, TranslationElement } from '@/types';
+import { Error, Success } from '@/utils';
 
 export class EditCronHandler implements IIntCreateHandler {
   private client: Botrucho;
@@ -24,13 +26,18 @@ export class EditCronHandler implements IIntCreateHandler {
     if (!interaction.isModalSubmit()) return false;
     if (!interaction.customId.includes('cron-setup-modal')) return false;
 
+    const lang = interaction.guild
+      ? (await interaction.guild.fetchDB(this.client.guildData)).lang
+      : undefined;
+    const t = interaction.translate('CRONS', lang) as TranslationElement<CronsKeys>;
+
     const nameInput = interaction.fields.getTextInputValue('cron-edit-name-input');
     const cronId = interaction.customId.split(':')[1];
 
     const existingCron: ICronData | null = await this.client.cronData.getCronById(cronId);
     if (!existingCron) {
       await interaction.reply({
-        content: 'Error: Cron job not found',
+        embeds: [Error({ description: t.JOB_NOT_FOUND })],
         flags: MessageFlags.Ephemeral,
       });
       return true;
@@ -42,7 +49,8 @@ export class EditCronHandler implements IIntCreateHandler {
       metadata: interaction.fields.getTextInputValue('cron-edit-metadata-input'),
     });
     if (!result.ok) {
-      await this._replyWithRetry(interaction, cronId, result.message);
+      const description = t[result.error].replace('${fields}', (result.fields ?? []).join(', '));
+      await this._replyWithRetry(interaction, cronId, Error({ description }), t.TRY_AGAIN);
       return true;
     }
 
@@ -59,8 +67,11 @@ export class EditCronHandler implements IIntCreateHandler {
     await interaction.reply({
       embeds: [
         Success({
-          title: 'Cron Job Updated',
-          description: `The cron job has been updated successfully!\n\n**Name:** ${nameInput}\n**Cron:** ${inlineCode(cronExpression)}\n**Run-On-Init:** ${inlineCode(String(runOnInit))}\n**Metadata:** ${JSON.stringify(metadata, null, 2)}`,
+          title: t.UPDATED_TITLE,
+          description: t.UPDATED_DESCRIPTION.replace('${name}', nameInput)
+            .replace('${cron}', inlineCode(cronExpression))
+            .replace('${runOnInit}', inlineCode(String(runOnInit)))
+            .replace('${metadata}', JSON.stringify(metadata, null, 2)),
         }),
       ],
       flags: MessageFlags.Ephemeral,
@@ -72,14 +83,15 @@ export class EditCronHandler implements IIntCreateHandler {
   private _replyWithRetry = async (
     interaction: ModalSubmitInteraction,
     cronId: string,
-    content: string,
+    embed: EmbedBuilder,
+    label: string,
   ): Promise<void> => {
     const retryButton = new ButtonBuilder()
       .setCustomId(`retry-cron-modal:${cronId}`)
-      .setLabel('Try Again')
+      .setLabel(label)
       .setStyle(ButtonStyle.Primary);
     await interaction.reply({
-      content,
+      embeds: [embed],
       components: [new ActionRowBuilder<ButtonBuilder>().addComponents(retryButton)],
       flags: MessageFlags.Ephemeral,
     });

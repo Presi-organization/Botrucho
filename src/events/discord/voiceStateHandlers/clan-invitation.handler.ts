@@ -81,9 +81,9 @@ const sendClanInvitationAudioChannel = async (
   const textChannel: TextChannel | null | undefined = defaultChannelId
     ? (guild?.channels.cache.get(defaultChannelId) as TextChannel)
     : null;
-  if (isTargetUser && channel?.isVoiceBased) {
+  if (isTargetUser && channel?.isVoiceBased()) {
     const player: Player = useMainPlayer();
-    const audioFile: string = join(__dirname, '../../../../assets/voice/audio_fcV1.mp3');
+    const audioFile: string = join(process.cwd(), '/assets/voice/audio_fcV1.mp3');
     try {
       const resource: AudioResource = createAudioResource(audioFile, {
         metadata: { title: 'M-19 Clan Invitation' },

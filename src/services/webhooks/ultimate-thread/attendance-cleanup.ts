@@ -1,20 +1,17 @@
 import { Snowflake } from 'discord-api-types/v10';
 import { Collection, Message, TextChannel, TextThreadChannel, User } from 'discord.js';
 
-import { AttendanceReactionHandler } from '@/events/discord/reactionHandlers';
 import { Botrucho } from '@/mongodb';
+import { registerAttendanceReaction } from '@/services/attendance/attendance-registration';
 import { ATTENDANCE_CHANNEL_ID } from '@/services/webhooks/ultimate-thread/constants';
 import { logger } from '@/utils';
 
 const handleReactions = async (client: Botrucho, message: Message<true>): Promise<void> => {
-  const attendanceReactionHandler: AttendanceReactionHandler = new AttendanceReactionHandler(
-    client,
-  );
   for (const reaction of message.reactions.cache.values()) {
     const users: Collection<Snowflake, User> = await reaction.users.fetch();
     for (const user of users.values()) {
       if (user.id !== client.user?.id) {
-        await attendanceReactionHandler.handle(reaction, user);
+        await registerAttendanceReaction(client, reaction, user);
       }
     }
   }

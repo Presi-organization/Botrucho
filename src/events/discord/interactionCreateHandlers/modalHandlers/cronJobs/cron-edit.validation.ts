@@ -16,26 +16,25 @@ export interface CronEditValues {
   metadata: Record<string, unknown>;
 }
 
-export type CronEditResult = { ok: true; values: CronEditValues } | { ok: false; message: string };
+export type CronEditErrorKey =
+  'INVALID_METADATA' | 'INVALID_CRON' | 'INVALID_RUN_ON_INIT' | 'INVALID_EMOJI';
 
-const validateEmojis = (text: string): string | null => {
-  if (!text || text.trim() === '') return 'No emojis provided.';
-  const rest = text.replace(EMOJI_REGEX, '').replace(DISCORD_EMOJI_REGEX, '').replace(/\s/g, '');
-  return rest.length > 0
-    ? 'Contains invalid characters. Please use only emoji characters or Discord custom emojis.'
-    : null;
-};
+export type CronEditResult =
+  { ok: true; values: CronEditValues } | { ok: false; error: CronEditErrorKey; fields?: string[] };
 
-const findInvalidEmojiFields = (metadata: Record<string, unknown>): string[] => {
-  const problems: string[] = [];
-  for (const [field, value] of Object.entries(metadata)) {
-    const isEmojiField = EMOJI_FIELDS.some((name) => field.toLowerCase().includes(name));
-    if (!isEmojiField || typeof value !== 'string') continue;
-    const problem = validateEmojis(value);
-    if (problem) problems.push(`- Field "${field}": ${problem}`);
-  }
-  return problems;
-};
+const isValidEmojiText = (text: string): boolean =>
+  text.trim() !== '' &&
+  text.replace(EMOJI_REGEX, '').replace(DISCORD_EMOJI_REGEX, '').replace(/\s/g, '') === '';
+
+const findInvalidEmojiFields = (metadata: Record<string, unknown>): string[] =>
+  Object.entries(metadata)
+    .filter(
+      ([field, value]) =>
+        EMOJI_FIELDS.some((name) => field.toLowerCase().includes(name)) &&
+        typeof value === 'string' &&
+        !isValidEmojiText(value),
+    )
+    .map(([field]) => field);
 
 const parseMetadata = (raw: string): Record<string, unknown> | null => {
   if (!raw || raw.trim() === '') return {};
@@ -45,42 +44,24 @@ const parseMetadata = (raw: string): Record<string, unknown> | null => {
       return parsed as Record<string, unknown>;
     }
   } catch {
-    /* reported by the caller as invalid metadata */
+    /* falls through to null */
   }
   return null;
 };
 
 export function validateCronEdit(input: CronEditInput): CronEditResult {
   const metadata = parseMetadata(input.metadata);
-  if (!metadata) {
-    return {
-      ok: false,
-      message: 'Invalid JSON format in metadata. Please ensure it is a valid JSON object.',
-    };
-  }
+  if (!metadata) return { ok: false, error: 'INVALID_METADATA' };
 
-  if (!cron.validate(input.cronExpression)) {
-    return {
-      ok: false,
-      message: 'Invalid cron expression. Please use the format: `* * * * *`',
-    };
-  }
+  if (!cron.validate(input.cronExpression)) return { ok: false, error: 'INVALID_CRON' };
 
   const flag = input.runOnInit?.trim().toLowerCase() ?? '';
   if (flag !== '' && flag !== 'true' && flag !== 'false') {
-    return {
-      ok: false,
-      message: 'Invalid input for "Run on Init". Please enter either `true` or `false`.',
-    };
+    return { ok: false, error: 'INVALID_RUN_ON_INIT' };
   }
 
-  const emojiProblems = findInvalidEmojiFields(metadata);
-  if (emojiProblems.length > 0) {
-    return {
-      ok: false,
-      message: `Invalid emoji content detected:\n${emojiProblems.join('\n')}\n\nPlease use only valid emoji characters or Discord custom emojis.`,
-    };
-  }
+  const invalidFields = findInvalidEmojiFields(metadata);
+  if (invalidFields.length > 0) return { ok: false, error: 'INVALID_EMOJI', fields: invalidFields };
 
   return {
     ok: true,
