@@ -25,6 +25,11 @@ import {
 } from '@/types';
 import { Error, Success } from '@/utils';
 
+const formatCronLabel = (cron: ICronData): string => {
+  const name = cron.cronName.replace(/([A-Z])/g, ' $1').replace(/^./, (str) => str.toUpperCase());
+  return `${cron.isActive ? '🟢' : '🔴'} ${name} │ ${cron.cronExpression} │`;
+};
+
 export default class CronsCommand extends ICommand {
   name = 'crons';
   description = 'Manage scheduled events and threads.';
@@ -61,7 +66,7 @@ export default class CronsCommand extends ICommand {
 
     const cronJobs: ICronData[] = await interaction.client.cronData.getAllCrones();
     const choices = cronJobs.map((cron: ICronData) => ({
-      name: `${cron.isActive ? '🟢' : '🔴'} ${cron.cronName.replace(/([A-Z])/g, ' $1').replace(/^./, (str) => str.toUpperCase())} │ ${cron.cronExpression} │`,
+      name: formatCronLabel(cron),
       value: cron.cronId as string,
     }));
 
@@ -132,7 +137,7 @@ export default class CronsCommand extends ICommand {
     const selectOptions: StringSelectMenuOptionBuilder[] = cronJobs.map(
       (cron) =>
         new StringSelectMenuOptionBuilder({
-          label: `${cron.isActive ? '🟢' : '🔴'} ${cron.cronName.replace(/([A-Z])/g, ' $1').replace(/^./, (str) => str.toUpperCase())} │ ${cron.cronExpression} │`,
+          label: formatCronLabel(cron),
           value: cron.cronId as string,
         }),
     );
