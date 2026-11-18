@@ -53,14 +53,18 @@ const updateQueueMessage = async (
 
   const replyOptions: MessageCreateOptions & MessageEditOptions = { embeds: [Info(embed.data)] };
 
-  if (!queue.metadata.queueMessage) {
-    if (!queue.metadata.channel) {
-      throw new Error('Channel is undefined in queue metadata.');
+  if (queue.metadata.queueMessage) {
+    try {
+      await queue.metadata.queueMessage.edit(replyOptions);
+      return;
+    } catch {
+      logger.warn('[Player] Queue message could not be edited, sending a new one.');
     }
-    queue.metadata.queueMessage = await queue.metadata.channel.send(replyOptions);
-  } else {
-    await queue.metadata.queueMessage.edit(replyOptions);
   }
+  if (!queue.metadata.channel) {
+    throw new Error('Channel is undefined in queue metadata.');
+  }
+  queue.metadata.queueMessage = await queue.metadata.channel.send(replyOptions);
 };
 
 export { updateQueueMessage };

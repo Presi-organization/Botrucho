@@ -81,6 +81,42 @@ for (const edit of [false, true]) {
   }
 }
 
+test('sends a new queue message when the old one can no longer be edited', async () => {
+  const exports = {};
+  runInNewContext(code, {
+    exports,
+    URL,
+    require: (name) =>
+      name === '@/utils' ? { Info, logger: { warn: () => undefined } } : require(name),
+  });
+  const fresh = {};
+  const queue = {
+    tracks: { data: [] },
+    metadata: {
+      queueMessage: {
+        edit: async () => {
+          throw new Error('Unknown Message');
+        },
+      },
+      channel: { send: async () => fresh },
+    },
+  };
+  const track = {
+    title: 'Test song',
+    author: 'Test artist',
+    url: 'https://example.com/song',
+    thumbnail: 'https://example.com/cover.jpg',
+    requestedBy: { displayName: 'Listener', displayAvatarURL: () => undefined },
+  };
+  await exports.updateQueueMessage(queue, track, {
+    NOW_PLAYING: 'Now playing',
+    SONG: 'Song ${index}',
+    REQUESTED_BY: 'Requested by ${username}',
+    TRACKS_LEFT: 'Tracks left',
+  });
+  assert.equal(queue.metadata.queueMessage, fresh);
+});
+
 for (const thumbnail of ['https://example.com/cover.jpg', 'http://example.com/cover.jpg']) {
   test(`preserves valid thumbnail ${thumbnail}`, async () => {
     const { embed, warnings } = await buildMessage(thumbnail);
