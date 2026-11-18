@@ -24,7 +24,7 @@ test('history goes first, collapses whitespace, truncates and skips empty lines'
 test('lists the commands disabled in the server before the chat', () => {
   assert.equal(
     buildAiPrompt('Ana', 'hola', [{ author: 'Luis', text: 'uno' }], ['siata', 'play']),
-    'Disabled here: /siata, /play (an admin can re-enable them with /toggle-command)\n\nRecent chat:\nLuis: uno\n\nMessage from Ana:\nhola',
+    'Disabled here: /siata, /play\n\nRecent chat:\nLuis: uno\n\nMessage from Ana:\nhola',
   );
 });
 

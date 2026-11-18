@@ -22,7 +22,7 @@ export const buildAiPrompt = (
     .map(({ name, text }) => `${name}: ${text}`);
   const chat = lines.length ? `Recent chat:\n${lines.join('\n')}\n\n` : '';
   const disabled = disabledCommands.length
-    ? `Disabled here: ${disabledCommands.map((name) => `/${name}`).join(', ')} (an admin can re-enable them with /toggle-command)\n\n`
+    ? `Disabled here: ${disabledCommands.map((name) => `/${name}`).join(', ')}\n\n`
     : '';
   return `${disabled}${chat}Message from ${author}:\n${prompt}`;
 };
