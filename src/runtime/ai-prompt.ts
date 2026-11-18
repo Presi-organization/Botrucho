@@ -7,7 +7,12 @@ export interface ChatLine {
   text: string;
 }
 
-export const buildAiPrompt = (author: string, prompt: string, history: ChatLine[]): string => {
+export const buildAiPrompt = (
+  author: string,
+  prompt: string,
+  history: ChatLine[],
+  disabledCommands: string[] = [],
+): string => {
   const lines = history
     .map(({ author: name, text }) => ({
       name,
@@ -16,5 +21,8 @@ export const buildAiPrompt = (author: string, prompt: string, history: ChatLine[
     .filter(({ text }) => text)
     .map(({ name, text }) => `${name}: ${text}`);
   const chat = lines.length ? `Recent chat:\n${lines.join('\n')}\n\n` : '';
-  return `${chat}Message from ${author}:\n${prompt}`;
+  const disabled = disabledCommands.length
+    ? `Disabled here: ${disabledCommands.map((name) => `/${name}`).join(', ')} (an admin can re-enable them with /toggle-command)\n\n`
+    : '';
+  return `${disabled}${chat}Message from ${author}:\n${prompt}`;
 };

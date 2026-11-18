@@ -21,6 +21,13 @@ test('history goes first, collapses whitespace, truncates and skips empty lines'
   );
 });
 
+test('lists the commands disabled in the server before the chat', () => {
+  assert.equal(
+    buildAiPrompt('Ana', 'hola', [{ author: 'Luis', text: 'uno' }], ['siata', 'play']),
+    'Disabled here: /siata, /play (an admin can re-enable them with /toggle-command)\n\nRecent chat:\nLuis: uno\n\nMessage from Ana:\nhola',
+  );
+});
+
 test('redacts the n-word in its disguised forms but leaves normal words alone', () => {
   for (const text of ['Nigger-Man', 'nigga', 'N i g g 3 r', 'nigger man']) {
     assert.equal(redactSlurs(`el gato ${text} era`), 'el gato [censurado] era', text);

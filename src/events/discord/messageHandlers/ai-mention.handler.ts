@@ -75,7 +75,10 @@ export async function handleAiMention(client: Botrucho, message: Message): Promi
     await message.channel.sendTyping();
     const history = await fetchHistory(client, message);
     const author = message.member?.displayName ?? message.author.username;
-    const answer = await generateReply(buildAiPrompt(author, prompt, history), settings);
+    const answer = await generateReply(
+      buildAiPrompt(author, prompt, history, guildDB.disabledCommands),
+      settings,
+    );
     tokens = answer.totalTokens;
     refund = false;
     await reply(Info({ description: redactSlurs(answer.text).slice(0, EMBED_DESCRIPTION_LIMIT) }));
