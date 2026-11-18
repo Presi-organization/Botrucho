@@ -3,6 +3,8 @@ import { EmbedBuilder, Message } from 'discord.js';
 import config from '@/config';
 import { Botrucho } from '@/mongodb';
 import { AiRefusal } from '@/runtime/ai-limits';
+import { redactSlurs } from '@/runtime/ai-output-filter';
+import { buildAiPrompt, ChatLine, HISTORY_LIMIT, HISTORY_WINDOW_MS } from '@/runtime/ai-prompt';
 import { GeminiError, generateReply } from '@/services/REST/gemini.service';
 import { AiKeys, TranslationElement } from '@/types';
 import { Error, Info, logger, Warning } from '@/utils';
@@ -13,6 +15,27 @@ const LIMIT_KEYS: Partial<Record<AiRefusal, AiKeys>> = {
   guild: 'GUILD_LIMIT',
   global: 'GLOBAL_LIMIT',
 };
+
+// The bot answers with embeds, so its own earlier replies live in the embed description.
+async function fetchHistory(client: Botrucho, message: Message<true>): Promise<ChatLine[]> {
+  try {
+    const recent = await message.channel.messages.fetch({
+      limit: HISTORY_LIMIT,
+      before: message.id,
+    });
+    const oldest = message.createdTimestamp - HISTORY_WINDOW_MS;
+    const fresh = [...recent.values()].filter((entry) => entry.createdTimestamp >= oldest);
+    return fresh.reverse().map((entry) => {
+      const isBot = entry.author.id === client.user?.id;
+      return {
+        author: isBot ? 'Botrucho' : (entry.member?.displayName ?? entry.author.username),
+        text: entry.cleanContent || (isBot ? (entry.embeds[0]?.description ?? '') : ''),
+      };
+    });
+  } catch {
+    return [];
+  }
+}
 
 export async function handleAiMention(client: Botrucho, message: Message): Promise<boolean> {
   if (!config.integrations.vertexAi || !client.user || !message.inGuild()) return false;
@@ -50,10 +73,12 @@ export async function handleAiMention(client: Botrucho, message: Message): Promi
   let refund = true;
   try {
     await message.channel.sendTyping();
-    const answer = await generateReply(prompt, settings);
+    const history = await fetchHistory(client, message);
+    const author = message.member?.displayName ?? message.author.username;
+    const answer = await generateReply(buildAiPrompt(author, prompt, history), settings);
     tokens = answer.totalTokens;
     refund = false;
-    await reply(Info({ description: answer.text.slice(0, EMBED_DESCRIPTION_LIMIT) }));
+    await reply(Info({ description: redactSlurs(answer.text).slice(0, EMBED_DESCRIPTION_LIMIT) }));
   } catch (error) {
     if (error instanceof GeminiError && error.totalTokens > 0) {
       tokens = error.totalTokens;

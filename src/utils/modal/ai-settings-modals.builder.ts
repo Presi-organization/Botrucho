@@ -6,7 +6,7 @@ import {
   TextInputStyle,
 } from 'discord.js';
 
-import { MAX_INSTRUCTION_CHARS, THINKING_LEVELS } from '@/runtime/ai-settings';
+import { formatThinkingField, MAX_INSTRUCTION_CHARS, THINKING_LEVELS } from '@/runtime/ai-settings';
 import { AiSettings } from '@/types';
 
 export const AI_SETTINGS_MODAL = 'ai-settings-modal';
@@ -48,9 +48,9 @@ export const showAiModelModal = (interaction: ButtonInteraction, settings: AiSet
         input('model', 'Gemini model ID', settings.model, 'gemini-3.1-flash-lite'),
         input(
           'thinkingLevel',
-          `Thinking level (${THINKING_LEVELS.join('/')})`,
-          settings.thinkingLevel,
-          'low',
+          'Thinking level, temperature (0-2)',
+          formatThinkingField(settings),
+          `${THINKING_LEVELS.join('/')}, 1.0`,
         ),
         input(
           'googleSearch',

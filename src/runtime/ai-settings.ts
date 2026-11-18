@@ -11,9 +11,10 @@ export const MAX_INSTRUCTION_CHARS = 4000; // Discord's text input limit
 export const defaultAiSettings = (systemInstruction: string): AiSettings => ({
   model: 'gemini-3.1-flash-lite',
   thinkingLevel: 'low',
+  temperature: 1,
   googleSearch: false,
   maxInputChars: 500,
-  maxOutputTokens: 512,
+  maxOutputTokens: 1024,
   systemInstruction,
   limits: {
     userCooldownSec: 20,
@@ -80,15 +81,32 @@ export const parseLimitsForm = (values: Record<keyof AiLimits, string>): FormRes
 
 type ModelForm = Pick<
   AiSettings,
-  'model' | 'thinkingLevel' | 'googleSearch' | 'maxInputChars' | 'maxOutputTokens'
+  'model' | 'thinkingLevel' | 'temperature' | 'googleSearch' | 'maxInputChars' | 'maxOutputTokens'
 >;
 
-export const parseModelForm = (values: Record<keyof ModelForm, string>): FormResult<ModelForm> => {
+const MAX_TEMPERATURE = 2;
+
+// The modal is capped at five inputs, so thinking level and temperature share one ("low, 1.0").
+export const formatThinkingField = ({
+  thinkingLevel,
+  temperature,
+}: Pick<AiSettings, 'thinkingLevel' | 'temperature'>): string => `${thinkingLevel}, ${temperature}`;
+
+export const parseModelForm = (
+  values: Record<Exclude<keyof ModelForm, 'temperature'>, string>,
+): FormResult<ModelForm> => {
   const model = values.model.trim();
   if (!/^[\w.-]+$/.test(model)) return { ok: false, error: 'Model must be a model ID.' };
-  const thinkingLevel = values.thinkingLevel.trim().toLowerCase() as ThinkingLevelSetting;
+  const [levelRaw, temperatureRaw = ''] = values.thinkingLevel.split(',');
+  const thinkingLevel = levelRaw.trim().toLowerCase() as ThinkingLevelSetting;
   if (!THINKING_LEVELS.includes(thinkingLevel))
     return { ok: false, error: `Thinking level must be one of: ${THINKING_LEVELS.join(', ')}.` };
+  const temperature = Number(temperatureRaw.trim());
+  if (!/^\d+(\.\d+)?$/.test(temperatureRaw.trim()) || temperature > MAX_TEMPERATURE)
+    return {
+      ok: false,
+      error: `Write the thinking level and a temperature from 0 to ${MAX_TEMPERATURE}, like \`low, 1.0\`.`,
+    };
   const search = values.googleSearch.trim().toLowerCase();
   if (!['on', 'off'].includes(search))
     return { ok: false, error: 'Google Search must be `on` or `off`.' };
@@ -100,7 +118,13 @@ export const parseModelForm = (values: Record<keyof ModelForm, string>): FormRes
   if (!numbers.ok) return numbers;
   return {
     ok: true,
-    value: { model, thinkingLevel, googleSearch: search === 'on', ...numbers.value },
+    value: {
+      model,
+      thinkingLevel,
+      temperature,
+      googleSearch: search === 'on',
+      ...numbers.value,
+    },
   };
 };
 

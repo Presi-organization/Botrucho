@@ -40,15 +40,16 @@ const _currentDateTime = (now: Date): string => {
   return `Current date and time: ${formatted} (${timeZone}).`;
 };
 
-export const generateReply = async (
+const _generateOnce = async (
   prompt: string,
   settings: AiSettings,
-  now: Date = new Date(),
+  now: Date,
 ): Promise<GeminiReply> => {
   const requestConfig: GenerateContentConfig = {
     systemInstruction: `${settings.systemInstruction}
 
 ${_currentDateTime(now)}`,
+    temperature: settings.temperature,
     maxOutputTokens: settings.maxOutputTokens,
     thinkingConfig: { thinkingLevel: settings.thinkingLevel.toUpperCase() as ThinkingLevel },
     ...(settings.googleSearch && { tools: [{ googleSearch: {} }] }),
@@ -79,4 +80,22 @@ ${_currentDateTime(now)}`,
       totalTokens,
     );
   return { text, totalTokens };
+};
+
+export const generateReply = async (
+  prompt: string,
+  settings: AiSettings,
+  now: Date = new Date(),
+): Promise<GeminiReply> => {
+  let spent = 0;
+  for (let attempt = 1; ; attempt++) {
+    try {
+      const reply = await _generateOnce(prompt, settings, now);
+      return { ...reply, totalTokens: reply.totalTokens + spent };
+    } catch (error) {
+      if (!(error instanceof GeminiError) || error.reason !== 'empty') throw error;
+      spent += error.totalTokens;
+      if (attempt === 2) throw new GeminiError(error.message, 'empty', spent);
+    }
+  }
 };

@@ -24,6 +24,7 @@ class ApiError extends Error {
 const settings = {
   model: 'test-model',
   thinkingLevel: 'low',
+  temperature: 1,
   googleSearch: false,
   maxInputChars: 1000,
   maxOutputTokens: 256,
@@ -89,6 +90,7 @@ test('sends the system instruction, prompt and output caps with retries disabled
     model: 'test-model',
     contents: '¿Qué tal?',
     config: {
+      temperature: 1,
       maxOutputTokens: 256,
       thinkingConfig: { thinkingLevel: 'LOW' },
     },
@@ -120,18 +122,37 @@ test('maps quota, request and blocked failures to typed errors', async () => {
   }
 });
 
-test('an empty answer still reports the tokens that were billed', async () => {
-  const { generateReply } = load(() => ({
+test('an empty answer is retried once and reports the tokens of both attempts', async () => {
+  const { generateReply, calls } = load(() => ({
     text: undefined,
     candidates: [{ finishReason: 'MAX_TOKENS' }],
     usageMetadata: { totalTokenCount: 256 },
   }));
   await assert.rejects(generateReply('x', settings), (error) => {
     assert.equal(error.reason, 'empty');
-    assert.equal(error.totalTokens, 256);
+    assert.equal(error.totalTokens, 512);
     assert.match(error.message, /MAX_TOKENS/);
     return true;
   });
+  assert.equal(calls.length, 2);
+});
+
+test('a retry after an empty answer returns the text and counts both attempts', async () => {
+  const responses = [
+    { text: undefined, candidates: [{ finishReason: 'STOP' }] },
+    reply('Hola', 40),
+  ];
+  const { generateReply, calls } = load(() => responses.shift());
+  assert.deepEqual(plain(await generateReply('x', settings)), { text: 'Hola', totalTokens: 40 });
+  assert.equal(calls.length, 2);
+});
+
+test('errors other than empty answers are not retried', async () => {
+  const { generateReply, calls } = load(() => {
+    throw new ApiError({ message: 'down', status: 500 });
+  });
+  await assert.rejects(generateReply('x', settings));
+  assert.equal(calls.length, 1);
 });
 
 test('tells the model the current date and time in the configured timezone', async () => {

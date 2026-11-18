@@ -20,6 +20,7 @@ const { code } = transformSync(
 );
 
 const BOT_ID = '100';
+const NOW = 1_800_000_000_000;
 const translations = {
   EMPTY_PROMPT: 'empty',
   USER_LIMIT: 'user limit',
@@ -78,17 +79,34 @@ function setup({ answer = async () => ({ text: 'answer', totalTokens: 7 }), perm
     },
   };
 
-  function message({ content = `<@${BOT_ID}> hola`, guildId = 'g1', mentioned = true } = {}) {
+  function message({
+    content = `<@${BOT_ID}> hola`,
+    guildId = 'g1',
+    mentioned = true,
+    history = [],
+    fetchFails = false,
+  } = {}) {
     const sent = { replies: [], reactions: [], typing: 0 };
     const msg = {
       content,
       guildId,
-      author: { id: 'u1' },
+      id: 'm9',
+      createdTimestamp: NOW,
+      author: { id: 'u1', username: 'ana_user' },
+      member: { displayName: 'Ana' },
       inGuild: () => true,
       mentions: { users: new Map(mentioned ? [[BOT_ID, {}]] : []) },
       guild: { fetchDB: async () => ({ aiEnabled: guildId === 'g1', lang: 'en' }) },
       translate: () => translations,
-      channel: { sendTyping: async () => void sent.typing++ },
+      channel: {
+        sendTyping: async () => void sent.typing++,
+        messages: {
+          fetch: async () => {
+            if (fetchFails) throw new Error('missing access');
+            return new Map(history.map((entry, index) => [`h${index}`, entry]));
+          },
+        },
+      },
       reply: async (payload) => sent.replies.push(payload),
       react: async (emoji) => sent.reactions.push(emoji),
     };
@@ -103,7 +121,7 @@ test('answers a direct mention with the stripped prompt and never pings anyone',
   const { handle, message, prompts, releases } = setup();
   const { msg, sent } = message({ content: `<@!${BOT_ID}>   ¿qué jugamos? <@${BOT_ID}>` });
   assert.equal(await handle(msg), true);
-  assert.deepEqual(prompts, ['¿qué jugamos?']);
+  assert.deepEqual(prompts, ['Message from Ana:\n¿qué jugamos?']);
   assert.equal(sent.typing, 1);
   assert.deepEqual(plain(sent.replies), [
     {
@@ -120,8 +138,48 @@ test('truncates long prompts and long answers', async () => {
   });
   const { msg, sent } = message({ content: `<@${BOT_ID}> ${'a'.repeat(50)}` });
   await handle(msg);
-  assert.equal(prompts[0].length, 20);
+  assert.equal(prompts[0], `Message from Ana:\n${'a'.repeat(20)}`);
   assert.equal(sent.replies[0].embeds[0].description.length, 4096);
+});
+
+test('sends recent channel messages oldest first, with the bot replies read from embeds', async () => {
+  const { handle, message, prompts } = setup();
+  const entry = (id, name, cleanContent, embedText, ageMs = 60_000) => ({
+    author: { id, username: name },
+    member: { displayName: name },
+    cleanContent,
+    embeds: embedText ? [{ description: embedText }] : [],
+    createdTimestamp: NOW - ageMs,
+  });
+  const { msg } = message({
+    history: [
+      entry(BOT_ID, 'bot-user', '', 'respuesta previa'),
+      entry('u2', 'Luis', 'hola @Botrucho'),
+      entry('u3', 'Vieja', 'charla de hace horas', '', 3 * 60 * 60_000),
+    ],
+  });
+  await handle(msg);
+  assert.equal(
+    prompts[0],
+    'Recent chat:\nLuis: hola @Botrucho\nBotrucho: respuesta previa\n\nMessage from Ana:\nhola',
+  );
+});
+
+test('still answers when the channel history cannot be fetched', async () => {
+  const { handle, message, prompts } = setup();
+  const { msg, sent } = message({ fetchFails: true });
+  await handle(msg);
+  assert.deepEqual(prompts, ['Message from Ana:\nhola']);
+  assert.equal(text(sent.replies[0]), 'info: answer');
+});
+
+test('slurs in the model answer are censored before replying', async () => {
+  const { handle, message } = setup({
+    answer: async () => ({ text: 'Se llamaba Nigger-Man.', totalTokens: 1 }),
+  });
+  const { msg, sent } = message();
+  await handle(msg);
+  assert.equal(text(sent.replies[0]), 'info: Se llamaba [censurado].');
 });
 
 test('ignores messages that do not directly mention the bot or come from servers without AI enabled', async () => {

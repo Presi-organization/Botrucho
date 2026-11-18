@@ -90,7 +90,7 @@ test('limits form accepts whole numbers and rejects anything else', () => {
 test('model form validates model ID, thinking level, search flag and caps', () => {
   const values = {
     model: ' gemini-3.5-flash-lite ',
-    thinkingLevel: 'Medium',
+    thinkingLevel: 'Medium, 1.3',
     googleSearch: 'ON',
     maxInputChars: '500',
     maxOutputTokens: '2048',
@@ -100,6 +100,7 @@ test('model form validates model ID, thinking level, search flag and caps', () =
     value: {
       model: 'gemini-3.5-flash-lite',
       thinkingLevel: 'medium',
+      temperature: 1.3,
       googleSearch: true,
       maxInputChars: 500,
       maxOutputTokens: 2048,
@@ -107,7 +108,11 @@ test('model form validates model ID, thinking level, search flag and caps', () =
   });
   for (const [field, bad] of [
     ['model', 'models/x y'],
-    ['thinkingLevel', 'max'],
+    ['thinkingLevel', 'max, 1'],
+    ['thinkingLevel', 'low'],
+    ['thinkingLevel', 'low, hot'],
+    ['thinkingLevel', 'low, 2.5'],
+    ['thinkingLevel', 'low, -1'],
     ['googleSearch', 'yes'],
     ['maxInputChars', '0'],
     ['maxOutputTokens', '100000'],

@@ -7,6 +7,7 @@ const schema = new Schema<AiSettings & { _id: string }>(
     _id: { type: String, required: true },
     model: String,
     thinkingLevel: String,
+    temperature: Number,
     googleSearch: Boolean,
     maxInputChars: Number,
     maxOutputTokens: Number,

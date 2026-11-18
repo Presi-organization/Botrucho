@@ -11,6 +11,7 @@ export interface AiLimits {
 export interface AiSettings {
   model: string;
   thinkingLevel: ThinkingLevelSetting;
+  temperature: number;
   googleSearch: boolean;
   maxInputChars: number;
   maxOutputTokens: number;

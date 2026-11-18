@@ -9,8 +9,7 @@ import {
 
 import config from '@/config';
 import type { Botrucho } from '@/mongodb';
-
-import { Info } from './message-builder.util';
+import { Info } from '@/utils';
 
 export const AI_SETTINGS_BUTTON = 'ai-settings';
 export type AiSettingsAction = 'limits' | 'model' | 'instructions' | 'toggle';
@@ -43,7 +42,7 @@ export const buildAiSettingsPanel = async (
       {
         name: 'Model',
         value: [
-          `${inlineCode(settings.model)} · thinking ${inlineCode(settings.thinkingLevel)}`,
+          `${inlineCode(settings.model)} · thinking ${inlineCode(settings.thinkingLevel)} · temperature ${inlineCode(`${settings.temperature}`)}`,
           `Google Search: ${settings.googleSearch ? '**on** (billed per search)' : 'off'}`,
           `Max input ${number(settings.maxInputChars)} chars · max output ${number(settings.maxOutputTokens)} tokens`,
         ].join('\n'),
