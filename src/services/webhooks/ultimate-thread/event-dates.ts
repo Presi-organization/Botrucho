@@ -24,7 +24,6 @@ export const getEventDates = (): { eventDate: Date; expirationDate: Date } => {
 export const getTomorrowsDay = (): string => {
   const { eventDate } = getEventDates();
   return eventDate.toLocaleDateString('es-CO', {
-    timeZone: 'America/Bogota',
     day: '2-digit',
     month: '2-digit',
     year: 'numeric',
