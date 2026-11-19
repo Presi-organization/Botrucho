@@ -83,6 +83,13 @@
   "MOVE": {
     "USER_MOVED": "Moviste a ${username} a ${channel}"
   },
+  "HELP": {
+    "TITLE": "Comandos disponibles",
+    "MUSIC": "Música",
+    "FUN": "Diversión",
+    "INFO": "Información",
+    "SERVER": "Servidor"
+  },
   "PING": {
     "PINGING": "Pinging...",
     "PONG": ":ping_pong: Latencia de ida y vuelta: ${latency}ms\n:ping_pong: Latencia del websocket: ${heartbeat}ms."

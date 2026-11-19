@@ -11,6 +11,7 @@ export interface TranslationsType {
   EVENT: TranslationElement<EventKeys>;
   LANGUAGE: TranslationElement<LanguageKeys>;
   MOVE: TranslationElement<MoveKeys>;
+  HELP: TranslationElement<HelpKeys>;
   PING: TranslationElement<PingKeys>;
   PRUNE: TranslationElement<PruneKeys>;
   SERVER_INFO: TranslationElement<ServerInfoKeys>;
@@ -91,6 +92,7 @@ export type EventKeys =
   | 'EVENT_GENERATED';
 export type LanguageKeys = 'CURRENT_LANG' | 'LANG_CHANGED';
 export type MoveKeys = 'USER_MOVED';
+export type HelpKeys = 'TITLE' | 'MUSIC' | 'FUN' | 'INFO' | 'SERVER';
 export type PingKeys = 'PINGING' | 'PONG';
 export type PruneKeys = 'AMOUNT_ERR' | 'ERR' | 'SUCCESS';
 export type ServerInfoKeys = 'TITLE' | 'ONLY_SERVER' | 'a' | 'b' | 'c' | 'd' | 'e' | 'f';
