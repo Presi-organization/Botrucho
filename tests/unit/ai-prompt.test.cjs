@@ -21,11 +21,17 @@ test('history goes first, collapses whitespace, truncates and skips empty lines'
   );
 });
 
-test('lists the commands disabled in the server before the chat', () => {
+test('lists a disabled command only when the message or the chat mentions it', () => {
   assert.equal(
-    buildAiPrompt('Ana', 'hola', [{ author: 'Luis', text: 'uno' }], ['siata', 'play']),
-    'Disabled here: /siata, /play\n\nRecent chat:\nLuis: uno\n\nMessage from Ana:\nhola',
+    buildAiPrompt(
+      'Ana',
+      'no sirve',
+      [{ author: 'Luis', text: 'el /Siata no abre' }],
+      ['siata', 'play'],
+    ),
+    'Disabled here: /siata\n\nRecent chat:\nLuis: el /Siata no abre\n\nMessage from Ana:\nno sirve',
   );
+  assert.equal(buildAiPrompt('Ana', 'hola', [], ['siata', 'multas']), 'Message from Ana:\nhola');
 });
 
 test('redacts the n-word in its disguised forms but leaves normal words alone', () => {

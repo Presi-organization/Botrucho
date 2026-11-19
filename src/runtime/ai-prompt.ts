@@ -21,8 +21,10 @@ export const buildAiPrompt = (
     .filter(({ text }) => text)
     .map(({ name, text }) => `${name}: ${text}`);
   const chat = lines.length ? `Recent chat:\n${lines.join('\n')}\n\n` : '';
-  const disabled = disabledCommands.length
-    ? `Disabled here: ${disabledCommands.map((name) => `/${name}`).join(', ')}\n\n`
+  const context = [prompt, ...lines].join('\n').toLowerCase();
+  const mentioned = disabledCommands.filter((name) => context.includes(name.toLowerCase()));
+  const disabled = mentioned.length
+    ? `Disabled here: ${mentioned.map((name) => `/${name}`).join(', ')}\n\n`
     : '';
   return `${disabled}${chat}Message from ${author}:\n${prompt}`;
 };
