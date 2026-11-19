@@ -12,7 +12,7 @@ import type { Botrucho } from '@/mongodb';
 import { Info } from '@/utils';
 
 export const AI_SETTINGS_BUTTON = 'ai-settings';
-export type AiSettingsAction = 'limits' | 'model' | 'instructions' | 'toggle';
+export type AiSettingsAction = 'limits' | 'model' | 'toggle';
 
 export const isAiOwner = (interaction: BaseInteraction): boolean =>
   config.owners.includes(interaction.user.id);
@@ -31,10 +31,6 @@ export const buildAiSettingsPanel = async (
   ]);
   const enabled = !!guildDB?.aiEnabled;
   const { limits } = settings;
-  const preview =
-    settings.systemInstruction.length > 300
-      ? `${settings.systemInstruction.slice(0, 300)}…`
-      : settings.systemInstruction;
 
   const embed = Info({
     title: `Botrucho AI — ${enabled ? '🟢 enabled here' : '🔴 disabled here'}`,
@@ -58,7 +54,10 @@ export const buildAiSettingsPanel = async (
         name: 'Today (UTC)',
         value: `${number(usage.requests)} requests · ${number(usage.tokens)} tokens · this server ${number(usage.guildRequests)}`,
       },
-      { name: 'Instructions', value: preview || '—' },
+      {
+        name: 'Instructions',
+        value: `From ${inlineCode('assets/ai/system-instruction.md')} (${number(settings.systemInstruction.length)} chars)`,
+      },
     ],
   });
 
@@ -70,10 +69,6 @@ export const buildAiSettingsPanel = async (
     new ButtonBuilder()
       .setCustomId(`${AI_SETTINGS_BUTTON}:model`)
       .setLabel('Model')
-      .setStyle(ButtonStyle.Secondary),
-    new ButtonBuilder()
-      .setCustomId(`${AI_SETTINGS_BUTTON}:instructions`)
-      .setLabel('Instructions')
       .setStyle(ButtonStyle.Secondary),
     new ButtonBuilder()
       .setCustomId(`${AI_SETTINGS_BUTTON}:toggle`)

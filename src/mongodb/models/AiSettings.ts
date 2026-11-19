@@ -1,8 +1,8 @@
 import { model, Schema } from 'mongoose';
 
-import type { AiSettings } from '@/types';
+import type { StoredAiSettings } from '@/types';
 
-const schema = new Schema<AiSettings & { _id: string }>(
+const schema = new Schema<StoredAiSettings & { _id: string }>(
   {
     _id: { type: String, required: true },
     model: String,
@@ -11,7 +11,6 @@ const schema = new Schema<AiSettings & { _id: string }>(
     googleSearch: Boolean,
     maxInputChars: Number,
     maxOutputTokens: Number,
-    systemInstruction: String,
     limits: {
       userCooldownSec: Number,
       userDaily: Number,
@@ -23,4 +22,4 @@ const schema = new Schema<AiSettings & { _id: string }>(
   { versionKey: false },
 );
 
-export const AiSettingsModel = model<AiSettings & { _id: string }>('AiSettings', schema);
+export const AiSettingsModel = model<StoredAiSettings & { _id: string }>('AiSettings', schema);

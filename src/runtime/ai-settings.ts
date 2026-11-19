@@ -1,12 +1,11 @@
-import type { AiLimits, AiSettings, ThinkingLevelSetting } from '@/types';
+import type { AiLimits, AiSettings, StoredAiSettings, ThinkingLevelSetting } from '@/types';
 
 export interface SettingsStore {
-  load(): PromiseLike<Partial<AiSettings> | null>;
-  save(settings: AiSettings): PromiseLike<unknown>;
+  load(): PromiseLike<Partial<StoredAiSettings> | null>;
+  save(settings: StoredAiSettings): PromiseLike<unknown>;
 }
 
 export const THINKING_LEVELS: ThinkingLevelSetting[] = ['minimal', 'low', 'medium', 'high'];
-export const MAX_INSTRUCTION_CHARS = 4000; // Discord's text input limit
 
 export const defaultAiSettings = (systemInstruction: string): AiSettings => ({
   model: 'gemini-3.1-flash-lite',
@@ -42,15 +41,18 @@ export class AiSettingsStore {
     const settings: AiSettings = {
       ...defaults,
       ...stored,
+      systemInstruction: defaults.systemInstruction,
       limits: { ...defaults.limits, ...stored.limits },
     };
     this.cached = { settings, at: this.now() };
     return settings;
   }
 
-  async update(patch: Partial<Omit<AiSettings, 'limits'>> & { limits?: AiLimits }) {
-    const settings: AiSettings = { ...(await this.get()), ...patch };
-    await this.store.save(settings);
+  async update(patch: Partial<Omit<StoredAiSettings, 'limits'>> & { limits?: AiLimits }) {
+    const { systemInstruction, ...current } = await this.get();
+    const stored: StoredAiSettings = { ...current, ...patch };
+    await this.store.save(stored);
+    const settings: AiSettings = { ...stored, systemInstruction };
     this.cached = { settings, at: this.now() };
     return settings;
   }
@@ -126,15 +128,4 @@ export const parseModelForm = (
       ...numbers.value,
     },
   };
-};
-
-export const parseInstructionForm = (raw: string): FormResult<string> => {
-  const value = raw.trim();
-  if (!value) return { ok: false, error: 'Instructions cannot be empty.' };
-  if (value.length > MAX_INSTRUCTION_CHARS)
-    return {
-      ok: false,
-      error: `Instructions must be at most ${MAX_INSTRUCTION_CHARS} characters.`,
-    };
-  return { ok: true, value };
 };

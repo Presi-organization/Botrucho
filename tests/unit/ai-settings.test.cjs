@@ -5,7 +5,6 @@ const assert = require('node:assert/strict');
 const {
   AiSettingsStore,
   defaultAiSettings,
-  parseInstructionForm,
   parseLimitsForm,
   parseModelForm,
 } = require('@/runtime/ai-settings');
@@ -52,14 +51,23 @@ test('caches reads for the TTL so other shards see edits shortly after', async (
   assert.equal(loads(), 2);
 });
 
-test('update saves the full merged settings and serves them immediately', async () => {
+test('update saves the merged settings without the instruction and serves them immediately', async () => {
   const { store, saved, loads } = setup();
   await store.update({ googleSearch: true });
   assert.equal(saved.length, 1);
   assert.equal(saved[0].googleSearch, true);
-  assert.equal(saved[0].systemInstruction, 'Default prompt');
-  assert.equal((await store.get()).googleSearch, true);
+  assert.equal('systemInstruction' in saved[0], false);
+  const settings = await store.get();
+  assert.equal(settings.googleSearch, true);
+  assert.equal(settings.systemInstruction, 'Default prompt');
   assert.equal(loads(), 1);
+});
+
+test('an instruction left in the database never overrides the file', async () => {
+  const { store } = setup({ systemInstruction: 'Old saved copy', model: 'custom' });
+  const settings = await store.get();
+  assert.equal(settings.systemInstruction, 'Default prompt');
+  assert.equal(settings.model, 'custom');
 });
 
 test('limits form accepts whole numbers and rejects anything else', () => {
@@ -118,10 +126,4 @@ test('model form validates model ID, thinking level, search flag and caps', () =
     ['maxOutputTokens', '100000'],
   ])
     assert.equal(parseModelForm({ ...values, [field]: bad }).ok, false, field);
-});
-
-test('instructions must be non-empty and fit a Discord text input', () => {
-  assert.deepEqual(parseInstructionForm('  Be brief.  '), { ok: true, value: 'Be brief.' });
-  assert.equal(parseInstructionForm('   ').ok, false);
-  assert.equal(parseInstructionForm('x'.repeat(4001)).ok, false);
 });

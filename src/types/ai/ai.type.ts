@@ -18,3 +18,6 @@ export interface AiSettings {
   systemInstruction: string;
   limits: AiLimits;
 }
+
+/** What lives in Mongo: the instruction always comes from the repo file. */
+export type StoredAiSettings = Omit<AiSettings, 'systemInstruction'>;

@@ -6,11 +6,10 @@ import {
   TextInputStyle,
 } from 'discord.js';
 
-import { formatThinkingField, MAX_INSTRUCTION_CHARS, THINKING_LEVELS } from '@/runtime/ai-settings';
+import { formatThinkingField, THINKING_LEVELS } from '@/runtime/ai-settings';
 import { AiSettings } from '@/types';
 
 export const AI_SETTINGS_MODAL = 'ai-settings-modal';
-export const AI_INSTRUCTION_FIELD = 'systemInstruction';
 
 const input = (id: string, label: string, value: string, placeholder?: string) =>
   new ActionRowBuilder<TextInputBuilder>().addComponents(
@@ -63,24 +62,6 @@ export const showAiModelModal = (interaction: ButtonInteraction, settings: AiSet
           'maxOutputTokens',
           'Max answer tokens (includes thinking)',
           `${settings.maxOutputTokens}`,
-        ),
-      ),
-  );
-
-export const showAiInstructionsModal = (interaction: ButtonInteraction, settings: AiSettings) =>
-  interaction.showModal(
-    new ModalBuilder()
-      .setCustomId(`${AI_SETTINGS_MODAL}:instructions`)
-      .setTitle('AI instructions')
-      .addComponents(
-        new ActionRowBuilder<TextInputBuilder>().addComponents(
-          new TextInputBuilder()
-            .setCustomId(AI_INSTRUCTION_FIELD)
-            .setLabel('System instruction')
-            .setStyle(TextInputStyle.Paragraph)
-            .setRequired(true)
-            .setMaxLength(MAX_INSTRUCTION_CHARS)
-            .setValue(settings.systemInstruction.slice(0, MAX_INSTRUCTION_CHARS)),
         ),
       ),
   );

@@ -2,20 +2,8 @@ import { BaseInteraction, MessageFlags, ModalSubmitInteraction } from 'discord.j
 
 import { IIntCreateHandler } from '@/events/discord/interactionCreateHandlers';
 import { Botrucho } from '@/mongodb';
-import {
-  FormResult,
-  parseInstructionForm,
-  parseLimitsForm,
-  parseModelForm,
-} from '@/runtime/ai-settings';
-import {
-  AI_INSTRUCTION_FIELD,
-  AI_SETTINGS_MODAL,
-  buildAiSettingsPanel,
-  Error,
-  isAiOwner,
-  logger,
-} from '@/utils';
+import { FormResult, parseLimitsForm, parseModelForm } from '@/runtime/ai-settings';
+import { AI_SETTINGS_MODAL, buildAiSettingsPanel, Error, isAiOwner, logger } from '@/utils';
 
 type SettingsPatch = Parameters<Botrucho['aiSettings']['update']>[0];
 
@@ -49,12 +37,6 @@ const PARSERS: Record<string, (interaction: ModalSubmitInteraction) => FormResul
           'maxOutputTokens',
         ]),
       ),
-    instructions: (interaction) => {
-      const result = parseInstructionForm(
-        interaction.fields.getTextInputValue(AI_INSTRUCTION_FIELD),
-      );
-      return result.ok ? { ok: true, value: { systemInstruction: result.value } } : result;
-    },
   };
 
 export class AiSettingsModalHandler implements IIntCreateHandler {

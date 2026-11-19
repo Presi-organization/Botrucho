@@ -9,7 +9,6 @@ import {
   Error,
   isAiOwner,
   logger,
-  showAiInstructionsModal,
   showAiLimitsModal,
   showAiModelModal,
 } from '@/utils';
@@ -17,7 +16,6 @@ import {
 const MODALS = {
   limits: showAiLimitsModal,
   model: showAiModelModal,
-  instructions: showAiInstructionsModal,
 };
 
 export class AiSettingsButtonHandler implements IIntCreateHandler {
