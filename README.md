@@ -68,10 +68,10 @@ Mentioning the bot (`@Botrucho ¿qué jugamos hoy?`) in a server with AI enabled
 
 The only environment variable is the secret `VERTEX_API_KEY` (`npx dotenvx set VERTEX_API_KEY "key" -f .env.production`): a Google Cloud API key bound to a service account with the **Vertex AI User** role, in a project with billing enabled. Usage is billed postpaid to that project. Everything else is managed from Discord with `/ai settings`, stored in MongoDB, and picked up by every shard within 30 seconds:
 
-- Everyone can run `/ai settings` and see the current settings; only **bot owners** (`config.owners`) get the buttons for **Limits** (cooldown, per-user/per-server/global daily requests, daily token budget; `0` disables a scope), **Model** (model ID, thinking level, Google Search on/off, max question length, max answer tokens) and **Instructions** (the system prompt).
+- Everyone can run `/ai settings` and see the current settings; only **bot owners** (`config.owners`) get the buttons for **Limits** (cooldown, per-user/per-server/global daily requests, daily token budget; `0` disables a scope), **Model** (model ID, thinking level, Google Search on/off, max question length, max answer tokens).
 - Owners also get **Enable here / Disable here** for the current server. AI is off in every server until an owner enables it.
 
-`assets/ai/system-instruction.md` is the default prompt until it is edited from the panel. Usage is counted per UTC day in MongoDB (`aiusages`), so caps hold across restarts and shards. Google Search grounding is billed per search query. As a second safety net, restrict the API key to the Vertex AI API and set a billing budget alert in Google Cloud.
+The system prompt is always `assets/ai/system-instruction.md`; it is not editable from Discord, so changing it means committing and deploying. Usage is counted per UTC day in MongoDB (`aiusages`), so caps hold across restarts and shards. Google Search grounding is billed per search query. As a second safety net, restrict the API key to the Vertex AI API and set a billing budget alert in Google Cloud.
 
 ## Development and tests
 
@@ -127,4 +127,5 @@ Terraform has one root under `terraform/`, activating only `modules/gcp`. The [P
 - **Decryption failure:** confirm the key matches encrypted `.env.production`. Do not replace encrypted values with plaintext to bypass the error.
 - **Git ownership errors in a container:** the workflow explicitly trusts only `$GITHUB_WORKSPACE`; do not disable Git protection globally with `safe.directory=*`.
 - **Dependency warnings:** audit output is separate from build/test failures. Review `npm audit --omit=dev` and the [dependency triage](docs/security-dependency-triage.md); passing tests does not mean every advisory is resolved.
+- **Server operations:** start, stop, restart, logs and the music diagnostics toggle over SSH are in [docs/server-ops.md](docs/server-ops.md).
 - **Deployment verification:** `systemctl is-active` is not a full Discord/Mongo readiness or load test. Uploads are in-place, without automatic rollback. Check service logs and verify integrations before treating a deployment as production-ready.
