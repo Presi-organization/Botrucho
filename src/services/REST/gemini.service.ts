@@ -1,4 +1,10 @@
-import { ApiError, GenerateContentConfig, GoogleGenAI, ThinkingLevel } from '@google/genai';
+import {
+  ApiError,
+  GenerateContentConfig,
+  GenerateContentResponse,
+  GoogleGenAI,
+  ThinkingLevel,
+} from '@google/genai';
 
 import config from '@/config';
 import { AiSettings } from '@/types';
@@ -15,10 +21,29 @@ export class GeminiError extends Error {
   }
 }
 
+export interface GeminiSource {
+  title: string;
+  uri: string;
+}
+
 export interface GeminiReply {
   text: string;
   totalTokens: number;
+  sources: GeminiSource[];
 }
+
+const MAX_SOURCES = 3;
+
+const _groundingSources = (response: GenerateContentResponse): GeminiSource[] => {
+  const chunks = response.candidates?.[0]?.groundingMetadata?.groundingChunks ?? [];
+  const byTitle = new Map<string, GeminiSource>();
+  for (const { web } of chunks) {
+    if (!web?.uri) continue;
+    const title = web.title ?? web.uri;
+    if (!byTitle.has(title)) byTitle.set(title, { title, uri: web.uri });
+  }
+  return [...byTitle.values()].slice(0, MAX_SOURCES);
+};
 
 let client: GoogleGenAI | undefined;
 
@@ -48,7 +73,8 @@ const _generateOnce = async (
   const requestConfig: GenerateContentConfig = {
     systemInstruction: `${settings.systemInstruction}
 
-${_currentDateTime(now)}`,
+${_currentDateTime(now)}
+Web search: ${settings.googleSearch ? 'on' : 'off'}.`,
     temperature: settings.temperature,
     maxOutputTokens: settings.maxOutputTokens,
     thinkingConfig: { thinkingLevel: settings.thinkingLevel.toUpperCase() as ThinkingLevel },
@@ -79,7 +105,7 @@ ${_currentDateTime(now)}`,
       'empty',
       totalTokens,
     );
-  return { text, totalTokens };
+  return { text, totalTokens, sources: _groundingSources(response) };
 };
 
 export const generateReply = async (

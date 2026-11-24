@@ -81,7 +81,11 @@ export async function handleAiMention(client: Botrucho, message: Message): Promi
     );
     tokens = answer.totalTokens;
     refund = false;
-    await reply(Info({ description: redactSlurs(answer.text).slice(0, EMBED_DESCRIPTION_LIMIT) }));
+    const sources = answer.sources.length
+      ? `\n\n${translations.SOURCES}: ${answer.sources.map(({ title, uri }) => `[${title}](${uri})`).join(', ')}`
+      : '';
+    const body = redactSlurs(answer.text).slice(0, EMBED_DESCRIPTION_LIMIT - sources.length);
+    await reply(Info({ description: body + sources }));
   } catch (error) {
     if (error instanceof GeminiError && error.totalTokens > 0) {
       tokens = error.totalTokens;

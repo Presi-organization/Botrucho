@@ -226,7 +226,8 @@
     "USER_LIMIT": "You have reached your daily limit of AI questions. Try again tomorrow.",
     "GUILD_LIMIT": "This server has reached its daily limit of AI questions. Try again tomorrow.",
     "GLOBAL_LIMIT": "I have used up my AI budget for today. Try again tomorrow.",
-    "ERROR": "I could not answer right now. Please try again later."
+    "ERROR": "I could not answer right now. Please try again later.",
+    "SOURCES": "Sources"
   },
   "_EVENTS": "EVENTS TRANSLATIONS",
   "DELETE": {

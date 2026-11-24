@@ -27,6 +27,7 @@ const translations = {
   GUILD_LIMIT: 'guild limit',
   GLOBAL_LIMIT: 'global limit',
   ERROR: 'error',
+  SOURCES: 'Sources',
 };
 
 class GeminiError extends Error {
@@ -37,7 +38,10 @@ class GeminiError extends Error {
   }
 }
 
-function setup({ answer = async () => ({ text: 'answer', totalTokens: 7 }), permit } = {}) {
+function setup({
+  answer = async () => ({ text: 'answer', totalTokens: 7, sources: [] }),
+  permit,
+} = {}) {
   const prompts = [];
   const releases = [];
   const errors = [];
@@ -134,7 +138,7 @@ test('answers a direct mention with the stripped prompt and never pings anyone',
 
 test('truncates long prompts and long answers', async () => {
   const { handle, message, prompts } = setup({
-    answer: async () => ({ text: 'x'.repeat(5000), totalTokens: 1 }),
+    answer: async () => ({ text: 'x'.repeat(5000), totalTokens: 1, sources: [] }),
   });
   const { msg, sent } = message({ content: `<@${BOT_ID}> ${'a'.repeat(50)}` });
   await handle(msg);
@@ -173,9 +177,25 @@ test('still answers when the channel history cannot be fetched', async () => {
   assert.equal(text(sent.replies[0]), 'info: answer');
 });
 
+test('search sources are appended as links after the answer', async () => {
+  const { handle, message } = setup({
+    answer: async () => ({
+      text: 'Llueve',
+      totalTokens: 1,
+      sources: [{ title: 'siata.gov.co', uri: 'https://x/1' }],
+    }),
+  });
+  const { msg, sent } = message({ content: `<@${BOT_ID}> clima` });
+  await handle(msg);
+  assert.equal(
+    sent.replies[0].embeds[0].description,
+    'Llueve\n\nSources: [siata.gov.co](https://x/1)',
+  );
+});
+
 test('slurs in the model answer are censored before replying', async () => {
   const { handle, message } = setup({
-    answer: async () => ({ text: 'Se llamaba Nigger-Man.', totalTokens: 1 }),
+    answer: async () => ({ text: 'Se llamaba Nigger-Man.', totalTokens: 1, sources: [] }),
   });
   const { msg, sent } = message();
   await handle(msg);

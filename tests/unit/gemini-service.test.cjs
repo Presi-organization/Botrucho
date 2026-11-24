@@ -74,6 +74,7 @@ test('sends the system instruction, prompt and output caps with retries disabled
   assert.deepEqual(plain(await generateReply('¿Qué tal?', settings)), {
     text: 'Hola',
     totalTokens: 42,
+    sources: [],
   });
   await generateReply('otra', settings);
 
@@ -101,6 +102,34 @@ test('adds the Google Search tool only when enabled', async () => {
   const { generateReply, calls } = load(() => reply('ok'));
   await generateReply('x', { ...settings, googleSearch: true });
   assert.deepEqual(plain(calls[0].config.tools), [{ googleSearch: {} }]);
+});
+
+test('returns up to three distinct grounding sources', async () => {
+  const web = (title, uri) => ({ web: { title, uri } });
+  const { generateReply } = load(() => ({
+    ...reply('Llueve'),
+    candidates: [
+      {
+        finishReason: 'STOP',
+        groundingMetadata: {
+          groundingChunks: [
+            web('siata.gov.co', 'https://r/1'),
+            web('siata.gov.co', 'https://r/2'),
+            { web: { uri: 'https://r/3' } },
+            web('a.com', 'https://r/4'),
+            web('b.com', 'https://r/5'),
+            {},
+          ],
+        },
+      },
+    ],
+  }));
+  const { sources } = plain(await generateReply('clima', { ...settings, googleSearch: true }));
+  assert.deepEqual(sources, [
+    { title: 'siata.gov.co', uri: 'https://r/1' },
+    { title: 'https://r/3', uri: 'https://r/3' },
+    { title: 'a.com', uri: 'https://r/4' },
+  ]);
 });
 
 test('maps quota, request and blocked failures to typed errors', async () => {
@@ -143,7 +172,11 @@ test('a retry after an empty answer returns the text and counts both attempts', 
     reply('Hola', 40),
   ];
   const { generateReply, calls } = load(() => responses.shift());
-  assert.deepEqual(plain(await generateReply('x', settings)), { text: 'Hola', totalTokens: 40 });
+  assert.deepEqual(plain(await generateReply('x', settings)), {
+    text: 'Hola',
+    totalTokens: 40,
+    sources: [],
+  });
   assert.equal(calls.length, 2);
 });
 
@@ -168,5 +201,11 @@ test('tells the model the current date and time in the configured timezone', asy
   const { systemInstruction } = calls[0].config;
   assert.match(systemInstruction, /viernes, 13 de noviembre de 2026/);
   assert.match(systemInstruction, /3:45/);
-  assert.ok(systemInstruction.endsWith('(America/Bogota).'), systemInstruction);
+  assert.match(systemInstruction, /\(America\/Bogota\)\.\nWeb search: off\.$/);
+});
+
+test('tells the model whether web search is on', async () => {
+  const { generateReply, calls } = load(() => reply('ok'));
+  await generateReply('x', { ...settings, googleSearch: true });
+  assert.match(calls[0].config.systemInstruction, /\nWeb search: on\.$/);
 });

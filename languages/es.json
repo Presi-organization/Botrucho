@@ -226,7 +226,8 @@
     "USER_LIMIT": "Llegaste a tu límite diario de preguntas a la IA. Intenta de nuevo mañana.",
     "GUILD_LIMIT": "Este servidor llegó a su límite diario de preguntas a la IA. Intenta de nuevo mañana.",
     "GLOBAL_LIMIT": "Ya gasté mi presupuesto de IA por hoy. Intenta de nuevo mañana.",
-    "ERROR": "No pude responder en este momento. Intenta de nuevo más tarde."
+    "ERROR": "No pude responder en este momento. Intenta de nuevo más tarde.",
+    "SOURCES": "Fuentes"
   },
   "_EVENTS": "TRADUCCIONES DE EVENTOS",
   "DELETE": {

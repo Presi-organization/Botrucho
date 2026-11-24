@@ -158,4 +158,5 @@ export type FootballKeys =
   | 'DAILY_OFF'
   | 'DAILY_SET'
   | 'DAILY_NO_PERMS';
-export type AiKeys = 'EMPTY_PROMPT' | 'USER_LIMIT' | 'GUILD_LIMIT' | 'GLOBAL_LIMIT' | 'ERROR';
+export type AiKeys =
+  'EMPTY_PROMPT' | 'USER_LIMIT' | 'GUILD_LIMIT' | 'GLOBAL_LIMIT' | 'ERROR' | 'SOURCES';
