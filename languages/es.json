@@ -187,9 +187,14 @@
     "TITLE": "Multas de la cédula ${id}",
     "DESC": "Multas por secretaría"
   },
-  "SIATA": {
+  "RADAR": {
     "ZOOM": "Radar Zoom x${zoom}",
-    "ERR": "Ocurrió un error mientras se procesaban las imágenes."
+    "ERR": "Ocurrió un error mientras se procesaban las imágenes.",
+    "NOT_ENOUGH_FRAMES": "Aún no hay suficientes imágenes para un timelapse.",
+    "TIMELAPSE": "Timelapse ${title}",
+    "FRAMES": "Mostrando ${count} imágenes",
+    "SATELLITE_NOTE": "Imágenes de satélite (topes de nubes), no radar de lluvia.",
+    "UNSUPPORTED_MAP": "${provider} no ofrece el mapa \"${map}\". Disponibles: ${maps}."
   },
   "TFT_ELO": {
     "ELO": "TFT ELO",

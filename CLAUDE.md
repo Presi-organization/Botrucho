@@ -49,7 +49,12 @@ docker build -f docker/Dockerfile.ci -t botrucho:checks .              # full Li
 - `@snazzah/davey` is pinned to 0.1.12 for `discord-voip` 7.2.0 (DAVE encryption stays on). 0.2.0 needs transition calls that library never makes, so do not upgrade it blindly.
 - `/play` sets `fallbackSearchEngine: QueryType.YOUTUBE_SEARCH` so plain song names do not hit an empty generic search; recognized URLs still route automatically.
 
-**Other pieces.** `src/workers/` holds the image/GIF render workers and the SIATA radar job. `src/runtime/presence.ts` and `services/presence.service.ts` drive the rotating status (Open-Meteo weather, AI usage, music). Most time-based logic hardcodes `America/Bogota`.
+**Radar.** `/radar still` and `/radar timelapse` take optional `provider`, `map`, `locations` (still only) and `circles`. A `RadarProvider` (`types/radar`) hands the shared render workers a map, frames and crops. `services/radar/registry.ts` resolves providers; `DEFAULT_RADAR_PROVIDER` in `config/radar.ts` is only the fallback when `provider` is not given. The `provider` choices come from `RADAR_PROVIDER_IDS` and the `map` choices from the union of every provider's `maps` (a provider's first map is its default, and a map it lacks gets an error reply). `workerRadarProcess` refreshes every provider, because any of them can be picked per call.
+- `radar/siata/`: the original radar. `siata-radar.service.ts` is downloaded by the cron into `assets/siata/` (its image feed has been failing) and the provider serves the pre-rendered `google` and `stadia` maps.
+- `radar/gibs/`: NASA GIBS GOES-East infrared (Web Mercator WMS), fetched on demand and cached under `assets/radar/gibs/`, so it needs no cron. `gibs.client.ts` talks to GIBS (GIBS answers a time with no imagery with a blank image, not an error), `cloud-mask.ts` makes the IR colormap's gray background transparent so only cold cloud tops are drawn, `basemap.ts` stitches Google Streets tiles, `view.ts` holds the shared view (center, spans, marker circles, Mercator and tile math), and `file-cache.ts` is the atomic disk cache. The view is framed like the old Leaflet-generated SIATA maps and always labelled; `locations` adds the 5 marker circles. Stadia and CARTO tiles need an API key, so `gibs` offers `google` and a `dark` variant made by restyling Google tiles with `apistyle`.
+- RainViewer was rejected because it has no radar coverage over Medellín, and Windy has no server-side radar endpoint.
+
+**Other pieces.** `src/workers/` holds the image/GIF render workers and the radar cron entry point. `src/runtime/presence.ts` and `services/presence.service.ts` drive the rotating status (Open-Meteo weather, AI usage, music). Most time-based logic hardcodes `America/Bogota`.
 
 ## Conventions
 

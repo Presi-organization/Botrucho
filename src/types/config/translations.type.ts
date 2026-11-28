@@ -29,7 +29,7 @@ export interface TranslationsType {
   VOLUME: TranslationElement<VolumeKeys>;
   SAY: TranslationElement<SayKeys>;
   FINES: TranslationElement<FinesKeys>;
-  SIATA: TranslationElement<SiataKeys>;
+  RADAR: TranslationElement<RadarKeys>;
   TFT_ELO: TranslationElement<TftEloKeys>;
   FOOTBALL: TranslationElement<FootballKeys>;
   AI: TranslationElement<AiKeys>;
@@ -127,7 +127,14 @@ export type VolumeKeys =
   'VOLUME_CHANGED_TITLE' | 'VOLUME_CHANGED_DESC' | 'CURRENT_VOLUME_TITLE' | 'CURRENT_VOLUME_DESC';
 export type SayKeys = 'SYNTHESIZING';
 export type FinesKeys = 'TITLE' | 'DESC';
-export type SiataKeys = 'ZOOM' | 'ERR';
+export type RadarKeys =
+  | 'ZOOM'
+  | 'ERR'
+  | 'NOT_ENOUGH_FRAMES'
+  | 'TIMELAPSE'
+  | 'FRAMES'
+  | 'SATELLITE_NOTE'
+  | 'UNSUPPORTED_MAP';
 export type TftEloKeys =
   | 'ELO'
   | 'SUMMONER_NOT_FOUND'

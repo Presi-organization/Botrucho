@@ -187,9 +187,14 @@
     "TITLE": "Fines for ID ${id}",
     "DESC": "Fines by secretary"
   },
-  "SIATA": {
+  "RADAR": {
     "ZOOM": "Radar Zoom x${zoom}",
-    "ERR": "An error occurred while processing the images."
+    "ERR": "An error occurred while processing the images.",
+    "NOT_ENOUGH_FRAMES": "Not enough images collected yet for a timelapse.",
+    "TIMELAPSE": "${title} Timelapse",
+    "FRAMES": "Showing ${count} images",
+    "SATELLITE_NOTE": "Satellite imagery (cloud tops), not rain radar.",
+    "UNSUPPORTED_MAP": "${provider} does not offer the map \"${map}\". Available: ${maps}."
   },
   "TFT_ELO": {
     "ELO": "TFT ELO",

@@ -27,7 +27,7 @@ import {
   VolumeCommand,
 } from '@/commands/music';
 import { SayCommand } from '@/commands/say';
-import { FootballCommand, MultasCommand, SiataCommand, TFTEloCommand } from '@/commands/searching';
+import { FootballCommand, MultasCommand, RadarCommand, TFTEloCommand } from '@/commands/searching';
 import { ICommand } from '@/types';
 
 export const commandRegistry: (new () => ICommand)[] = [
@@ -55,7 +55,7 @@ export const commandRegistry: (new () => ICommand)[] = [
   ResumeCommand,
   SayCommand,
   ServerCommand,
-  SiataCommand,
+  RadarCommand,
   ShuffleCommand,
   SkipCommand,
   SongInfoCommand,

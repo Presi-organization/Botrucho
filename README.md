@@ -6,7 +6,7 @@ A Discord bot for music, utilities, scheduled events and attendance tracking. **
 
 - Voice/music commands using discord-player and a YouTube extractor.
 - Text-to-speech through Azure Speech.
-- TFT rank, football and SIATA radar commands.
+- TFT rank, football and radar commands.
 - Guild utilities, language settings, games and management commands.
 - MongoDB-backed event attendance and scheduled jobs.
 - Sharded Discord processes with instance leases and coordinated shutdown.

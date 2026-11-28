@@ -18,6 +18,7 @@ import { drawCroppedImage, invertCanvasImage } from '@/utils';
       gifPath,
       invertRadar,
       showProgress,
+      radarOpacity = 0.5,
     } = workerData;
 
     const mapImg = await loadImage(mapPath);
@@ -40,7 +41,7 @@ import { drawCroppedImage, invertCanvasImage } from '@/utils';
       ctx.clearRect(0, 0, outputSize, outputSize);
       drawCroppedImage(ctx, mapImg, mapCrop, { x: 0, y: 0, width: outputSize, height: outputSize });
 
-      ctx.globalAlpha = 0.5;
+      ctx.globalAlpha = radarOpacity;
       drawCroppedImage(ctx, radarImg, radarCrop, {
         x: 0,
         y: 0,

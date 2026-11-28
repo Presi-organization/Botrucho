@@ -4,3 +4,4 @@ export * from './commands';
 export * from './config';
 export * from './images';
 export * from './workers';
+export * from './radar';

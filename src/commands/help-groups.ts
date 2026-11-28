@@ -23,7 +23,7 @@ export const HELP_GROUP_COMMANDS: Record<HelpGroup, string[]> = {
     'football',
     'football-daily',
     'tftelo',
-    'siata',
+    'radar',
     'multas',
     'avatar',
     'user-info',
